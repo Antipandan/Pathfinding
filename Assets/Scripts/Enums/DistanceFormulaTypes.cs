@@ -3,6 +3,6 @@
     public enum DistanceFormulaTypes
     {
         EuclidianDistance, 
-        ManhattanDistance,
+        ManhattanDistance
     }
 }
