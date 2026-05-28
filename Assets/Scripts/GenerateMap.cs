@@ -1,15 +1,12 @@
+using System;
 using UnityEngine;
 
 public class GenerateMap : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
+    [SerializeField] private int rows = 40;
+    [SerializeField] private int columns = 40;
+    
+    private void Awake()
     {
         
     }
