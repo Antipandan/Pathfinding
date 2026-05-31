@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using Utility;
 using Screen = UnityEngine.Device.Screen;
@@ -8,6 +9,7 @@ public class GenerateMap : MonoBehaviour
 {
     [Header("Padding")]
     [SerializeField] private Vector2Int screenPadding = new Vector2Int(0, 0);
+    [SerializeField] private Vector2Int squarePadding = new Vector2Int(0, 0);
     [SerializeField] private ushort rows = 40;
     [SerializeField] private ushort columns = 40;
     [Header("Other Settings")]
@@ -41,16 +43,27 @@ public class GenerateMap : MonoBehaviour
     
     private void GenerateGrid()
     {
-        Debug.Log($"screen Width: {Screen.width}, screen Height: {Screen.height}");
+        int totalSquares = 0;
         for (int column = 0; column < columns; column++)
         {
             for (int row = 0; row < rows; row++)
             {
+                totalSquares++;
+                float xPosition = GiveSquareExtraIndent(row + row * column, new Vector2Int(row, column))
+                    ? row * width + 1
+                    : row * width; 
                 Instantiate(squarePrefab, 
                     new Vector3(row * width, Screen.height - columns * column - height, 0),
                     Quaternion.identity ,transform);
             }
         }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private bool GiveSquareExtraIndent(int squareIndex, Vector2Int dimensions)
+    {
+        if (squareIndex == 0) return false;
+        return squareIndex % dimensions.x > 1;
     }
 
     private void AStarPathfinding()
