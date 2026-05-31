@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Utility
 {
-    public class UtilityFunctions
+    public static class UtilityFunctions
     {
         /// <summary>
         /// Calculates the distance between two points using the pythagorean theorem see: https://www.geeksforgeeks.org/maths/euclidean-distance/
@@ -22,6 +22,7 @@ namespace Utility
             float yDiff = end.y - start.y;
             return Mathf.Sqrt(xDiff * xDiff + yDiff * yDiff);
         }
+        
         /// <summary>
         /// Calculates the distance between two points using the pythagorean theorem see: https://www.geeksforgeeks.org/maths/euclidean-distance/
         /// </summary>
@@ -56,6 +57,51 @@ namespace Utility
         public static float CalculateManhattanDistance(float deltaDistanceX, float deltaDistanceY)
         {
             return Mathf.Abs(deltaDistanceX) + Mathf.Abs(deltaDistanceY);
+        }
+
+
+        public static bool CheckIfObjectsAreNull(out object currentObject, params object[] objects)
+        {
+            foreach (object obj in objects)
+            {
+                currentObject = obj;
+                if (obj == null) return true;
+            }
+            currentObject = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Generic method used to check if object member variables are null. If so return true else false
+        /// </summary>
+        /// <param name="objects">Objects to check for null</param>
+        /// <returns>true if there is a null object. false if there is none</returns>
+        public static bool CheckIfObjectsAreNull(params GameObject[] objects)
+        {
+            foreach (GameObject obj in objects)
+            {
+                if (obj == null) return true;
+            }
+            return false;
+        }
+        
+        /// <summary>
+        /// Generic method used to check if object member variables are null. If so return true else false
+        /// </summary>
+        /// <param name="currentGameObject">Which object is null. Will not return several objects that may be null.
+        /// Returns only the first object that is null</param>
+        /// <param name="objects">Objects to check for null</param>
+        /// <returns>true if there is a null object. false if there is none</returns>
+        public static bool CheckIfObjectsAreNull(out GameObject currentGameObject, params GameObject[] objects)
+        {
+            foreach (GameObject obj in objects)
+            {
+                currentGameObject = obj;
+                if (obj == null) return true;
+            }
+
+            currentGameObject = null;
+            return false;
         }
         
     }
