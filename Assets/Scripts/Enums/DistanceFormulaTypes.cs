@@ -1,8 +1,7 @@
-﻿namespace DefaultNamespace
+﻿using System;
+
+public enum DistanceFormulaTypes
 {
-    public enum DistanceFormulaTypes
-    {
-        EuclidianDistance, 
-        ManhattanDistance
-    }
+    EuclidianDistance, 
+    ManhattanDistance
 }

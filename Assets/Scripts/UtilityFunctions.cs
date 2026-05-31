@@ -60,6 +60,13 @@ namespace Utility
         }
 
 
+        /// <summary>
+        /// Generic method used to check if object member variables are null. If so return true else false
+        /// </summary>
+        /// <param name="currentObject">Which object is null. Will not return several objects that may be null.
+        /// Returns only the first object that is null</param>
+        /// <param name="objects">Objects to check for null</param>
+        /// <returns>true if there is a null object. false if there is none</returns>
         public static bool CheckIfObjectsAreNull(out object currentObject, params object[] objects)
         {
             foreach (object obj in objects)
@@ -68,6 +75,21 @@ namespace Utility
                 if (obj == null) return true;
             }
             currentObject = null;
+            return false;
+        }
+        
+        /// <summary>
+        /// Generic method used to check if object member variables are null. If so return true else false
+        /// </summary>
+        /// <param name="objects">Objects to check for null</param>
+        /// <returns>true if there is a null object. false if there is none</returns>
+        public static bool CheckIfObjectsAreNull(params object[] objects)
+        {
+            foreach (object obj in objects)
+            {
+                if (obj == null) return true;
+            }
+
             return false;
         }
 
