@@ -152,10 +152,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   screenPadding: {x: 0, y: 0}
+  squarePadding: {x: 0, y: 0}
   rows: 10
   columns: 10
   squarePrefab: {fileID: 3996662933413418316, guid: 7091c56ecdb17e5448980647ede19036, type: 3}
-  maxWeight: 4294967294
+  maxWeight: 0
   distanceFormula: 1
   pauseInterval: 0
 --- !u!114 &134725751

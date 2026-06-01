@@ -10,11 +10,11 @@ public class GenerateMap : MonoBehaviour
     [Header("Padding")]
     [SerializeField] private Vector2Int screenPadding = new Vector2Int(0, 0);
     [SerializeField] private Vector2Int squarePadding = new Vector2Int(0, 0);
-    [SerializeField] private ushort rows = 40;
-    [SerializeField] private ushort columns = 40;
+    [SerializeField] private ushort rows = 10;
+    [SerializeField] private ushort columns = 10;
     [Header("Other Settings")]
     [SerializeField] private GameObject squarePrefab;
-    [SerializeField] [Range(0, uint.MaxValue - 1)] private uint maxWeight = UInt32.MaxValue - 1;
+    [SerializeField] [Range(0, 500)] private uint maxWeight = 50;
     [SerializeField] private DistanceFormulaTypes distanceFormula = DistanceFormulaTypes.ManhattanDistance;
     [SerializeField] [Range(0, 100f)] private float pauseInterval = 0f;
 
@@ -43,27 +43,36 @@ public class GenerateMap : MonoBehaviour
     
     private void GenerateGrid()
     {
-        int totalSquares = 0;
         for (int column = 0; column < columns; column++)
         {
             for (int row = 0; row < rows; row++)
             {
-                totalSquares++;
-                float xPosition = GiveSquareExtraIndent(row + row * column, new Vector2Int(row, column))
-                    ? row * width + 1
-                    : row * width; 
+                float xPosition = GiveSquareExtraXIndent(row + columns * column)
+                    ? row * width + 5 * row : row * width; 
+                
+                float yPosition = GiveSquareExtraYindent(row + columns * column) ?
+                    Screen.height - height - (height) * column - 5 * column: Screen.height - height - (height) * column;
+                
                 Instantiate(squarePrefab, 
-                    new Vector3(row * width, Screen.height - columns * column - height, 0),
+                    new Vector3(xPosition, yPosition, 0),
                     Quaternion.identity ,transform);
             }
         }
     }
 
+    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool GiveSquareExtraIndent(int squareIndex, Vector2Int dimensions)
+    private bool GiveSquareExtraXIndent(int squareIndex)
     {
         if (squareIndex == 0) return false;
-        return squareIndex % dimensions.x > 1;
+        return squareIndex % columns != 0;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private bool GiveSquareExtraYindent(int squareIndex)
+    {
+        if (squareIndex < rows + 0 * columns) return false; // anledning bakom att vi skriver 0 * column är att vi inte vill indentera rutor som befinner sig 0:e kolumnen
+        return true;
     }
 
     private void AStarPathfinding()
