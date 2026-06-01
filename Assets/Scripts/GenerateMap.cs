@@ -9,30 +9,25 @@ public class GenerateMap : MonoBehaviour
 {
     [Header("Padding")]
     [SerializeField] private Vector2Int screenPadding = new Vector2Int(0, 0);
-    [SerializeField] private Vector2Int squarePadding = new Vector2Int(0, 0);
     [SerializeField] private ushort rows = 10;
     [SerializeField] private ushort columns = 10;
-    [Header("Other Settings")]
+    [Header("Other Settings")] 
+    [SerializeField] private Transform parentTransform = null;
     [SerializeField] private GameObject squarePrefab;
     [SerializeField] [Range(0, 500)] private uint maxWeight = 50;
-    [SerializeField] private DistanceFormulaTypes distanceFormula = DistanceFormulaTypes.ManhattanDistance;
-    [SerializeField] [Range(0, 100f)] private float pauseInterval = 0f;
-
     private int width = 0;
     private int height = 0;
-    private HashSet<GameObject> visitedObjects = new HashSet<GameObject>();
-    private List<GameObject> objects = new List<GameObject>();
 
 
     private void Awake()
     {
-        objects.Capacity = (int) (rows * columns);
         object nullObject = null;
-        if (!UtilityFunctions.CheckIfObjectsAreNull(out nullObject, squarePrefab))
+        if (!UtilityFunctions.CheckIfObjectsAreNull(out nullObject, parentTransform, squarePrefab))
         {
             GetDimensions(squarePrefab.GetComponent<RectTransform>());
             GenerateGrid();
         }
+        else Debug.LogError($"Error!\nOne or more objects are null! Check the inspector for missing references", gameObject);
     }
 
     private void GetDimensions(RectTransform transform)
@@ -55,7 +50,7 @@ public class GenerateMap : MonoBehaviour
                 
                 Instantiate(squarePrefab, 
                     new Vector3(xPosition, yPosition, 0),
-                    Quaternion.identity ,transform);
+                    Quaternion.identity ,parentTransform);
             }
         }
     }
@@ -73,11 +68,6 @@ public class GenerateMap : MonoBehaviour
     {
         if (squareIndex < rows + 0 * columns) return false; // anledning bakom att vi skriver 0 * column är att vi inte vill indentera rutor som befinner sig 0:e kolumnen
         return true;
-    }
-
-    private void AStarPathfinding()
-    {
-        
     }
     
 }
