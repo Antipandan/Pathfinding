@@ -54,7 +54,6 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
     {
         GetScreenHeightAndWidth();
         GetMapWidthHeight();
-        GetNrRowsColumns();
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -75,10 +74,5 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
         Debug.Log($"mapHeight: {mapHeightWorldPos}");
 
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void GetNrRowsColumns()
-    {
-        return;
-    }
+    
 }

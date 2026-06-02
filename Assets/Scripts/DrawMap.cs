@@ -24,10 +24,11 @@ public class DrawMap : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        foreach (var square in generateMap.GetSquares)
+        foreach (Square square in generateMap.GetSquares)
         {
-            Vector2Int pos = square.SquarePosition;
-            Gizmos.DrawCube(new Vector3(pos.x, pos.y, 0f), Vector3.one);
+            
+            Vector2Int position = square.SquarePosition;
+            Gizmos.DrawCube(new Vector3(position.x, position.y, 0f), Vector3.one / 4f);
         }
     }
 }

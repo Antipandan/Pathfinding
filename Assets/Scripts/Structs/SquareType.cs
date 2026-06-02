@@ -21,8 +21,7 @@ public struct SquareType
         Type = 0b0;
         foreach (int i in ints)
         {
-            // ska fungera. Har ej testat!
-            Type &= GetMostSignificantNumber();
+            Type &= GetMostSignificantNumber(i);
         }
     }
     
@@ -39,6 +38,7 @@ public struct SquareType
     // ReSharper disable once MemberCanBePrivate.Global
     public static int GetMostSignificantNumber(int number)
     {
+        if (number <= 0) return 0;
         return (int)(Math.Log(number, 0b10));
     }
 
