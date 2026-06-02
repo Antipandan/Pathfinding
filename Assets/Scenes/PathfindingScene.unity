@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 134725751}
   - component: {fileID: 134725750}
   - component: {fileID: 134725758}
+  - component: {fileID: 134725759}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -253,6 +254,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   distanceFormula: 0
   SearchFrequencyDelay: 0
+--- !u!114 &134725759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 134725749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6829b28304aa45a783e1b4894525581f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  generateMap: {fileID: 134725750}
+  regularColor: {r: 1, g: 1, b: 1, a: 1}
+  wallColor: {r: 0, g: 0, b: 0, a: 1}
+  neighbourColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  foundPathColor: {r: 1, g: 0, b: 0, a: 1}
+  endNodeColor: {r: 1, g: 0, b: 1, a: 1}
+  startNodeColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &258787622
 GameObject:
   m_ObjectHideFlags: 0

@@ -47,11 +47,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
             }
         }
     }
-
-    private void FixedUpdate()
-    {
-        
-    }
+    
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void GetAllNecessaryStuff()

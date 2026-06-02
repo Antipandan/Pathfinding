@@ -16,7 +16,6 @@ public class Square
     {
         this.squarePosition = squarePosition;
     }
-    
 
     public Vector2Int SquarePosition => squarePosition;
     public void RandomizeWeight(Random random, int minVal = 0, int maxVal = int.MaxValue)
