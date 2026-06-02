@@ -9,12 +9,14 @@ using Random = System.Random;
 public class Square
 {
     private uint weight;
+    private SquareType type;
     private Vector2Int squarePosition = Vector2Int.zero;
     private List<Square> neighbourSquares = new List<Square>();
 
-    public Square(Vector2Int squarePosition)
+    public Square(Vector2Int squarePosition, params SquareTypes[] types)
     {
         this.squarePosition = squarePosition;
+        type = new SquareType(types);
     }
 
     public Vector2Int SquarePosition => squarePosition;
@@ -23,4 +25,5 @@ public class Square
         if (maxVal < 0) throw new ArgumentOutOfRangeException(nameof(maxVal));
         weight = (uint) random.Next(minVal, maxVal);
     }
+    
 }
