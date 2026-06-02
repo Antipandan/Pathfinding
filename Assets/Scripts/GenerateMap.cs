@@ -7,11 +7,10 @@ using Utility;
 using Screen = UnityEngine.Device.Screen;
 
 [RequireComponent(typeof(Tilemap), typeof(TilemapRenderer), typeof(Grid))]
-public class GenerateMap : MonoBehaviour
+public class GenerateMap : MonoBehaviour, IGenerateMap
 {
     [SerializeField] private ushort rows;
     [SerializeField] private ushort columns;
-    [SerializeField] private ushort searchFrequencyDelay = 0;
     
     private TilemapRenderer tilemapRenderer;
     private Grid tilemapGrid;
@@ -19,18 +18,17 @@ public class GenerateMap : MonoBehaviour
     
     private int screenHeight;
     private int screenWidth;
+    private Square[,] squares;
+
+    public Square[,] GetSquares => squares;
 
     private void Awake()
     {
         GetAllNecessaryStuff();
         GenerateGrid();
+        FillRectangle(Vector3Int.zero);
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ResizeGrid()
-    {
-        tilemapGrid.cellSize = new Vector3(screenWidth / (float) rows, screenHeight / (float) columns, 0f);
-    }
+    
     
     private void GenerateGrid()
     {
@@ -51,6 +49,28 @@ public class GenerateMap : MonoBehaviour
     {
         screenWidth = Screen.width;
         screenHeight = Screen.height;
+    }
+    
+    
+    
+    private void FillRectangle(Vector3Int origin)
+    {
+        FillTile(new Vector3Int(0, 0, 0), Color.red);
+        for (int x = 0; x < rows; x++)
+        {
+            for (int y = 0; y < columns; y++)
+            {
+                Vector3Int pos = new Vector3Int(origin.x + x, origin.y + y, origin.z);
+
+            }
+        }
+        tilemap.RefreshAllTiles();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void FillTile(Vector3Int position, Color color)
+    {
+        tilemap.SetColor(position, color);
     }
     
 }
