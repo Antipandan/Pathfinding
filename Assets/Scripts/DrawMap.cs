@@ -2,23 +2,34 @@
 using System.Collections.Generic;
 using Unity;
 using UnityEngine;
-
+using static Constants;
+using static SquareTypes;
 
 public class DrawMap : MonoBehaviour
 {
     [SerializeField] private GenerateMap generateMap;
     [Space]
-    [SerializeField] private Color regularColor = Color.white;
-    [SerializeField] private Color wallColor = Color.black;
+    [SerializeField] private Color regularColor = GetSquareColors[RegularColor];
+    [SerializeField] private Color wallColor = GetSquareColors[WallSquare];
     [Space]
-    [SerializeField] private Color neighbourColor = Color.yellow;
-    [SerializeField] private Color foundPathColor = Color.red;
+    [SerializeField] private Color neighbourColor = GetSquareColors[NeighbourColor];
+    [SerializeField] private Color foundPathColor = GetSquareColors[FoundPathColor];
     [Space]
-    [SerializeField] private Color endNodeColor = Color.magenta;
-    [SerializeField] private Color startNodeColor = Color.green;
+    [SerializeField] private Color endNodeColor = GetSquareColors[EndNodeColor];
+    [SerializeField] private Color startNodeColor = GetSquareColors[StartNodeColor];
+    // det finns säker ett bättre sätt att göra detta på men jag har crunch:at lite för mycket idag...
+    private Dictionary<SquareTypes, Color> squareColors = new Dictionary<SquareTypes, Color>(6);
+
+    public Dictionary<SquareTypes, Color> SquareColors
+    {
+        get => squareColors;
+    }
 
     private void Awake()
     {
+        squareColors = new Dictionary<SquareTypes, Color>();
+        {
+        }
         if (generateMap == null) Debug.LogError($"Warning no reference to {nameof(generateMap)}!");
     }
 

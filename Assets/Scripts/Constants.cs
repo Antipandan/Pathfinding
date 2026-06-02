@@ -5,7 +5,7 @@ using UnityEngine;
 public static class Constants
 {
     public const uint InfiniteWeight = int.MaxValue;
-    private static Dictionary<SquareTypes, Color> squareColors = new Dictionary<SquareTypes, Color>
+    private static readonly Dictionary<SquareTypes, Color> squareColors = new Dictionary<SquareTypes, Color>
         {
             {SquareTypes.WallSquare, Color.black},
             {SquareTypes.RegularColor, Color.white},
@@ -14,5 +14,8 @@ public static class Constants
             {SquareTypes.EndNodeColor, Color.magenta},
             {SquareTypes.StartNodeColor, Color.green},
         };
-    public static Dictionary<SquareTypes, Color> GetSquareColors =>  squareColors;
+    public static Dictionary<SquareTypes, Color> GetSquareColors
+    {
+        get => squareColors;
+    }
 }
