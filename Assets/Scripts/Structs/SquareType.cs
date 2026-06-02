@@ -7,25 +7,29 @@ using UnityEngine;
 
 public struct SquareType
 {
+    private int type;
     public SquareType(params SquareTypes[] squares)
     {
-        Type = 0b0;
+        type = 0b0;
         foreach (SquareTypes squareType in squares)
         {
-            Type &= (int) squareType;
+            type &= (int) squareType;
         }
     }
 
     public SquareType(params int[] ints)
     {
-        Type = 0b0;
+        type = 0b0;
         foreach (int i in ints)
         {
-            Type &= GetMostSignificantNumber(i);
+            type &= GetMostSignificantNumber(i);
         }
     }
     
-    public int Type { get; }
+    public int Type
+    {
+        get => type;
+    }
 
     /// <summary>
     /// Calculates the Most significant bit and interprets that as a number.
@@ -40,6 +44,18 @@ public struct SquareType
     {
         if (number <= 0) return 0;
         return (int)(Math.Log(number, 0b10));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SquareTypes GetDominantSquareType(int number)
+    {
+        return (SquareTypes)GetMostSignificantNumber(number);
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public SquareTypes GetDominantSquareType()
+    {
+        return GetDominantSquareType(type);
     }
 
     /// <summary>

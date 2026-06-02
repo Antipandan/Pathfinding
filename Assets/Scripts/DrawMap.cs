@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity;
 using UnityEngine;
 using static Constants;
@@ -9,8 +10,8 @@ public class DrawMap : MonoBehaviour
 {
     [SerializeField] private GenerateMap generateMap;
     [Space]
-    [SerializeField] private Color regularColor = GetSquareColors[RegularColor];
     [SerializeField] private Color wallColor = GetSquareColors[WallSquare];
+    [SerializeField] private Color regularColor = GetSquareColors[RegularColor];
     [Space]
     [SerializeField] private Color neighbourColor = GetSquareColors[NeighbourColor];
     [SerializeField] private Color foundPathColor = GetSquareColors[FoundPathColor];
@@ -27,19 +28,40 @@ public class DrawMap : MonoBehaviour
 
     private void Awake()
     {
-        squareColors = new Dictionary<SquareTypes, Color>();
-        {
-        }
+        BuildDictionary();
         if (generateMap == null) Debug.LogError($"Warning no reference to {nameof(generateMap)}!");
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void BuildDictionary()
+    {
+        squareColors = new Dictionary<SquareTypes, Color>(6)
+        {
+            {WallSquare, wallColor},
+            {RegularColor, regularColor},
+            {NeighbourColor, neighbourColor},
+            {FoundPathColor, foundPathColor},
+            {EndNodeColor, endNodeColor},
+            {StartNodeColor, startNodeColor}
+        };
+    }
+    
+
     private void OnDrawGizmos()
     {
+        // förhindra att felmeddelanden dycker upp i editmode
+        if (!UnityEditor.EditorApplication.isPlaying) return;
         foreach (Square square in generateMap.GetSquares)
         {
-            
             Vector2Int position = square.SquarePosition;
+            Gizmos.color = squareColors[square.Type.GetDominantSquareType()];
             Gizmos.DrawCube(new Vector3(position.x, position.y, 0f), Vector3.one / 4f);
         }
+    }
+
+    private void OnValidate()
+    {
+        // det måste finnas ett bättre sätt att göra detta på!
+        BuildDictionary();
     }
 }
