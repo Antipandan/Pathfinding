@@ -6,11 +6,19 @@ using Unity;
 using Utility;
 using Random = System.Random;
 
-public class Square : MonoBehaviour
+public class Square
 {
-    [SerializeField] private uint weight = 0;
-    [SerializeField] private SquareTypes squareType = SquareTypes.RegularSquare;
+    private uint weight;
+    private Vector2Int squarePosition = Vector2Int.zero;
+    private List<Square> neighbourSquares = new List<Square>();
 
+    public Square(Vector2Int squarePosition)
+    {
+        this.squarePosition = squarePosition;
+    }
+    
+
+    public Vector2Int SquarePosition => squarePosition;
     public void RandomizeWeight(Random random, int minVal = 0, int maxVal = int.MaxValue)
     {
         if (maxVal < 0) throw new ArgumentOutOfRangeException(nameof(maxVal));

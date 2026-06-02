@@ -154,6 +154,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rows: 20
   columns: 20
+  mapIndentationX: 500
+  mapIndentationY: 300
 --- !u!114 &134725751
 MonoBehaviour:
   m_ObjectHideFlags: 0
