@@ -11,13 +11,13 @@ public class DrawMap : MonoBehaviour
     [SerializeField] private GenerateMap generateMap;
     [Space]
     [SerializeField] private Color wallColor = GetSquareColors[WallSquare];
-    [SerializeField] private Color regularColor = GetSquareColors[RegularColor];
+    [SerializeField] private Color regularColor = GetSquareColors[RegularSquare];
     [Space]
-    [SerializeField] private Color neighbourColor = GetSquareColors[NeighbourColor];
-    [SerializeField] private Color foundPathColor = GetSquareColors[FoundPathColor];
+    [SerializeField] private Color neighbourColor = GetSquareColors[NeighbourSquare];
+    [SerializeField] private Color foundPathColor = GetSquareColors[FoundPathSquare];
     [Space]
-    [SerializeField] private Color endNodeColor = GetSquareColors[EndNodeColor];
-    [SerializeField] private Color startNodeColor = GetSquareColors[StartNodeColor];
+    [SerializeField] private Color endNodeColor = GetSquareColors[EndNodeSquare];
+    [SerializeField] private Color startNodeColor = GetSquareColors[StartNodeSquare];
     // det finns säker ett bättre sätt att göra detta på men jag har crunch:at lite för mycket idag...
     private Dictionary<SquareTypes, Color> squareColors = new Dictionary<SquareTypes, Color>();
 
@@ -38,11 +38,11 @@ public class DrawMap : MonoBehaviour
         squareColors = new Dictionary<SquareTypes, Color>
         {
             {WallSquare, wallColor},
-            {RegularColor, regularColor},
-            {NeighbourColor, neighbourColor},
-            {FoundPathColor, foundPathColor},
-            {EndNodeColor, endNodeColor},
-            {StartNodeColor, startNodeColor}
+            {RegularSquare, regularColor},
+            {NeighbourSquare, neighbourColor},
+            {FoundPathSquare, foundPathColor},
+            {EndNodeSquare, endNodeColor},
+            {StartNodeSquare, startNodeColor}
         };
     }
     

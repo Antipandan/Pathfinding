@@ -32,7 +32,6 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
     {
         if (CheckIfStartGoalSame()) AssignCorrectValues();
         squares = new Square[rows, columns];
-        GetAllNecessaryStuff();
         GenerateGrid();
     }
 
@@ -44,14 +43,17 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
     
     private void GenerateGrid()
     {
-        SetStartingSquare();
         for (int y = 0; y < columns; y++)
         {
             for (int x = 0; x < rows; x++)
             {
-                squares[x, y] = new Square(new Vector2Int(x, y), UtilityFunctions.RandomizeWeight(rand, 0, maxWeight));
+                squares[x, y] = new Square(new Vector2Int(x, y),
+                    UtilityFunctions.RandomizeWeight(rand, 0, maxWeight),
+                    SquareTypes.RegularSquare);
             }
         }
+        SetSingleSquareType(0, 0, SquareTypes.RegularSquare);
+        SetSingleSquareType(rows - 1, columns - 1, SquareTypes.EndNodeSquare);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -61,29 +63,10 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SetStartingSquare()
+    private void SetSingleSquareType(int rowIndex, int columnIndex, SquareTypes type)
     {
-        squares[0, 0].Type = new SquareType(SquareTypes.StartNodeColor);
+        squares[rowIndex, columnIndex].Type = new SquareType(type);
     }
     
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void GetAllNecessaryStuff()
-    {
-        GetScreenHeightAndWidth();
-        GetMapWidthHeight();
-    }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void GetScreenHeightAndWidth()
-    {
-        return;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void GetMapWidthHeight()
-    {
-        return;
-    }
     
 }
