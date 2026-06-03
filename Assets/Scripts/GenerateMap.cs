@@ -30,16 +30,26 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
 
     private void Awake()
     {
-        if (CheckIfStartGoalSame()) AssignCorrectValues();
+        CheckValuesAreCorrect();
         squares = new Square[rows, columns];
         GenerateGrid();
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void AssignCorrectValues()
+    private void CheckValuesAreCorrect()
     {
-        goalSquarePosition = new Vector2Int(rows - 1, columns - 1);
+        Vector2Int defaultGoalPosition = new Vector2Int(rows - 1, columns - 1);
+        Vector2Int defaultStartingPosition = new Vector2Int(0, 0);
+        startingSquarePosition = new Vector2Int(Mathf.Max(startingSquarePosition.x, 0), Mathf.Max(startingSquarePosition.y, 0));
+        goalSquarePosition = new Vector2Int(Mathf.Max(goalSquarePosition.x, 0), Mathf.Max(goalSquarePosition.y, 0));
+        if (startingSquarePosition == goalSquarePosition)
+        {
+            startingSquarePosition = defaultStartingPosition;
+            goalSquarePosition = defaultGoalPosition;
+        }
+        if (goalSquarePosition.x >= rows || goalSquarePosition.y >= columns) goalSquarePosition = defaultGoalPosition;
+        if (startingSquarePosition.x >= rows || startingSquarePosition.y >= rows) startingSquarePosition = defaultStartingPosition;
     }
+    
     
     private void GenerateGrid()
     {
@@ -65,6 +75,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetSingleSquareType(Vector2Int index, SquareTypes type)
     {
+        Debug.Log($"index: {index}, type: {type}");
         squares[index.x, index.y].Type = new SquareType(type);
     }
     

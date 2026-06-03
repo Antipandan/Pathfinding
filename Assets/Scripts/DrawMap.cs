@@ -65,6 +65,7 @@ public class DrawMap : MonoBehaviour
         BuildDictionary();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Color SelectRightColor(Square square)
     {
         // holy spaghetti
