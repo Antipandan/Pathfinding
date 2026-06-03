@@ -5,7 +5,9 @@ using UnityEngine;
 public static class Constants
 {
     public const uint InfiniteWeight = int.MaxValue;
-    private static readonly Dictionary<SquareTypes, Color> squareColors = new Dictionary<SquareTypes, Color>
+    // Hashset eftersom den implementerar IList vilket behöver för .Contains methoden
+    public static readonly HashSet<SquareTypes> NonMixableSquareTypes = new HashSet<SquareTypes>{ SquareTypes.WallSquare };
+    public static readonly Dictionary<SquareTypes, Color> squareColors = new Dictionary<SquareTypes, Color>
         {
             {SquareTypes.WallSquare, Color.black},
             {SquareTypes.RegularSquare, Color.white},
@@ -14,8 +16,4 @@ public static class Constants
             {SquareTypes.EndNodeSquare, Color.magenta},
             {SquareTypes.StartNodeSquare, Color.green},
         };
-    public static Dictionary<SquareTypes, Color> GetSquareColors
-    {
-        get => squareColors;
-    }
 }

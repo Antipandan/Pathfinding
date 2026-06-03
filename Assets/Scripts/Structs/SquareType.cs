@@ -26,10 +26,26 @@ public struct SquareType
         }
     }
     
-    
     public int GetType
     {
         get => this.type;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void AssignNewType(SquareTypes newType)
+    {
+        this.type |= (int)newType;
+    }
+
+    public void TryAddMoreTypes(params SquareTypes[] squareType)
+    {
+        foreach (SquareTypes newType in squareType)
+        {
+            if (!Constants.NonMixableSquareTypes.Contains(newType))
+            {
+                AssignNewType(newType);
+            }
+        }
     }
 
     /// <summary>

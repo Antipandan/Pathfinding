@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity;
 using UnityEngine;
-using static Constants;
 using static SquareTypes;
 
 public class DrawMap : MonoBehaviour
 {
     [SerializeField] private GenerateMap generateMap;
     [Space]
-    [SerializeField] private Color wallColor = GetSquareColors[WallSquare];
-    [SerializeField] private Color regularColor = GetSquareColors[RegularSquare];
+    [SerializeField] private Color wallColor = Constants.squareColors[WallSquare];
+    [SerializeField] private Color regularColor = Constants.squareColors[RegularSquare];
     [Space]
-    [SerializeField] private Color neighbourColor = GetSquareColors[NeighbourSquare];
-    [SerializeField] private Color foundPathColor = GetSquareColors[FoundPathSquare];
+    [SerializeField] private Color neighbourColor = Constants.squareColors[NeighbourSquare];
+    [SerializeField] private Color foundPathColor = Constants.squareColors[FoundPathSquare];
     [Space]
-    [SerializeField] private Color endNodeColor = GetSquareColors[EndNodeSquare];
-    [SerializeField] private Color startNodeColor = GetSquareColors[StartNodeSquare];
+    [SerializeField] private Color endNodeColor = Constants.squareColors[EndNodeSquare];
+    [SerializeField] private Color startNodeColor = Constants.squareColors[StartNodeSquare];
     // det finns säker ett bättre sätt att göra detta på men jag har crunch:at lite för mycket idag...
     private Dictionary<SquareTypes, Color> squareColors = new Dictionary<SquareTypes, Color>();
 

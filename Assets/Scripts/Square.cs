@@ -11,7 +11,6 @@ public class Square
     private uint weight;
     private SquareType type;
     private Vector2Int squarePosition = Vector2Int.zero;
-    private List<Square> neighbourSquares = new List<Square>();
 
     public Square(Vector2Int squarePosition, int maxWeight, params SquareTypes[] types)
     {
@@ -31,15 +30,8 @@ public class Square
         set => type = value;
     }
 
-    public Vector2Int SquarePosition => squarePosition;
-
-    
-    public void AddNeighbours(params Square[] neighbouringSquares)
+    public Vector2Int SquarePosition
     {
-        foreach (Square Square in neighbouringSquares)
-        {
-            neighbourSquares.Add(Square);
-        }
+        get => squarePosition;
     }
-    
 }
