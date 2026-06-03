@@ -11,8 +11,8 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
 {
     [SerializeField] private ushort rows;
     [SerializeField] private ushort columns;
-    [SerializeField] private int startingSquareIndex;
-    [SerializeField] private int goalSquareIndex;
+    [SerializeField] private Vector2Int startingSquarePosition;
+    [SerializeField] private Vector2Int goalSquarePosition;
     [SerializeField] [Range(0, 500)] private int maxWeight = 15;
 
     private Random rand = new Random();
@@ -38,7 +38,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void AssignCorrectValues()
     {
-        goalSquareIndex = (rows * columns) - 1;
+        goalSquarePosition = new Vector2Int(rows - 1, columns - 1);
     }
     
     private void GenerateGrid()
@@ -52,20 +52,20 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
                     SquareTypes.RegularSquare);
             }
         }
-        SetSingleSquareType(0, 0, SquareTypes.RegularSquare);
-        SetSingleSquareType(rows - 1, columns - 1, SquareTypes.EndNodeSquare);
+        SetSingleSquareType(startingSquarePosition, SquareTypes.StartNodeSquare);
+        SetSingleSquareType(goalSquarePosition, SquareTypes.EndNodeSquare);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool CheckIfStartGoalSame()
     {
-        return startingSquareIndex == goalSquareIndex;
+        return startingSquarePosition == goalSquarePosition;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SetSingleSquareType(int rowIndex, int columnIndex, SquareTypes type)
+    private void SetSingleSquareType(Vector2Int index, SquareTypes type)
     {
-        squares[rowIndex, columnIndex].Type = new SquareType(type);
+        squares[index.x, index.y].Type = new SquareType(type);
     }
     
     
