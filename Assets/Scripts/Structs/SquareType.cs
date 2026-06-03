@@ -11,19 +11,13 @@ public struct SquareType
     public SquareType(params SquareTypes[] squares)
     {
         this.type = 0b0;
-        foreach (SquareTypes squareType in squares)
-        {
-            this.type |= (int) squareType;
-        }
+        AssignNewType(squares);
     }
 
     public SquareType(params int[] ints)
     {
         this.type = 0b0;
-        foreach (int i in ints)
-        {
-            this.type &= GetMostSignificantNumber(i);
-        }
+        AssignNewType(ints);
     }
     
     public int GetType
@@ -31,15 +25,37 @@ public struct SquareType
         get => this.type;
     }
 
+    /// <summary>
+    /// Takes the int value of the newTypes and applies them to 'this.type'
+    /// </summary>
+    /// <param name="newTypes">Collection of types to be added to 'this.type'</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void AssignNewType(params SquareTypes[] newTypes)
     {
         foreach (SquareTypes newType in newTypes)
         {
-            this.type |= (int)newType;
+            AssignSingleNewType(newType);
         }
     }
 
+    /// <summary>
+    /// Takes the int value, finds the MSB and applies them to 'this.type'.
+    /// </summary>
+    /// <param name="ints">Integers representing different squares</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void AssignNewType(params int[] ints)
+    {
+        foreach (int i in ints)
+        {
+            AssignSingleNewType(i);
+        }
+    }
+
+    /// <summary>
+    /// Try and add more types. Designed to be used externally when modifying value of struct.
+    /// Will not add certain types to others
+    /// </summary>
+    /// <param name="squareType">Collection of types to be added to 'this.type'</param>
     public void TryAddMoreTypes(params SquareTypes[] squareType)
     {
         foreach (SquareTypes newType in squareType)
@@ -52,7 +68,30 @@ public struct SquareType
     }
 
     /// <summary>
+    /// Perform an OR operation on 'this.type' and int value of 'newType' to integrate its value into 'this.type'
+    /// <example><c>(0b1000 |= 0b0010) = 0b1010</c></example>
+    /// </summary>
+    /// <param name="newType">SquareTypes to integrate into 'this.type'</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void AssignSingleNewType(SquareTypes newType)
+    {
+        type |= (int)newType;
+    }
+
+    /// <summary>
+    /// Perform an OR operation on 'this.type' and the integer value to integrate its value into 'this.type'
+    /// <example><c>(0b1000 |= 0b0010) = 0b1010</c></example>
+    /// </summary>
+    /// <param name="i">Integer to integrate into 'this.type'</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void AssignSingleNewType(int i)
+    {
+        type |= GetMostSignificantNumber(i);
+    }
+
+    /// <summary>
     /// Checks If the number / bit of a 'SquareTypes' is included in type of said 'SquareType'
+    /// <example><c>0b1010, 0b1001 -> 0b1000 = 'EndNodeSquare'</c></example>>
     /// </summary>
     /// <param name="desiredType">'SquareTypes' to search for in 'type'</param>
     /// <returns></returns>
