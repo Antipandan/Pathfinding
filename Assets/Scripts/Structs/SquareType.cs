@@ -32,9 +32,12 @@ public struct SquareType
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void AssignNewType(SquareTypes newType)
+    private void AssignNewType(params SquareTypes[] newTypes)
     {
-        this.type |= (int)newType;
+        foreach (SquareTypes newType in newTypes)
+        {
+            this.type |= (int)newType;
+        }
     }
 
     public void TryAddMoreTypes(params SquareTypes[] squareType)
