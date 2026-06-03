@@ -54,8 +54,8 @@ public class DrawMap : MonoBehaviour
         foreach (Square square in generateMap.GetSquares)
         {
             Vector2Int position = square.SquarePosition;
-            Gizmos.color = squareColors[square.Type.GetDominantSquareType()];
-            Gizmos.DrawCube(new Vector3(position.x, position.y, 0f), Vector3.one / 4f);
+            Gizmos.color = SelectRightColor(square);
+            Gizmos.DrawCube(new Vector3(position.x, position.y, 0f), Vector3.one / 2f);
         }
     }
 
@@ -63,5 +63,11 @@ public class DrawMap : MonoBehaviour
     {
         // det måste finnas ett bättre sätt att göra detta på!
         BuildDictionary();
+    }
+
+    private Color SelectRightColor(Square square)
+    {
+        // holy spaghetti
+        return squareColors[(SquareTypes)(int)Mathf.Pow(2f, (float)square.Type.GetDominantSquareType())];
     }
 }

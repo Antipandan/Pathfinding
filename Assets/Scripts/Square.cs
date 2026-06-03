@@ -16,10 +16,14 @@ public class Square
     public Square(Vector2Int squarePosition, int maxWeight, params SquareTypes[] types)
     {
         this.squarePosition = squarePosition;
-        type = new SquareType(types);
+        this.type = new SquareType(types);
         this.weight = (uint) maxWeight;
     }
     
+    public uint Weight
+    {
+        get => weight;
+    }
     
     public SquareType Type
     {
@@ -29,10 +33,13 @@ public class Square
 
     public Vector2Int SquarePosition => squarePosition;
 
+    
     public void AddNeighbours(params Square[] neighbouringSquares)
     {
-        
+        foreach (Square Square in neighbouringSquares)
+        {
+            neighbourSquares.Add(Square);
+        }
     }
-    
     
 }

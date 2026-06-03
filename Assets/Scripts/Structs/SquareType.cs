@@ -13,7 +13,7 @@ public struct SquareType
         this.type = 0b0;
         foreach (SquareTypes squareType in squares)
         {
-            this.type &= (int) squareType;
+            this.type |= (int) squareType;
         }
     }
 
@@ -33,6 +33,17 @@ public struct SquareType
     }
 
     /// <summary>
+    /// Checks If the number / bit of a 'SquareTypes' is included in type of said 'SquareType'
+    /// </summary>
+    /// <param name="desiredType">'SquareTypes' to search for in 'type'</param>
+    /// <returns></returns>
+    public bool HasSquareType(SquareTypes desiredType)
+    {
+        int bitIndex = (int)desiredType;
+        return ((type & bitIndex) >> (bitIndex - 1) & 0b1) == 0b1;
+    }
+
+    /// <summary>
     /// Calculates the Most significant bit and interprets that as a number.
     /// </summary>
     /// <param name="number">Number to get the most significant bit of</param>
@@ -40,11 +51,11 @@ public struct SquareType
     /// bit e.g an input of 68 will return 64 because 2**6 = 64, where 6
     /// represents the index of the most significant bit</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    // ReSharper disable once MemberCanBePrivate.Global
     public static int GetMostSignificantNumber(int number)
     {
         if (number <= 0) return 0;
-        return (int)(Math.Log(number, 0b10));
+        // Debug.Log($"number: {Math.Log(number, 2)}, incoming number: {number}");
+        return (int)(Math.Log(number, 2));
     }
     
     /// <summary>
