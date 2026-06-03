@@ -77,12 +77,6 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool CheckIfStartGoalSame()
-    {
-        return startingSquarePosition == goalSquarePosition;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetSingleSquareType(Vector2Int index, SquareTypes type)
     {
         squares[index.x, index.y].Type = new SquareType(type);
