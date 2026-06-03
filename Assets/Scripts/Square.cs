@@ -13,19 +13,26 @@ public class Square
     private Vector2Int squarePosition = Vector2Int.zero;
     private List<Square> neighbourSquares = new List<Square>();
 
-    public Square(Vector2Int squarePosition, params SquareTypes[] types)
+    public Square(Vector2Int squarePosition, int maxWeight, params SquareTypes[] types)
     {
         this.squarePosition = squarePosition;
         type = new SquareType(types);
+        this.weight = (uint) maxWeight;
     }
     
-    public SquareType Type => type;
+    
+    public SquareType Type
+    {
+        get => type;
+        set => type = value;
+    }
 
     public Vector2Int SquarePosition => squarePosition;
-    public void RandomizeWeight(Random random, int minVal = 0, int maxVal = int.MaxValue)
+
+    public void AddNeighbours(params Square[] neighbouringSquares)
     {
-        if (maxVal < 0) throw new ArgumentOutOfRangeException(nameof(maxVal));
-        weight = (uint) random.Next(minVal, maxVal);
+        
     }
+    
     
 }

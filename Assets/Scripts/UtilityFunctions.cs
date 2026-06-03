@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity;
 using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 namespace Utility
 {
@@ -166,6 +167,13 @@ namespace Utility
                                         screenDimensions.y / (float)rowColumnCount.y,
                                         0f);
         }
+        
+        public static int RandomizeWeight(System.Random random, int minVal = 0, int maxVal = int.MaxValue)
+        {
+            if (maxVal < 0) throw new ArgumentOutOfRangeException(nameof(maxVal));
+            return random.Next(minVal, maxVal);
+        }
+        
         
     }
 }
