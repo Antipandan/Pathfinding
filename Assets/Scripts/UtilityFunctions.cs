@@ -9,6 +9,20 @@ namespace Utility
 {
     public static class UtilityFunctions
     {
+
+        /// <summary>
+        /// Calculates the distance between two points using the pythagorean theorem see: https://www.geeksforgeeks.org/maths/euclidean-distance/
+        /// </summary>
+        /// <param name="start">Starting point</param>
+        /// <param name="end">End point</param>
+        /// <returns>Distance between two points</returns>
+        public static int CalculateEuclidieanDistance(Vector2Int start, Vector2Int end)
+        {
+            int yDiff = end.y - start.y;
+            int xDiff = end.x - start.x;
+            // gånger 10 eftersom det ger oss "bra" värden tycker jag
+            return (int)(Mathf.Sqrt(xDiff * xDiff + yDiff * yDiff)) * 10;
+        }
         /// <summary>
         /// Calculates the distance between two points using the pythagorean theorem see: https://www.geeksforgeeks.org/maths/euclidean-distance/
         /// </summary>
@@ -36,6 +50,7 @@ namespace Utility
         {
             return Mathf.Sqrt(deltaDistanceX * deltaDistanceX + deltaDistanceY * deltaDistanceY);
         }
+        
 
         /// <summary>
         /// Calculates the manhattan distance between two points see: https://www.geeksforgeeks.org/data-science/manhattan-distance/
@@ -55,11 +70,23 @@ namespace Utility
         /// <param name="deltaDistanceX">Difference between X position</param>
         /// <param name="deltaDistanceY">Difference between Y position</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float CalculateManhattanDistance(float deltaDistanceX, float deltaDistanceY)
         {
             return Mathf.Abs(deltaDistanceX) + Mathf.Abs(deltaDistanceY);
         }
 
+        /// <summary>
+        /// Calculates the manhattan distance between two points see: https://www.geeksforgeeks.org/data-science/manhattan-distance/
+        /// </summary>
+        /// <param name="start">Starting point</param>
+        /// <param name="end">End point</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int CalculateManhattanDistance(Vector2Int start, Vector2Int end)
+        {
+            return Mathf.Abs(start.x - end.x) + Mathf.Abs(start.y - end.y);
+        }
 
         /// <summary>
         /// Generic method used to check if object member variables are null. If so return true else false
@@ -173,7 +200,6 @@ namespace Utility
             if (maxVal < 0) throw new ArgumentOutOfRangeException(nameof(maxVal));
             return random.Next(minVal, maxVal);
         }
-        
         
     }
 }

@@ -155,8 +155,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rows: 20
   columns: 20
-  mapIndentationX: 500
-  mapIndentationY: 300
+  startingSquarePosition: {x: 2, y: 7}
+  goalSquarePosition: {x: 20, y: 20}
+  maxWeight: 15
 --- !u!114 &134725751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -267,8 +268,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generateMap: {fileID: 134725750}
-  regularColor: {r: 1, g: 1, b: 1, a: 1}
   wallColor: {r: 0, g: 0, b: 0, a: 1}
+  regularColor: {r: 1, g: 1, b: 1, a: 1}
   neighbourColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   foundPathColor: {r: 1, g: 0, b: 0, a: 1}
   endNodeColor: {r: 1, g: 0, b: 1, a: 1}

@@ -9,5 +9,4 @@ public enum SquareTypes
     FoundPathSquare = 0b100, // 4
     EndNodeSquare = 0b1000, // 8
     StartNodeSquare = 0b1000_0, // 16
-    
 }
