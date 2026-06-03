@@ -10,19 +10,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
 {
     [SerializeField] private ushort rows;
     [SerializeField] private ushort columns;
-    [Tooltip("Measured in pixels")]
-    [SerializeField] private ushort mapIndentationX;
-    [Tooltip("Measured in pixels")]
-    [SerializeField] private ushort mapIndentationY;
     
-    private float size = 1/10f;
-    private int coefficientScreenToWorldPosition;
-    private int screenHeight;
-    private int screenWidth;
-    
-    private int mapWidthWorldPos;
-    private int mapHeightWorldPos;
-
     private Square[,] squares;
 
     public Square[,] GetSquares => squares;
@@ -30,12 +18,9 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
     private void Awake()
     {
         squares = new Square[rows, columns];
-        // Debug.Log($"mapWidthWorldPos: {mapWidthWorldPos},  mapHeightWorldPos: {mapHeightWorldPos}");
-        Instantiate(new GameObject("test Position"), new Vector3(mapWidthWorldPos, mapHeightWorldPos, 0), Quaternion.identity);
         GetAllNecessaryStuff();
         GenerateGrid();
     }
-    
     
     private void GenerateGrid()
     {
@@ -59,20 +44,13 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void GetScreenHeightAndWidth()
     {
-        screenWidth = Screen.width;
-        screenHeight = Screen.height;
-        coefficientScreenToWorldPosition = (int) (screenHeight / 10f);
+        return;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void GetMapWidthHeight()
     {
-        Debug.Log($"screenWidth: {screenWidth},  screenHeight: {screenHeight},\ncoefficientScreenToWorldPosition: {coefficientScreenToWorldPosition}, ");
-        mapWidthWorldPos = (int) (((screenWidth - mapIndentationX) - (0 +  mapIndentationX)) * ((1 / (float) coefficientScreenToWorldPosition)));
-        Debug.Log($"mapWidth: {mapWidthWorldPos}");
-        mapHeightWorldPos = (int)(((screenHeight - mapIndentationY) - (0 + mapIndentationY)) * (1 / (float) coefficientScreenToWorldPosition));
-        Debug.Log($"mapHeight: {mapHeightWorldPos}");
-
+        return;
     }
     
 }

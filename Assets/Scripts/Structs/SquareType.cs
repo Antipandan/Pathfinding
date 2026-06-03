@@ -10,25 +10,26 @@ public struct SquareType
     private int type;
     public SquareType(params SquareTypes[] squares)
     {
-        type = 0b0;
+        this.type = 0b0;
         foreach (SquareTypes squareType in squares)
         {
-            type &= (int) squareType;
+            this.type &= (int) squareType;
         }
     }
 
     public SquareType(params int[] ints)
     {
-        type = 0b0;
+        this.type = 0b0;
         foreach (int i in ints)
         {
-            type &= GetMostSignificantNumber(i);
+            this.type &= GetMostSignificantNumber(i);
         }
     }
     
-    public int Type
+    
+    public int GetType
     {
-        get => type;
+        get => this.type;
     }
 
     /// <summary>
@@ -45,6 +46,14 @@ public struct SquareType
         if (number <= 0) return 0;
         return (int)(Math.Log(number, 0b10));
     }
+    
+    /// <summary>
+    /// Calculates the Most significant bit and interprets that as a number.
+    /// </summary>
+    /// <param name="number">Number to the exponent from</param>>
+    /// <returns>Returns 2 to the power of the index of the most significant
+    /// bit e.g an input of 68 will return 64 because 2**6 = 64, where 6
+    /// represents the index of the most significant bit. Returns the exponent as a 'SquareTypes'</returns>
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static SquareTypes GetDominantSquareType(int number)
@@ -52,6 +61,12 @@ public struct SquareType
         return (SquareTypes)GetMostSignificantNumber(number);
     }
     
+    /// <summary>
+    /// Calculates the Most significant bit and interprets that as a number.
+    /// </summary>
+    /// <returns>Returns 2 to the power of the index of the most significant
+    /// bit e.g an input of 68 will return 64 because 2**6 = 64, where 6
+    /// represents the index of the most significant bit. Returns the exponent as a 'SquareTypes'</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public SquareTypes GetDominantSquareType()
     {
@@ -67,11 +82,11 @@ public struct SquareType
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetMostSignificantNumber()
     {
-        return GetMostSignificantNumber(Type);
+        return GetMostSignificantNumber(GetType);
     }
     
     public override string ToString()
     {
-        return $"Value: {Type} Base: {base.ToString()}";
+        return $"Value: {GetType} Base: {base.ToString()}";
     }
 }

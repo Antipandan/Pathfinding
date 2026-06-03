@@ -19,7 +19,7 @@ public class DrawMap : MonoBehaviour
     [SerializeField] private Color endNodeColor = GetSquareColors[EndNodeColor];
     [SerializeField] private Color startNodeColor = GetSquareColors[StartNodeColor];
     // det finns säker ett bättre sätt att göra detta på men jag har crunch:at lite för mycket idag...
-    private Dictionary<SquareTypes, Color> squareColors = new Dictionary<SquareTypes, Color>(6);
+    private Dictionary<SquareTypes, Color> squareColors = new Dictionary<SquareTypes, Color>();
 
     public Dictionary<SquareTypes, Color> SquareColors
     {
@@ -35,7 +35,7 @@ public class DrawMap : MonoBehaviour
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void BuildDictionary()
     {
-        squareColors = new Dictionary<SquareTypes, Color>(6)
+        squareColors = new Dictionary<SquareTypes, Color>
         {
             {WallSquare, wallColor},
             {RegularColor, regularColor},
