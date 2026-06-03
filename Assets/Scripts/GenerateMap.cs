@@ -15,12 +15,22 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
     [SerializeField] private Vector2Int goalSquarePosition;
     [SerializeField] [Range(0, 500)] private int maxWeight = 15;
 
-    private Random rand = new Random();
+    private readonly Random rand = new Random();
     private Square[,] squares;
-
+    
     public Square[,] GetSquares
     {
         get => squares;
+    }
+
+    public Square GetGoalSquare
+    {
+        get => squares[goalSquarePosition.x, goalSquarePosition.y];
+    }
+
+    public Square GetStartingSquare
+    {
+        get => squares[startingSquarePosition.x, startingSquarePosition.y];
     }
 
     public Random Rand
@@ -75,9 +85,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetSingleSquareType(Vector2Int index, SquareTypes type)
     {
-        Debug.Log($"index: {index}, type: {type}");
         squares[index.x, index.y].Type = new SquareType(type);
     }
-    
     
 }
