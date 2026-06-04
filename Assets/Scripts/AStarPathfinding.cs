@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Utility;
 
 public class AStarPathfinding : MonoBehaviour
@@ -8,9 +10,10 @@ public class AStarPathfinding : MonoBehaviour
     [SerializeField] private GenerateMap generateMap;
     [SerializeField] private DistanceFormulaTypes distanceFormula;
     [Tooltip("Delay in milliseconds(ms)")]
-    [SerializeField] private ushort SearchFrequencyDelay;
+    [SerializeField] private ushort searchFrequencyDelay;
     // collections
     private List<Square> path = new List<Square>();
+    private List<Square> currentNeighbours;
     private HashSet<Square> searchedSquares;
     private Square[,] searchGrid;
     // member variables
@@ -22,7 +25,7 @@ public class AStarPathfinding : MonoBehaviour
 
     private void Awake()
     {
-        return;
+        SetupStuff();
     }
 
     private void Update()
@@ -30,9 +33,32 @@ public class AStarPathfinding : MonoBehaviour
         return;
     }
 
+    private void AddNeighbours(Square square)
+    {
+        // detta är definitivt inte en bra lösning men jag antar att det fungerar?
+        Vector2Int currentIndex = square.SquarePosition;
+        if (currentIndex.x >= 0)
+        currentNeighbours.Add(searchGrid[currentIndex.x, currentIndex.y]);
+    }
+
     private void SetupStuff()
     {
+        searchGrid = generateMap.GetSquares;
+        startingSquare = generateMap.GetStartingSquare;
+        endingSquare = generateMap.GetGoalSquare;
+        currentSquare = startingSquare;
+        searchedSquares.Add(currentSquare);
+    }
+
+    private void IncrementGCost()
+    {
         
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void GetSquareNeighbours(Square square)
+    {
+        currentNeighbours = generateMap.GetNeighbours(square);
     }
     
     private int CalculateDistance()

@@ -45,6 +45,25 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
         GenerateGrid();
     }
 
+    public List<Square> GetNeighbours(Square square)
+    {
+        // much spaghett!
+        List<Square> neighbours = new List<Square>();
+        Vector2Int index = square.SquarePosition;
+        if (index.x - 1 >= 0 && index.x + 1 <= rows - 1)
+        {
+            neighbours.Add(squares[index.x - 1, index.y]);
+            neighbours.Add(squares[index.x + 1, index.y]);
+        }
+
+        if (index.y - 1 >= 0 && index.y + 1 <= columns - 1)
+        {
+            neighbours.Add(squares[index.x, index.y - 1]);
+            neighbours.Add(squares[index.x, index.y + 1]);
+        }
+        return neighbours;
+    }
+
     private void CheckValuesAreCorrect()
     {
         Vector2Int defaultGoalPosition = new Vector2Int(rows - 1, columns - 1);
