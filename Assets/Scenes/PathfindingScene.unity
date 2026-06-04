@@ -156,7 +156,7 @@ MonoBehaviour:
   rows: 20
   columns: 20
   startingSquarePosition: {x: 0, y: 0}
-  goalSquarePosition: {x: 19, y: 19}
+  goalSquarePosition: {x: 8, y: 19}
   maxWeight: 15
   seed: 123
 --- !u!114 &134725751

@@ -99,18 +99,25 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     private void CheckValuesAreCorrect()
     {
         Vector2Int defaultStartingPosition = new Vector2Int(0, 0);
+        Vector2Int dimensions = new Vector2Int(rows, columns);
         Vector2Int defaultGoalPosition = new Vector2Int(rows - 1, columns - 1);
-        startingSquarePosition = new Vector2Int(Mathf.Max(startingSquarePosition.x, 0), Mathf.Max(startingSquarePosition.y, 0));
-        goalSquarePosition = new Vector2Int(Mathf.Max(goalSquarePosition.x, 0), Mathf.Max(goalSquarePosition.y, 0));
+        ResetCorrectly(ref startingSquarePosition, dimensions);
+        ResetCorrectly(ref goalSquarePosition, dimensions);
         if (startingSquarePosition == goalSquarePosition)
         {
             startingSquarePosition = defaultStartingPosition;
             goalSquarePosition = defaultGoalPosition;
         }
-        if (goalSquarePosition.x >= rows || goalSquarePosition.y >= columns) goalSquarePosition = defaultGoalPosition;
-        if (startingSquarePosition.x >= rows || startingSquarePosition.y >= columns) startingSquarePosition = defaultStartingPosition;
     }
-    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void ResetCorrectly(ref Vector2Int position, Vector2Int dimensions)
+    {
+        Vector2Int newPosition = new Vector2Int(position.x % dimensions.x, position.y % dimensions.y);
+        if (newPosition.x < 0) newPosition.x += dimensions.x; 
+        if (newPosition.y < 0) newPosition.y += dimensions.y;
+        position = newPosition;
+    }
     
     private void GenerateGrid()
     {
