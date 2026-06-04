@@ -11,7 +11,9 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
 {
     [SerializeField] private ushort rows;
     [SerializeField] private ushort columns;
+    [Tooltip("Position is 0-indexed. Max value is rows or columns - 1")]
     [SerializeField] private Vector2Int startingSquarePosition;
+    [Tooltip("Position is 0-indexed. Max value is rows or columns - 1")]
     [SerializeField] private Vector2Int goalSquarePosition;
     [SerializeField] [Range(0, 500)] private int maxWeight = 15;
     [SerializeField] private string seed = "";
