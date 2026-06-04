@@ -134,7 +134,7 @@ public struct SquareType
     /// Calculates the Most significant bit and interprets that as a number.
     /// </summary>
     /// <returns>Returns 2 to the power of the index of the most significant
-    /// bit e.g an input of 68 will return 64 because 2**6 = 64, where 6
+    /// bit e.g. an input of 68 will return 64 because 2**6 = 64, where 6
     /// represents the index of the most significant bit. Returns the exponent as a 'SquareTypes'</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public SquareTypes GetDominantSquareType()

@@ -25,7 +25,7 @@ public class AStarPathfinding : MonoBehaviour
 
     private void Awake()
     {
-        SetupStuff();
+        // SetupStuff();
     }
 
     private void Update()

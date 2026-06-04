@@ -45,6 +45,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
 
     private void Awake()
     {
+        SetupValues();
         CheckValuesAreCorrect();
         squares = new Square[rows, columns];
         GenerateGrid();
@@ -128,5 +129,10 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     {
         squares[index.x, index.y].Type = new SquareType(type);
     }
-    
+
+    private void OnValidate()
+    {
+        // Ja detta är inte det bästa att göra!
+        GenerateGrid();
+    }
 }

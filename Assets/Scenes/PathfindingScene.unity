@@ -158,6 +158,7 @@ MonoBehaviour:
   startingSquarePosition: {x: 2, y: 7}
   goalSquarePosition: {x: 20, y: 20}
   maxWeight: 15
+  seed: 
 --- !u!114 &134725751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -253,8 +254,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1018d9164f025542a035503c730695e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  generateMap: {fileID: 134725750}
   distanceFormula: 0
-  SearchFrequencyDelay: 0
+  searchFrequencyDelay: 0
 --- !u!114 &134725759
 MonoBehaviour:
   m_ObjectHideFlags: 0
