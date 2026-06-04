@@ -32,7 +32,13 @@ public class Square
     
     public uint Weight
     {
-        get => weight;
+        // liten work around men jag bryr mig inte längre direkt!
+        get
+        {
+            if (type.HasSquareType(SquareTypes.StartNodeSquare) || 
+                    type.HasSquareType(SquareTypes.EndNodeSquare)) return 0;
+            return weight;
+        }
     }
     
     public SquareType Type

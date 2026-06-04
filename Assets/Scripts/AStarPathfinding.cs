@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Mono.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Utility;
@@ -14,6 +15,7 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
     [Tooltip("Delay in milliseconds(ms)")]
     [SerializeField] private ushort searchFrequencyDelay;
     // collections
+    private Square[] searchGrid;
     private List<Square> openList = new List<Square>();
     private List<Square> closedList = new List<Square>();
     // member variables
@@ -21,7 +23,7 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
     private Square currentSquare;
     private Square endingSquare;
     private uint totalGCost;
-    private bool paused = false;
+    private uint totalCost;
     
 
     private void Start()
@@ -46,8 +48,36 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
     {
         while (openList.Count > 0)
         {
-            
+            Square cheapestSquare = null;
+            foreach (Square square in openList)
+            {
+                if (cheapestSquare == null) cheapestSquare = square;
+                else if (CalculateFCost(square) < CalculateFCost(cheapestSquare)) cheapestSquare = square;
+            }
+
+            List<Square> neighbours = TryGetNeighbours(cheapestSquare);
         }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private List<Square> TryGetNeighbours(Square square)
+    {
+        Vector2Int ParentPosition = square.SquarePosition;
+        return new List<Square> { };
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void TryDeleteNullEntries(List<Square> list)
+    {
+        for (int i = list.Count - 1; i >= 0; i--)
+        {
+            if (list[i] == null) list.RemoveAt(i);
+        }
+    }
+
+    private uint CalculateFCost(Square square)
+    {
+        return totalGCost + (uint) CalculateDistance(square);
     }
 
     private void SetupStuff()
@@ -68,34 +98,23 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
     {
         totalGCost -= square.Weight;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void GetSquareNeighbours(Square square)
-    {
-        return;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ClearNeighbours()
-    {
-        return;
-    }
+    
 
     private void OnDisable()
     {
         StopCoroutine(Pathfinder());
     }
 
-    private int CalculateDistance()
+    private int CalculateDistance(Square square)
     {
         int distance = 0;
         switch (distanceFormula)
         {
             case DistanceFormulaTypes.EuclidianDistance:
-                distance = UtilityFunctions.CalculateEuclidieanDistance(currentSquare.SquarePosition, endingSquare.SquarePosition);
+                distance = UtilityFunctions.CalculateEuclidieanDistance(square.SquarePosition, endingSquare.SquarePosition);
                 break;
             case DistanceFormulaTypes.ManhattanDistance:
-                distance = UtilityFunctions.CalculateManhattanDistance(currentSquare.SquarePosition, endingSquare.SquarePosition);
+                distance = UtilityFunctions.CalculateManhattanDistance(square.SquarePosition, endingSquare.SquarePosition);
                 break;
         }
         return distance;
