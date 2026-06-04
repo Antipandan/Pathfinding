@@ -158,7 +158,7 @@ MonoBehaviour:
   startingSquarePosition: {x: 2, y: 7}
   goalSquarePosition: {x: 20, y: 20}
   maxWeight: 15
-  seed: 
+  seed: 123
 --- !u!114 &134725751
 MonoBehaviour:
   m_ObjectHideFlags: 0

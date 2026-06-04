@@ -111,6 +111,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     
     private void GenerateGrid()
     {
+        if (!UnityEditor.EditorApplication.isPlaying) return;
         for (int y = 0; y < columns; y++)
         {
             for (int x = 0; x < rows; x++)
