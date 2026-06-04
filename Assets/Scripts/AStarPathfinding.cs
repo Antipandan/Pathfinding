@@ -15,15 +15,13 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
     [Tooltip("Delay in milliseconds(ms)")]
     [SerializeField] private ushort searchFrequencyDelay;
     // collections
-    private Square[] searchGrid;
+    private Square[,] searchGrid;
     private List<Square> openList = new List<Square>();
     private List<Square> closedList = new List<Square>();
     // member variables
     private Square startingSquare;
     private Square currentSquare;
     private Square endingSquare;
-    private uint totalGCost;
-    private uint totalCost;
     
 
     private void Start()
@@ -56,6 +54,11 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
             }
 
             List<Square> neighbours = TryGetNeighbours(cheapestSquare);
+            foreach (Square neighbour in neighbours)
+            {
+                if (neighbour == endingSquare) return;
+                
+            }
         }
     }
 
@@ -63,7 +66,15 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
     private List<Square> TryGetNeighbours(Square square)
     {
         Vector2Int ParentPosition = square.SquarePosition;
-        return new List<Square> { };
+        List<Square> neighbours = new List<Square>
+        {
+            searchGrid[ParentPosition.x, ParentPosition.y - 1], 
+            searchGrid[ParentPosition.x, ParentPosition.y + 1],
+            searchGrid[ParentPosition.x - 1, ParentPosition.y],
+            searchGrid[ParentPosition.x + 1, ParentPosition.y],
+        };
+        TryDeleteNullEntries(neighbours);
+        return neighbours;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -77,7 +88,7 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
 
     private uint CalculateFCost(Square square)
     {
-        return totalGCost + (uint) CalculateDistance(square);
+        return square.G + (uint) CalculateDistance(square);
     }
 
     private void SetupStuff()
@@ -85,18 +96,6 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
         startingSquare = generateMap.GetStartingSquare;
         endingSquare = generateMap.GetGoalSquare;
         openList.Add(startingSquare);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void IncrementGCost(Square square)
-    {
-        totalGCost += square.Weight;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void DecrementGCost(Square square)
-    {
-        totalGCost -= square.Weight;
     }
     
 

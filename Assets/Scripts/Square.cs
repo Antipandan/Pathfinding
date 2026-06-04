@@ -8,6 +8,8 @@ using Random = System.Random;
 
 public class Square
 {
+    private uint g;
+    private uint h;
     private uint weight;
     private SquareType type;
     private Vector2Int squarePosition = Vector2Int.zero;
@@ -20,14 +22,6 @@ public class Square
     public Square()
     {
         ModifySquare(Vector2Int.zero, 0, SquareTypes.RegularSquare);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void ModifySquare(Vector2Int squarePosition, int maxWeight, params SquareTypes[] types)
-    {
-        this.squarePosition = squarePosition;
-        this.type = new SquareType(types);
-        this.weight = (uint) maxWeight;
     }
     
     public uint Weight
@@ -50,5 +44,27 @@ public class Square
     public Vector2Int SquarePosition
     {
         get => squarePosition;
+    }
+
+    public uint G
+    {
+        get => g;
+        set => g = value;
+    }
+
+    public uint H
+    {
+        get => h;
+        set => h = value;
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ModifySquare(Vector2Int squarePosition, int maxWeight, params SquareTypes[] types)
+    {
+        this.squarePosition = squarePosition;
+        this.type = new SquareType(types);
+        this.weight = (uint) maxWeight;
+        this.g = weight;
+        this.h = 0;
     }
 }
