@@ -24,42 +24,28 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
     private Square endingSquare;
     private uint totalGCost;
     private bool paused = false;
+    
 
-    private void Awake()
+    private void Start()
     {
-        
+        StartCoroutine(Pathfinder());
     }
-
-    private void Update()
-    {
-        // StartCoroutine(Pathfinder());
-    }
+    
 
     public IEnumerator Pathfinder()
     {
+        WaitForSeconds wait = new WaitForSeconds(searchFrequencyDelay / 1000f);
         while (true)
         {
-            while (paused == false)
-            {
-                Debug.Log($"pathfinding?");
-                yield return new WaitForSeconds(searchFrequencyDelay / 1000f);
-            }
-
-            yield return new WaitUntil(() => false);
+            Debug.Log($"pathfinding?");
+            yield return wait;
         }
-        
     }
-
-    private bool function()
-    {
-        return false;
-    }
+    
     
 
     private void AStarAlgorithm()
     {
-        // holy spaghetti, detta är extremt dåligt men jag kan inte lista ut coroutines!!!!!!!!!
-        Thread.Sleep(searchFrequencyDelay);
     }
 
     private void SetupStuff()
@@ -88,7 +74,12 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
     {
         currentNeighbours.Clear();
     }
-    
+
+    private void OnDisable()
+    {
+        StopCoroutine(Pathfinder());
+    }
+
     private int CalculateDistance()
     {
         int distance = 0;
