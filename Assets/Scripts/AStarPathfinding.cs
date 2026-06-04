@@ -14,10 +14,8 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
     [Tooltip("Delay in milliseconds(ms)")]
     [SerializeField] private ushort searchFrequencyDelay;
     // collections
-    private List<Square> path = new List<Square>();
-    private List<Square> currentNeighbours;
-    private HashSet<Square> searchedSquares;
-    private Square[,] searchGrid;
+    private List<Square> openList = new List<Square>();
+    private List<Square> closedList = new List<Square>();
     // member variables
     private Square startingSquare;
     private Square currentSquare;
@@ -28,6 +26,7 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
 
     private void Start()
     {
+        SetupStuff();
         StartCoroutine(Pathfinder());
     }
     
@@ -37,24 +36,25 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
         WaitForSeconds wait = new WaitForSeconds(searchFrequencyDelay / 1000f);
         while (true)
         {
-            Debug.Log($"pathfinding?");
+            // AStarAlgorithm();
             yield return wait;
         }
     }
     
     
-
     private void AStarAlgorithm()
     {
+        while (openList.Count > 0)
+        {
+            
+        }
     }
 
     private void SetupStuff()
     {
-        searchGrid = generateMap.GetSquares;
         startingSquare = generateMap.GetStartingSquare;
         endingSquare = generateMap.GetGoalSquare;
-        currentSquare = startingSquare;
-        searchedSquares.Add(currentSquare);
+        openList.Add(startingSquare);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -64,15 +64,21 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void DecrementGCost(Square square)
+    {
+        totalGCost -= square.Weight;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void GetSquareNeighbours(Square square)
     {
-        currentNeighbours = generateMap.GetNeighbours(square);
+        return;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ClearNeighbours()
     {
-        currentNeighbours.Clear();
+        return;
     }
 
     private void OnDisable()
