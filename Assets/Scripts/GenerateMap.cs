@@ -59,7 +59,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     public int ParseSeed(string seedString)
     {
         int seedSum = 0;
-        if (int.TryParse(seedString, out int seed)) return seed;
+        if (int.TryParse(seedString, out int parsedSeed)) return parsedSeed;
         foreach (char c in seedString)
         {
             seedSum += (int)c;
