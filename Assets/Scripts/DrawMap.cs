@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity;
 using UnityEngine;
+using Utility;
 using static SquareTypes;
 
 public class DrawMap : MonoBehaviour
@@ -65,7 +66,7 @@ public class DrawMap : MonoBehaviour
     private void OnValidate()
     {
         // det måste finnas ett bättre sätt att göra detta på!
-        BuildDictionary();
+        UtilityFunctions.PreventFunctionRunningInEditor(BuildDictionary);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

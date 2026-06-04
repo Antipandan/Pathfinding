@@ -132,7 +132,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
 
     private void OnValidate()
     {
-        // Ja detta är inte det bästa att göra!
-        GenerateGrid();
+        // förhindra felmeddelande
+        UtilityFunctions.PreventFunctionRunningInEditor(GenerateGrid);
     }
 }

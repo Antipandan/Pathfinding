@@ -200,6 +200,12 @@ namespace Utility
             if (maxVal < 0) throw new ArgumentOutOfRangeException(nameof(maxVal));
             return random.Next(minVal, maxVal);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void PreventFunctionRunningInEditor(Action functionToRun)
+        {
+            if (UnityEditor.EditorApplication.isPlaying) functionToRun();
+        }
         
     }
 }
