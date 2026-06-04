@@ -155,7 +155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rows: 20
   columns: 20
-  startingSquarePosition: {x: 2, y: 7}
+  startingSquarePosition: {x: 15, y: 7}
   goalSquarePosition: {x: 20, y: 20}
   maxWeight: 15
   seed: 123

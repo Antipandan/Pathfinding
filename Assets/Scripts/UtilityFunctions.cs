@@ -197,6 +197,7 @@ namespace Utility
         
         public static int RandomizeWeight(System.Random random, int minVal = 0, int maxVal = int.MaxValue)
         {
+            if (random == null) Debug.Log($"random is null?");
             if (maxVal < 0) throw new ArgumentOutOfRangeException(nameof(maxVal));
             return random.Next(minVal, maxVal);
         }
@@ -205,6 +206,25 @@ namespace Utility
         public static void PreventFunctionRunningInEditor(Action functionToRun)
         {
             if (UnityEditor.EditorApplication.isPlaying) functionToRun();
+        }
+
+        public static void InitializeSquares(ref Square[,] squares)
+        {
+            InitializeSquares(ref squares, squares.GetLength(0), squares.GetLength(1));
+        }
+
+        public static void InitializeSquares(ref Square[,] squares, int rows, int columns)
+        {
+            squares = new Square[rows, columns];
+            for (int x = 0; x < rows; x++)
+            {
+                for (int y = 0; y < columns; y++)
+                {
+                    squares[x, y] = new Square();
+                }
+            }
+
+            Debug.Log($"length of Squares: {squares.GetLength(0)}, {squares.GetLength(1)}");
         }
         
     }

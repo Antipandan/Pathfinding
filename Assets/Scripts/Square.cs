@@ -14,6 +14,17 @@ public class Square
 
     public Square(Vector2Int squarePosition, int maxWeight, params SquareTypes[] types)
     {
+        ModifySquare(squarePosition, maxWeight, types);
+    }
+
+    public Square()
+    {
+        ModifySquare(Vector2Int.zero, 0, SquareTypes.RegularSquare);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ModifySquare(Vector2Int squarePosition, int maxWeight, params SquareTypes[] types)
+    {
         this.squarePosition = squarePosition;
         this.type = new SquareType(types);
         this.weight = (uint) maxWeight;

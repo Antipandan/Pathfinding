@@ -16,7 +16,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     [SerializeField] [Range(0, 500)] private int maxWeight = 15;
     [SerializeField] private string seed = "";
 
-    private Random rand;
+    private Random rand = new Random();
     private Square[,] squares;
     
     public Random GetRandom
@@ -54,6 +54,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetupValues()
     {
+        squares = new Square[rows, columns];
         rand = new Random(ParseSeed(seed));
     }
 
@@ -111,17 +112,16 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     
     private void GenerateGrid()
     {
-        if (!UnityEditor.EditorApplication.isPlaying) return;
+        UtilityFunctions.InitializeSquares(ref squares, rows, columns);
         for (int y = 0; y < columns; y++)
         {
             for (int x = 0; x < rows; x++)
             {
-                squares[x, y] = new Square(new Vector2Int(x, y),
-                    UtilityFunctions.RandomizeWeight(rand, 0, maxWeight),
-                    SquareTypes.RegularSquare);
+                squares[x, y].ModifySquare(new Vector2Int(x, y), UtilityFunctions.RandomizeWeight(rand, 0, maxWeight), SquareTypes.RegularSquare);
             }
         }
         SetSingleSquareType(startingSquarePosition, SquareTypes.StartNodeSquare);
+        Debug.Log($"goalSquarePosition: {goalSquarePosition}");
         SetSingleSquareType(goalSquarePosition, SquareTypes.EndNodeSquare);
     }
 
@@ -133,6 +133,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
 
     private void OnValidate()
     {
+        CheckValuesAreCorrect();
         // förhindra felmeddelande
         UtilityFunctions.PreventFunctionRunningInEditor(GenerateGrid);
     }
