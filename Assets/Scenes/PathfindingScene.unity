@@ -156,7 +156,7 @@ MonoBehaviour:
   rows: 20
   columns: 20
   startingSquarePosition: {x: 0, y: 0}
-  goalSquarePosition: {x: 8, y: 19}
+  goalSquarePosition: {x: 8, y: 0}
   maxWeight: 15
   seed: 123
 --- !u!114 &134725751
@@ -256,7 +256,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   generateMap: {fileID: 134725750}
   distanceFormula: 0
-  searchFrequencyDelay: 0
+  searchFrequencyDelay: 50
 --- !u!114 &134725759
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,11 +1,13 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Utility;
 
-public class AStarPathfinding : MonoBehaviour
+public class AStarPathfinding : MonoBehaviour, IPathfinder
 {
     [SerializeField] private GenerateMap generateMap;
     [SerializeField] private DistanceFormulaTypes distanceFormula;
@@ -21,16 +23,43 @@ public class AStarPathfinding : MonoBehaviour
     private Square currentSquare;
     private Square endingSquare;
     private uint totalGCost;
-
+    private bool paused = false;
 
     private void Awake()
     {
-        // SetupStuff();
+        
     }
 
     private void Update()
     {
-        return;
+        // StartCoroutine(Pathfinder());
+    }
+
+    public IEnumerator Pathfinder()
+    {
+        while (true)
+        {
+            while (paused == false)
+            {
+                Debug.Log($"pathfinding?");
+                yield return new WaitForSeconds(searchFrequencyDelay / 1000f);
+            }
+
+            yield return new WaitUntil(() => false);
+        }
+        
+    }
+
+    private bool function()
+    {
+        return false;
+    }
+    
+
+    private void AStarAlgorithm()
+    {
+        // holy spaghetti, detta är extremt dåligt men jag kan inte lista ut coroutines!!!!!!!!!
+        Thread.Sleep(searchFrequencyDelay);
     }
 
     private void SetupStuff()
