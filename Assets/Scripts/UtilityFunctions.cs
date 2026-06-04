@@ -197,7 +197,6 @@ namespace Utility
         
         public static int RandomizeWeight(System.Random random, int minVal = 0, int maxVal = int.MaxValue)
         {
-            if (random == null) Debug.Log($"random is null?");
             if (maxVal < 0) throw new ArgumentOutOfRangeException(nameof(maxVal));
             return random.Next(minVal, maxVal);
         }
@@ -223,8 +222,6 @@ namespace Utility
                     squares[x, y] = new Square();
                 }
             }
-
-            Debug.Log($"length of Squares: {squares.GetLength(0)}, {squares.GetLength(1)}");
         }
         
     }

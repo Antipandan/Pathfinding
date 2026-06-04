@@ -98,8 +98,8 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
 
     private void CheckValuesAreCorrect()
     {
-        Vector2Int defaultGoalPosition = new Vector2Int(rows - 1, columns - 1);
         Vector2Int defaultStartingPosition = new Vector2Int(0, 0);
+        Vector2Int defaultGoalPosition = new Vector2Int(rows - 1, columns - 1);
         startingSquarePosition = new Vector2Int(Mathf.Max(startingSquarePosition.x, 0), Mathf.Max(startingSquarePosition.y, 0));
         goalSquarePosition = new Vector2Int(Mathf.Max(goalSquarePosition.x, 0), Mathf.Max(goalSquarePosition.y, 0));
         if (startingSquarePosition == goalSquarePosition)
@@ -108,7 +108,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
             goalSquarePosition = defaultGoalPosition;
         }
         if (goalSquarePosition.x >= rows || goalSquarePosition.y >= columns) goalSquarePosition = defaultGoalPosition;
-        if (startingSquarePosition.x >= rows || startingSquarePosition.y >= rows) startingSquarePosition = defaultStartingPosition;
+        if (startingSquarePosition.x >= rows || startingSquarePosition.y >= columns) startingSquarePosition = defaultStartingPosition;
     }
     
     
@@ -123,7 +123,6 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
             }
         }
         SetSingleSquareType(startingSquarePosition, SquareTypes.StartNodeSquare);
-        Debug.Log($"goalSquarePosition: {goalSquarePosition}");
         SetSingleSquareType(goalSquarePosition, SquareTypes.EndNodeSquare);
     }
 
