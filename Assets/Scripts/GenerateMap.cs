@@ -7,17 +7,22 @@ using Utility;
 using Random = System.Random;
 using Screen = UnityEngine.Device.Screen;
 
-public class GenerateMap : MonoBehaviour, IGenerateMap
+public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
 {
     [SerializeField] private ushort rows;
     [SerializeField] private ushort columns;
     [SerializeField] private Vector2Int startingSquarePosition;
     [SerializeField] private Vector2Int goalSquarePosition;
     [SerializeField] [Range(0, 500)] private int maxWeight = 15;
+    [SerializeField] private string seed = "";
 
-    private readonly Random rand = new Random();
+    private Random rand;
     private Square[,] squares;
     
+    public Random GetRandom
+    {
+        get => rand;
+    }
     public Square[,] GetSquares
     {
         get => squares;
@@ -45,6 +50,23 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
         GenerateGrid();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void SetupValues()
+    {
+        rand = new Random(ParseSeed(seed));
+    }
+
+    public int ParseSeed(string seedString)
+    {
+        int seedSum = 0;
+        if (int.TryParse(seedString, out int seed)) return seed;
+        foreach (char c in seedString)
+        {
+            seedSum += (int)c;
+        }
+        return seedSum;
+    }
+
     public List<Square> GetNeighbours(Square square)
     {
         // much spaghett!
@@ -52,19 +74,19 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
         Vector2Int index = square.SquarePosition;
         if (index.x - 1 >= 0 && index.x + 1 <= rows - 1)
         {
-            AddsingleNeighbour(squares[index.x - 1, index.y], neighbours);
-            AddsingleNeighbour(squares[index.x + 1, index.y], neighbours);        
+            AddSingleNeighbour(squares[index.x - 1, index.y], neighbours);
+            AddSingleNeighbour(squares[index.x + 1, index.y], neighbours);        
         }
 
         if (index.y - 1 >= 0 && index.y + 1 <= columns - 1)
         {
-            AddsingleNeighbour(squares[index.x, index.y - 1], neighbours);
-            AddsingleNeighbour(squares[index.x, index.y + 1], neighbours);
+            AddSingleNeighbour(squares[index.x, index.y - 1], neighbours);
+            AddSingleNeighbour(squares[index.x, index.y + 1], neighbours);
         }
         return neighbours;
     }
 
-    private static void AddsingleNeighbour(Square square, List<Square> neighbours)
+    private static void AddSingleNeighbour(Square square, List<Square> neighbours)
     {
         square.Type.TryAddMoreTypes(SquareTypes.NeighbourSquare);
         neighbours.Add(square);

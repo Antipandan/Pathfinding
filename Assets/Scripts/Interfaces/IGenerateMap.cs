@@ -11,8 +11,5 @@ public interface IGenerateMap
     
     public Square GetGoalSquare { get; }
     
-    public void FillTile(Vector3Int origin, Color color)
-    {
-        
-    }
+    public List<Square> GetNeighbours(Square square);    
 }
