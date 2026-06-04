@@ -52,16 +52,22 @@ public class GenerateMap : MonoBehaviour, IGenerateMap
         Vector2Int index = square.SquarePosition;
         if (index.x - 1 >= 0 && index.x + 1 <= rows - 1)
         {
-            neighbours.Add(squares[index.x - 1, index.y]);
-            neighbours.Add(squares[index.x + 1, index.y]);
+            AddsingleNeighbour(squares[index.x - 1, index.y], neighbours);
+            AddsingleNeighbour(squares[index.x + 1, index.y], neighbours);        
         }
 
         if (index.y - 1 >= 0 && index.y + 1 <= columns - 1)
         {
-            neighbours.Add(squares[index.x, index.y - 1]);
-            neighbours.Add(squares[index.x, index.y + 1]);
+            AddsingleNeighbour(squares[index.x, index.y - 1], neighbours);
+            AddsingleNeighbour(squares[index.x, index.y + 1], neighbours);
         }
         return neighbours;
+    }
+
+    private static void AddsingleNeighbour(Square square, List<Square> neighbours)
+    {
+        square.Type.TryAddMoreTypes(SquareTypes.NeighbourSquare);
+        neighbours.Add(square);
     }
 
     private void CheckValuesAreCorrect()

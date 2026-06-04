@@ -33,14 +33,6 @@ public class AStarPathfinding : MonoBehaviour
         return;
     }
 
-    private void AddNeighbours(Square square)
-    {
-        // detta är definitivt inte en bra lösning men jag antar att det fungerar?
-        Vector2Int currentIndex = square.SquarePosition;
-        if (currentIndex.x >= 0)
-        currentNeighbours.Add(searchGrid[currentIndex.x, currentIndex.y]);
-    }
-
     private void SetupStuff()
     {
         searchGrid = generateMap.GetSquares;
@@ -50,15 +42,22 @@ public class AStarPathfinding : MonoBehaviour
         searchedSquares.Add(currentSquare);
     }
 
-    private void IncrementGCost()
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void IncrementGCost(Square square)
     {
-        
+        totalGCost += square.Weight;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void GetSquareNeighbours(Square square)
     {
         currentNeighbours = generateMap.GetNeighbours(square);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void ClearNeighbours()
+    {
+        currentNeighbours.Clear();
     }
     
     private int CalculateDistance()
