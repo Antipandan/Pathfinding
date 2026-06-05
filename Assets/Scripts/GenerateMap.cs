@@ -99,6 +99,8 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
 
     private void CheckValuesAreCorrect()
     {
+        rows = clampDimensions(rows, 2, ushort.MaxValue);
+        columns = clampDimensions(columns, 2, ushort.MaxValue);
         Vector2Int defaultStartingPosition = new Vector2Int(0, 0);
         Vector2Int dimensions = new Vector2Int(rows, columns);
         Vector2Int defaultGoalPosition = new Vector2Int(rows - 1, columns - 1);
@@ -109,6 +111,17 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
             startingSquarePosition = defaultStartingPosition;
             goalSquarePosition = defaultGoalPosition;
         }
+    }
+    
+    private ushort clampDimensions(ushort value, ushort min, ushort max)
+    {
+        if (value < min) return min;
+        if (value > max)
+        {
+            Debug.Log($"returning max: {max}");
+            return max;
+        }
+        return value;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -132,7 +145,6 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
         }
         SetSingleSquareType(startingSquarePosition, SquareTypes.StartNodeSquare);
         SetSingleSquareType(goalSquarePosition, SquareTypes.EndNodeSquare);
-        Debug.Log($"done setting square!");
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

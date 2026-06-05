@@ -153,12 +153,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ee91131b1400d342a4f46fe78c3f910, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rows: 20
-  columns: 20
+  rows: 1
+  columns: 1
   startingSquarePosition: {x: 0, y: 0}
-  goalSquarePosition: {x: 8, y: 0}
+  goalSquarePosition: {x: 0, y: 0}
   maxWeight: 15
-  seed: 123
+  seed: 
 --- !u!114 &134725751
 MonoBehaviour:
   m_ObjectHideFlags: 0
