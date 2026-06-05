@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Utility;
 
-public class AStarPathfinding : MonoBehaviour, IPathfinder
+public class AStarPathfinding : MonoBehaviour
 {
     [SerializeField] private GenerateMap generateMap;
     [SerializeField] private DistanceFormulaTypes distanceFormula;
@@ -27,60 +27,57 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
     private void Start()
     {
         SetupStuff();
-        StartCoroutine(Pathfinder());
-    }
-    
-
-    public IEnumerator Pathfinder()
-    {
-        WaitForSeconds wait = new WaitForSeconds(searchFrequencyDelay / 1000f);
-        while (true)
-        {
-            // AStarAlgorithm();
-            yield return wait;
-        }
+        StartCoroutine(AStarAlgorithm());
     }
     
     
-    private void AStarAlgorithm()
+    
+    
+    private IEnumerator AStarAlgorithm()
     {
+        Debug.Log($"a*");
+        List<Square> neighbours = new List<Square>(); 
         while (openList.Count > 0)
         {
             Square cheapestSquare = null;
             foreach (Square square in openList)
             {
-                if (cheapestSquare == null) cheapestSquare = square;
-                else if (CalculateFCost(square) < CalculateFCost(cheapestSquare)) cheapestSquare = square;
+                if (cheapestSquare == null || CalculateFCost(square) < CalculateFCost(cheapestSquare)) cheapestSquare = square;
             }
 
-            List<Square> neighbours = TryGetNeighbours(cheapestSquare);
+            // neighbours = TryGetNeighbours(cheapestSquare);
             foreach (Square neighbour in neighbours)
             {
-                if (neighbour == endingSquare) return;
+                if (neighbour == endingSquare) break;
                 else
                 {
-                    neighbour.G = cheapestSquare.G + (uint) CalculateDistance(neighbour, cheapestSquare);
+                    neighbour.G = cheapestSquare!.G + (uint) CalculateDistance(neighbour, cheapestSquare);
                     neighbour.H = (uint) CalculateDistance(neighbour);
                 }
                 if (!DetermineIfSkip(neighbour)) openList.Add(neighbour);
             }
             closedList.Add(cheapestSquare);
+            yield return new WaitForSeconds(searchFrequencyDelay / 1000f);
+            Debug.Log($"adding!");
         }
+
+         
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private List<Square> TryGetNeighbours(Square square)
     {
         Vector2Int ParentPosition = square.SquarePosition;
-        List<Square> neighbours = new List<Square>
+        Debug.Log($"error: {searchGrid[ParentPosition.x - 1, ParentPosition.y].SquarePosition}");
+        List<Square> currentNeighbours = new List<Square>
         {
             searchGrid[ParentPosition.x, ParentPosition.y - 1], 
             searchGrid[ParentPosition.x, ParentPosition.y + 1],
             searchGrid[ParentPosition.x - 1, ParentPosition.y],
             searchGrid[ParentPosition.x + 1, ParentPosition.y],
         };
-        TryDeleteNullEntries(neighbours);
-        return neighbours;
+        TryDeleteNullEntries(currentNeighbours);
+        return currentNeighbours;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -106,7 +103,6 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
             if (square.SquarePosition == closedSquare.SquarePosition &&
                 CalculateFCost(closedSquare) < CalculateFCost(square)) skip = true;
         }
-
         return skip;
     }
     
@@ -126,7 +122,7 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
 
     private void OnDisable()
     {
-        StopCoroutine(Pathfinder());
+        StopCoroutine(AStarAlgorithm());
     }
 
     private int CalculateDistance(Square square)
