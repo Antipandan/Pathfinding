@@ -15,7 +15,7 @@ public class AStarPathfinding : MonoBehaviour
     [Tooltip("Delay in milliseconds(ms)")]
     [SerializeField] private ushort searchFrequencyDelay;
     // collections
-    private Square[,] searchGrid;
+    private Square[,] searchGrid = {};
     private List<Square> openList = new List<Square>();
     private List<Square> closedList = new List<Square>();
     // member variables
@@ -30,9 +30,6 @@ public class AStarPathfinding : MonoBehaviour
         StartCoroutine(AStarAlgorithm());
     }
     
-    
-    
-    
     private IEnumerator AStarAlgorithm()
     {
         Debug.Log($"a*");
@@ -42,10 +39,15 @@ public class AStarPathfinding : MonoBehaviour
             Square cheapestSquare = null;
             foreach (Square square in openList)
             {
-                if (cheapestSquare == null || CalculateFCost(square) < CalculateFCost(cheapestSquare)) cheapestSquare = square;
+                if (cheapestSquare == null || CalculateFCost(square) < CalculateFCost(cheapestSquare))
+                {
+                    cheapestSquare = square;
+                }
             }
-
-            // neighbours = TryGetNeighbours(cheapestSquare);
+            openList.Remove(cheapestSquare);
+            
+            neighbours = TryGetNeighbours(cheapestSquare);
+            Debug.Log($"neighbours: {neighbours.Count}");
             foreach (Square neighbour in neighbours)
             {
                 if (neighbour == endingSquare) break;
@@ -61,27 +63,40 @@ public class AStarPathfinding : MonoBehaviour
             Debug.Log($"adding!");
         }
 
+        Debug.Log($"outside of loop!");
          
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private List<Square> TryGetNeighbours(Square square)
     {
+        List<Square> currentNeighbours = new List<Square>(4);
         Vector2Int ParentPosition = square.SquarePosition;
-        Debug.Log($"error: {searchGrid[ParentPosition.x - 1, ParentPosition.y].SquarePosition}");
-        List<Square> currentNeighbours = new List<Square>
-        {
-            searchGrid[ParentPosition.x, ParentPosition.y - 1], 
-            searchGrid[ParentPosition.x, ParentPosition.y + 1],
-            searchGrid[ParentPosition.x - 1, ParentPosition.y],
-            searchGrid[ParentPosition.x + 1, ParentPosition.y],
-        };
-        TryDeleteNullEntries(currentNeighbours);
+        TryAddSingleEntry(currentNeighbours,new Vector2Int(ParentPosition.x, ParentPosition.y - 1));
+        TryAddSingleEntry(currentNeighbours,new Vector2Int(ParentPosition.x, ParentPosition.y + 1));
+        TryAddSingleEntry(currentNeighbours,new Vector2Int(ParentPosition.x - 1, ParentPosition.y));
+        TryAddSingleEntry(currentNeighbours,new Vector2Int(ParentPosition.x + 1, ParentPosition.y));
+        DeleteNullEntries(currentNeighbours);
         return currentNeighbours;
     }
 
+    private void TryAddSingleEntry(List<Square> list, Vector2Int index)
+    {
+        Debug.Log($"searchgrid: {searchGrid.Length}");
+        Square newSquare;
+        try
+        {
+            newSquare = searchGrid[index.x, index.y];
+        }
+        catch (IndexOutOfRangeException _)
+        {
+            newSquare = null;
+        }
+        list.Add(newSquare);
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void TryDeleteNullEntries(List<Square> list)
+    private void DeleteNullEntries(List<Square> list)
     {
         for (int i = list.Count - 1; i >= 0; i--)
         {
@@ -114,6 +129,7 @@ public class AStarPathfinding : MonoBehaviour
 
     private void SetupStuff()
     {
+        searchGrid = generateMap.GetSquares;
         startingSquare = generateMap.GetStartingSquare;
         endingSquare = generateMap.GetGoalSquare;
         openList.Add(startingSquare);
