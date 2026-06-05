@@ -10,6 +10,7 @@ using Utility;
 
 public class AStarPathfinding : MonoBehaviour
 {
+    [SerializeField] private CustomEvents customEvents;
     [SerializeField] private GenerateMap generateMap;
     [SerializeField] private DistanceFormulaTypes distanceFormula;
     [Tooltip("Delay in milliseconds(ms)")]
@@ -32,7 +33,6 @@ public class AStarPathfinding : MonoBehaviour
     
     private IEnumerator AStarAlgorithm()
     {
-        Debug.Log($"a*");
         List<Square> neighbours = new List<Square>(); 
         while (openList.Count > 0)
         {
@@ -45,9 +45,7 @@ public class AStarPathfinding : MonoBehaviour
                 }
             }
             openList.Remove(cheapestSquare);
-            
             neighbours = TryGetNeighbours(cheapestSquare);
-            Debug.Log($"neighbours: {neighbours.Count}");
             foreach (Square neighbour in neighbours)
             {
                 if (neighbour == endingSquare) break;
@@ -59,6 +57,7 @@ public class AStarPathfinding : MonoBehaviour
                 if (!DetermineIfSkip(neighbour)) openList.Add(neighbour);
             }
             closedList.Add(cheapestSquare);
+            customEvents.PublishUpdateGrid(searchGrid);
             yield return new WaitForSeconds(searchFrequencyDelay / 1000f);
             Debug.Log($"adding!");
         }
@@ -82,17 +81,31 @@ public class AStarPathfinding : MonoBehaviour
 
     private void TryAddSingleEntry(List<Square> list, Vector2Int index)
     {
-        Debug.Log($"searchgrid: {searchGrid.Length}");
         Square newSquare;
         try
         {
             newSquare = searchGrid[index.x, index.y];
+            UpdateColor(newSquare, SquareTypes.NeighbourSquare);
         }
         catch (IndexOutOfRangeException _)
         {
             newSquare = null;
         }
+        
         list.Add(newSquare);
+    }
+    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void UpdateColor(Square square, SquareTypes newType)
+    {
+        square.Type.TryAddMoreTypes(newType);
+        // det finns säker bättre sätt att göra detta på men jag krunchar just nu!
+        searchGrid[square.SquarePosition.x, square.SquarePosition.y] = searchGrid[square.SquarePosition.x, square.SquarePosition.y];
+        foreach (Square s in searchGrid)
+        {
+            if (s.Type.GetDominantSquareType() == SquareTypes.NeighbourSquare) Debug.Log($"new neighbour!");
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -129,7 +142,7 @@ public class AStarPathfinding : MonoBehaviour
 
     private void SetupStuff()
     {
-        searchGrid = generateMap.GetSquares;
+        searchGrid = customEvents.PublishRetrieveGrid();
         startingSquare = generateMap.GetStartingSquare;
         endingSquare = generateMap.GetGoalSquare;
         openList.Add(startingSquare);

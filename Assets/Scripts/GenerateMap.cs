@@ -5,10 +5,10 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using Utility;
 using Random = System.Random;
-using Screen = UnityEngine.Device.Screen;
 
 public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
 {
+    [SerializeField] private CustomEvents customEvents;
     [SerializeField] private ushort rows;
     [SerializeField] private ushort columns;
     [Tooltip("Position is 0-indexed. Max value is rows or columns - 1")]
@@ -24,10 +24,6 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     public Random GetRandom
     {
         get => rand;
-    }
-    public Square[,] GetSquares
-    {
-        get => squares;
     }
 
     public Square GetGoalSquare
@@ -59,6 +55,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
         squares = new Square[rows, columns];
         rand = new Random(ParseSeed(seed));
     }
+    
 
     public int ParseSeed(string seedString)
     {
@@ -131,6 +128,16 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
         }
         SetSingleSquareType(startingSquarePosition, SquareTypes.StartNodeSquare);
         SetSingleSquareType(goalSquarePosition, SquareTypes.EndNodeSquare);
+        customEvents.PublishUpdateGrid(squares);
+    }
+
+    public void UpdateGrid(Square[,] grid)
+    {
+        squares = grid;
+    }
+    public Square[,] RetrieveGrid()
+    {
+        return squares;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

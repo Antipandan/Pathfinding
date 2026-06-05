@@ -62,6 +62,7 @@ public struct SquareType
         {
             if (!Constants.NonMixableSquareTypes.Contains(newType))
             {
+                Debug.Log($"assigning new type!");
                 AssignNewType(newType);
             }
         }

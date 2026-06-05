@@ -5,11 +5,12 @@ using UnityEngine;
 
 public interface IGenerateMap
 {
-    public Square[,] GetSquares { get; }
-    
     public Square GetStartingSquare { get; }
     
     public Square GetGoalSquare { get; }
     
-    public List<Square> GetNeighbours(Square square);    
+    public void UpdateGrid(Square[,] grid);
+
+    public Square[,] RetrieveGrid();
+
 }

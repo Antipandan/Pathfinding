@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 134725750}
   - component: {fileID: 134725758}
   - component: {fileID: 134725759}
+  - component: {fileID: 134725760}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -153,6 +154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ee91131b1400d342a4f46fe78c3f910, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  customEvents: {fileID: 134725760}
   rows: 20
   columns: 20
   startingSquarePosition: {x: 0, y: 0}
@@ -254,9 +256,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1018d9164f025542a035503c730695e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  customEvents: {fileID: 134725760}
   generateMap: {fileID: 134725750}
   distanceFormula: 0
-  searchFrequencyDelay: 100
+  searchFrequencyDelay: 250
 --- !u!114 &134725759
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -269,6 +272,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6829b28304aa45a783e1b4894525581f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  customEvents: {fileID: 134725760}
   generateMap: {fileID: 134725750}
   wallColor: {r: 0, g: 0, b: 0, a: 1}
   regularColor: {r: 1, g: 1, b: 1, a: 1}
@@ -276,6 +280,18 @@ MonoBehaviour:
   foundPathColor: {r: 1, g: 0, b: 0, a: 1}
   endNodeColor: {r: 1, g: 0, b: 1, a: 1}
   startNodeColor: {r: 0, g: 1, b: 0, a: 1}
+--- !u!114 &134725760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 134725749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a8e101c3a971704f87e8633c0ee57f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &258787622
 GameObject:
   m_ObjectHideFlags: 0
