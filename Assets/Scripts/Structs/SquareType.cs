@@ -20,9 +20,9 @@ public struct SquareType
         AssignNewType(ints);
     }
     
-    public int GetType
+    public int Type
     {
-        get => this.type;
+        get => type;
     }
 
     /// <summary>
@@ -151,11 +151,11 @@ public struct SquareType
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetMostSignificantNumber()
     {
-        return GetMostSignificantNumber(GetType);
+        return GetMostSignificantNumber(type);
     }
     
     public override string ToString()
     {
-        return $"Value: {GetType} Base: {base.ToString()}";
+        return $"Value: {type}";
     }
 }

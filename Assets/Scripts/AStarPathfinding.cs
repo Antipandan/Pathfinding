@@ -32,7 +32,6 @@ public class AStarPathfinding : MonoBehaviour
     
     private IEnumerator AStarAlgorithm()
     {
-        Debug.Log($"a*");
         List<Square> neighbours = new List<Square>(); 
         while (openList.Count > 0)
         {
@@ -47,7 +46,6 @@ public class AStarPathfinding : MonoBehaviour
             openList.Remove(cheapestSquare);
             
             neighbours = TryGetNeighbours(cheapestSquare);
-            Debug.Log($"neighbours: {neighbours.Count}");
             foreach (Square neighbour in neighbours)
             {
                 if (neighbour == endingSquare) break;
@@ -60,11 +58,7 @@ public class AStarPathfinding : MonoBehaviour
             }
             closedList.Add(cheapestSquare);
             yield return new WaitForSeconds(searchFrequencyDelay / 1000f);
-            Debug.Log($"adding!");
         }
-
-        Debug.Log($"outside of loop!");
-         
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -76,13 +70,12 @@ public class AStarPathfinding : MonoBehaviour
         TryAddSingleEntry(currentNeighbours,new Vector2Int(ParentPosition.x, ParentPosition.y + 1));
         TryAddSingleEntry(currentNeighbours,new Vector2Int(ParentPosition.x - 1, ParentPosition.y));
         TryAddSingleEntry(currentNeighbours,new Vector2Int(ParentPosition.x + 1, ParentPosition.y));
-        DeleteNullEntries(currentNeighbours);
+        DeleteNullEntries(ref currentNeighbours);
         return currentNeighbours;
     }
 
     private void TryAddSingleEntry(List<Square> list, Vector2Int index)
     {
-        Debug.Log($"searchgrid: {searchGrid.Length}");
         Square newSquare;
         try
         {
@@ -96,11 +89,18 @@ public class AStarPathfinding : MonoBehaviour
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void DeleteNullEntries(List<Square> list)
+    private void DeleteNullEntries(ref List<Square> list)
     {
         for (int i = list.Count - 1; i >= 0; i--)
         {
-            if (list[i] == null) list.RemoveAt(i);
+            Square currentSquare = list[i];
+            if (currentSquare == null) list.RemoveAt(i);
+            else
+            {
+                // varför fungerar inte det här? först blir den 6 sedan 2????+j lnkjwdanklaWDKLN
+                currentSquare.Type.TryAddMoreTypes(SquareTypes.NeighbourSquare);
+                generateMap.GetSquares[currentSquare.SquarePosition.x, currentSquare.SquarePosition.y] = currentSquare;
+            }
         }
     }
 

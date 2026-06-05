@@ -28,6 +28,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     public Square[,] GetSquares
     {
         get => squares;
+        set =>  squares = value;
     }
 
     public Square GetGoalSquare
@@ -131,6 +132,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
         }
         SetSingleSquareType(startingSquarePosition, SquareTypes.StartNodeSquare);
         SetSingleSquareType(goalSquarePosition, SquareTypes.EndNodeSquare);
+        Debug.Log($"done setting square!");
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
