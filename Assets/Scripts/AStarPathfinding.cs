@@ -57,8 +57,14 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
             foreach (Square neighbour in neighbours)
             {
                 if (neighbour == endingSquare) return;
-                
+                else
+                {
+                    neighbour.G = cheapestSquare.G + (uint) CalculateDistance(neighbour, cheapestSquare);
+                    neighbour.H = (uint) CalculateDistance(neighbour);
+                }
+                if (!DetermineIfSkip(neighbour)) openList.Add(neighbour);
             }
+            closedList.Add(cheapestSquare);
         }
     }
 
@@ -85,6 +91,25 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
             if (list[i] == null) list.RemoveAt(i);
         }
     }
+
+    private bool DetermineIfSkip(Square square)
+    {
+        bool skip = false;
+        foreach (Square openSquare in openList)
+        {
+            if (square.SquarePosition == openSquare.SquarePosition &&
+                CalculateFCost(openSquare) < CalculateFCost(square)) skip = true;
+        }
+
+        foreach (Square closedSquare in closedList)
+        {
+            if (square.SquarePosition == closedSquare.SquarePosition &&
+                CalculateFCost(closedSquare) < CalculateFCost(square)) skip = true;
+        }
+
+        return skip;
+    }
+    
 
     private uint CalculateFCost(Square square)
     {
@@ -114,6 +139,21 @@ public class AStarPathfinding : MonoBehaviour, IPathfinder
                 break;
             case DistanceFormulaTypes.ManhattanDistance:
                 distance = UtilityFunctions.CalculateManhattanDistance(square.SquarePosition, endingSquare.SquarePosition);
+                break;
+        }
+        return distance;
+    }
+
+    private int CalculateDistance(Square startSquare, Square endSquare)
+    {
+        int distance = 0;
+        switch (distanceFormula)
+        {
+            case DistanceFormulaTypes.EuclidianDistance:
+                distance = UtilityFunctions.CalculateEuclidieanDistance(startSquare.SquarePosition, endSquare.SquarePosition);
+                break;
+            case DistanceFormulaTypes.ManhattanDistance:
+                distance = UtilityFunctions.CalculateManhattanDistance(startSquare.SquarePosition, endSquare.SquarePosition);
                 break;
         }
         return distance;
