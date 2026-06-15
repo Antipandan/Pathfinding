@@ -46,6 +46,16 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
         get => rand;
     }
 
+    public ushort Rows
+    {
+        get => rows;
+    }
+
+    public ushort Columns
+    {
+        get => columns;
+    }
+
     private void Awake()
     {
         SetupValues();

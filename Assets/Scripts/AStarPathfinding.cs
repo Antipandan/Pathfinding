@@ -16,8 +16,8 @@ public class AStarPathfinding : MonoBehaviour
     [SerializeField] private ushort searchFrequencyDelay;
     // collections
     private Square[,] searchGrid = {};
-    private List<Square> openList = new List<Square>();
-    private List<Square> closedList = new List<Square>();
+    private readonly List<Square> openList = new List<Square>();
+    private readonly List<Square> closedList = new List<Square>();
     // member variables
     private Square startingSquare;
     private Square currentSquare;
@@ -30,6 +30,7 @@ public class AStarPathfinding : MonoBehaviour
         StartCoroutine(AStarAlgorithm());
     }
     
+    // https://www.geeksforgeeks.org/dsa/a-search-algorithm/
     private IEnumerator AStarAlgorithm()
     {
         List<Square> neighbours = new List<Square>(); 
@@ -48,16 +49,21 @@ public class AStarPathfinding : MonoBehaviour
             neighbours = TryGetNeighbours(cheapestSquare);
             foreach (Square neighbour in neighbours)
             {
+                // steg 1
                 if (neighbour == endingSquare) break;
+                // steg 2
                 else
                 {
                     neighbour.G = cheapestSquare!.G + (uint) CalculateDistance(neighbour, cheapestSquare);
                     neighbour.H = (uint) CalculateDistance(neighbour);
                 }
+                // steg 3 och 4
                 if (!DetermineIfSkip(neighbour)) openList.Add(neighbour);
             }
             closedList.Add(cheapestSquare);
             yield return new WaitForSeconds(searchFrequencyDelay / 1000f);
+            Debug.Log($"currentSquare position: {cheapestSquare!.SquarePosition}");
+            // Debug.Log($"iterating!");
         }
     }
 
@@ -77,15 +83,7 @@ public class AStarPathfinding : MonoBehaviour
     private void TryAddSingleEntry(List<Square> list, Vector2Int index)
     {
         Square newSquare;
-        try
-        {
-            newSquare = searchGrid[index.x, index.y];
-        }
-        catch (IndexOutOfRangeException _)
-        {
-            newSquare = null;
-        }
-        list.Add(newSquare);
+        if (index.x <= 0 && index.x > generateMap.get§)
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -93,31 +91,27 @@ public class AStarPathfinding : MonoBehaviour
     {
         for (int i = list.Count - 1; i >= 0; i--)
         {
-            Square currentSquare = list[i];
-            if (currentSquare == null) list.RemoveAt(i);
-            else
-            {
-                // varför fungerar inte det här? först blir den 6 sedan 2????+j lnkjwdanklaWDKLN
-                currentSquare.Type.TryAddMoreTypes(SquareTypes.NeighbourSquare);
-                generateMap.GetSquares[currentSquare.SquarePosition.x, currentSquare.SquarePosition.y] = currentSquare;
-            }
+            Square square = list[i];
+            if (square == null) list.RemoveAt(i);
         }
     }
 
-    private bool DetermineIfSkip(Square square)
+    private bool DetermineIfSkip(Square successor)
     {
         bool skip = false;
         foreach (Square openSquare in openList)
         {
-            if (square.SquarePosition == openSquare.SquarePosition &&
-                CalculateFCost(openSquare) < CalculateFCost(square)) skip = true;
+            if (successor.SquarePosition == openSquare.SquarePosition &&
+                CalculateFCost(openSquare) < CalculateFCost(successor)) skip = true;
         }
 
         foreach (Square closedSquare in closedList)
         {
-            if (square.SquarePosition == closedSquare.SquarePosition &&
-                CalculateFCost(closedSquare) < CalculateFCost(square)) skip = true;
+            if (successor.SquarePosition == closedSquare.SquarePosition &&
+                CalculateFCost(closedSquare) < CalculateFCost(successor)) skip = true;
         }
+
+        Debug.Log($"skip: {skip}");
         return skip;
     }
     

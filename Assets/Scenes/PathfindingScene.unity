@@ -153,12 +153,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ee91131b1400d342a4f46fe78c3f910, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rows: 1
-  columns: 1
+  rows: 20
+  columns: 20
   startingSquarePosition: {x: 0, y: 0}
-  goalSquarePosition: {x: 0, y: 0}
+  goalSquarePosition: {x: 19, y: 19}
   maxWeight: 15
-  seed: 
+  seed: 123
 --- !u!114 &134725751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -255,7 +255,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generateMap: {fileID: 134725750}
-  distanceFormula: 0
+  distanceFormula: 1
   searchFrequencyDelay: 100
 --- !u!114 &134725759
 MonoBehaviour:
