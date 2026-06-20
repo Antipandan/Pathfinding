@@ -58,11 +58,7 @@ public class DrawMap : MonoBehaviour
             Gizmos.DrawCube(new Vector3(position.x, position.y, 0f), Vector3.one / 2f);
         }
     }
-
-    private void RequestColorChange()
-    {
-        
-    }
+    
     private void OnValidate()
     {
         // det måste finnas ett bättre sätt att göra detta på!
@@ -73,6 +69,6 @@ public class DrawMap : MonoBehaviour
     private Color SelectRightColor(Square square)
     {
         // holy spaghetti
-        return squareColors[(SquareTypes)(int)Mathf.Pow(2f, (float)square.Type.GetDominantSquareType())];
+        return squareColors[(SquareTypes)(int)Mathf.Pow(2f, (float)square.TypesSquare.GetDominantSquareType())];
     }
 }

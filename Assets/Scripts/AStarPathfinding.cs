@@ -15,7 +15,6 @@ public class AStarPathfinding : MonoBehaviour
     [Tooltip("Delay in milliseconds(ms)")]
     [SerializeField] private ushort searchFrequencyDelay;
     // collections
-    private Square[,] searchGrid = {};
     private readonly List<Square> openList = new List<Square>();
     private readonly List<Square> closedList = new List<Square>();
     // member variables
@@ -36,17 +35,20 @@ public class AStarPathfinding : MonoBehaviour
         List<Square> neighbours = new List<Square>(); 
         while (openList.Count > 0)
         {
+            // Debug.Log($"iterating!");
             Square cheapestSquare = null;
             foreach (Square square in openList)
             {
                 if (cheapestSquare == null || CalculateFCost(square) < CalculateFCost(cheapestSquare))
                 {
                     cheapestSquare = square;
+                    UpdateSquare(cheapestSquare, SquareTypes.FoundPathSquare);
                 }
             }
             openList.Remove(cheapestSquare);
-            
-            neighbours = TryGetNeighbours(cheapestSquare);
+
+            neighbours = generateMap.GetNeighbours(cheapestSquare);
+            // Debug.Log($"neighbour count: {neighbours.Count}");
             foreach (Square neighbour in neighbours)
             {
                 // steg 1
@@ -58,42 +60,41 @@ public class AStarPathfinding : MonoBehaviour
                     neighbour.H = (uint) CalculateDistance(neighbour);
                 }
                 // steg 3 och 4
-                if (!DetermineIfSkip(neighbour)) openList.Add(neighbour);
+                if (!DetermineIfSkip(neighbour))
+                {
+                    openList.Add(neighbour);
+                    UpdateSquare(neighbour, SquareTypes.NeighbourSquare);
+                }
             }
             closedList.Add(cheapestSquare);
             yield return new WaitForSeconds(searchFrequencyDelay / 1000f);
-            Debug.Log($"currentSquare position: {cheapestSquare!.SquarePosition}");
-            // Debug.Log($"iterating!");
         }
-    }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private List<Square> TryGetNeighbours(Square square)
-    {
-        List<Square> currentNeighbours = new List<Square>(4);
-        Vector2Int ParentPosition = square.SquarePosition;
-        TryAddSingleEntry(currentNeighbours,new Vector2Int(ParentPosition.x, ParentPosition.y - 1));
-        TryAddSingleEntry(currentNeighbours,new Vector2Int(ParentPosition.x, ParentPosition.y + 1));
-        TryAddSingleEntry(currentNeighbours,new Vector2Int(ParentPosition.x - 1, ParentPosition.y));
-        TryAddSingleEntry(currentNeighbours,new Vector2Int(ParentPosition.x + 1, ParentPosition.y));
-        DeleteNullEntries(ref currentNeighbours);
-        return currentNeighbours;
-    }
-
-    private void TryAddSingleEntry(List<Square> list, Vector2Int index)
-    {
-        Square newSquare;
-        if (index.x <= 0 && index.x > generateMap.get§)
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void DeleteNullEntries(ref List<Square> list)
-    {
-        for (int i = list.Count - 1; i >= 0; i--)
+        foreach (Square square in generateMap.GetSquares)
         {
-            Square square = list[i];
-            if (square == null) list.RemoveAt(i);
+            if (square.TypesSquare.GetDominantSquareType() ==  SquareTypes.NeighbourSquare) Debug.Log($"neighbour!");
         }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void UpdateSquareType(Square square, SquareTypes newType)
+    {
+        square.TypesSquare.TryAddMoreTypes(newType);
+        Debug.Log($"square new type: {square.TypesSquare.Type}");
+    }
+
+    private void UpdateSquare(Square square, SquareTypes newType)
+    {
+        UpdateSquareType(square, newType);
+        UpdateSingleSquare(square);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void UpdateSingleSquare(Square square)
+    {
+        Debug.Log($"before modifying: '{square.TypesSquare.Type}'");
+        generateMap.ChangeValueAtIndex(new Vector2Int(square.SquarePosition.x, square.SquarePosition.y), square);
+        Debug.Log($"after modifying: '{generateMap.GetSquares[square.SquarePosition.x, square.SquarePosition.y].TypesSquare.Type}'");
     }
 
     private bool DetermineIfSkip(Square successor)
@@ -110,8 +111,6 @@ public class AStarPathfinding : MonoBehaviour
             if (successor.SquarePosition == closedSquare.SquarePosition &&
                 CalculateFCost(closedSquare) < CalculateFCost(successor)) skip = true;
         }
-
-        Debug.Log($"skip: {skip}");
         return skip;
     }
     
@@ -123,13 +122,11 @@ public class AStarPathfinding : MonoBehaviour
 
     private void SetupStuff()
     {
-        searchGrid = generateMap.GetSquares;
         startingSquare = generateMap.GetStartingSquare;
         endingSquare = generateMap.GetGoalSquare;
         openList.Add(startingSquare);
     }
     
-
     private void OnDisable()
     {
         StopCoroutine(AStarAlgorithm());

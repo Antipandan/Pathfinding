@@ -11,7 +11,7 @@ public class Square
     private uint g;
     private uint h;
     private uint weight;
-    private SquareType type;
+    private SquareType typesSquaresSquare;
     private Vector2Int squarePosition = Vector2Int.zero;
 
     public Square(Vector2Int squarePosition, int maxWeight, params SquareTypes[] types)
@@ -29,16 +29,16 @@ public class Square
         // liten work around men jag bryr mig inte längre direkt!
         get
         {
-            if (type.HasSquareType(SquareTypes.StartNodeSquare) || 
-                    type.HasSquareType(SquareTypes.EndNodeSquare)) return 0;
+            if (typesSquaresSquare.HasSquareType(SquareTypes.StartNodeSquare) || 
+                    typesSquaresSquare.HasSquareType(SquareTypes.EndNodeSquare)) return 0;
             return weight;
         }
     }
     
-    public SquareType Type
+    public SquareType TypesSquare
     {
-        get => type;
-        set => type = value;
+        get => typesSquaresSquare;
+        set => typesSquaresSquare = value;
     }
 
     public Vector2Int SquarePosition
@@ -62,7 +62,7 @@ public class Square
     public void ModifySquare(Vector2Int squarePosition, int maxWeight, params SquareTypes[] types)
     {
         this.squarePosition = squarePosition;
-        this.type = new SquareType(types);
+        this.typesSquaresSquare = new SquareType(types);
         this.weight = (uint) maxWeight;
         this.g = weight;
         this.h = 0;

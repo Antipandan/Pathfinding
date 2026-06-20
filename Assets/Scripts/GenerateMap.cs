@@ -28,7 +28,6 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     public Square[,] GetSquares
     {
         get => squares;
-        set =>  squares = value;
     }
 
     public Square GetGoalSquare
@@ -56,11 +55,17 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
         get => columns;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ChangeValueAtIndex(Vector2Int index, Square newSquare)
+    {
+        squares[index.x, index.y] = newSquare;
+        Debug.Log($"new value: {squares[index.x, index.y].TypesSquare.Type}");
+    }
+
     private void Awake()
     {
         SetupValues();
         CheckValuesAreCorrect();
-        squares = new Square[rows, columns];
         GenerateGrid();
     }
 
@@ -84,33 +89,27 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
 
     public List<Square> GetNeighbours(Square square)
     {
+        if (square == null) return null;
         // much spaghett!
         List<Square> neighbours = new List<Square>();
         Vector2Int index = square.SquarePosition;
-        if (index.x - 1 >= 0 && index.x + 1 <= rows - 1)
-        {
-            AddSingleNeighbour(squares[index.x - 1, index.y], neighbours);
-            AddSingleNeighbour(squares[index.x + 1, index.y], neighbours);        
-        }
-
-        if (index.y - 1 >= 0 && index.y + 1 <= columns - 1)
-        {
-            AddSingleNeighbour(squares[index.x, index.y - 1], neighbours);
-            AddSingleNeighbour(squares[index.x, index.y + 1], neighbours);
-        }
+        if (index.x - 1 > 0) AddSingleNeighbour(squares[index.x - 1, index.y], neighbours);
+        if (index.x + 1 < rows) AddSingleNeighbour(squares[index.x + 1, index.y], neighbours);  
+        if (index.y - 1 > 0) AddSingleNeighbour(squares[index.x, index.y - 1], neighbours);
+        if (index.y + 1 < columns) AddSingleNeighbour(squares[index.x, index.y + 1], neighbours);
         return neighbours;
     }
 
     private static void AddSingleNeighbour(Square square, List<Square> neighbours)
     {
-        square.Type.TryAddMoreTypes(SquareTypes.NeighbourSquare);
+        square.TypesSquare.TryAddMoreTypes(SquareTypes.NeighbourSquare);
         neighbours.Add(square);
     }
 
     private void CheckValuesAreCorrect()
     {
-        rows = clampDimensions(rows, 2, ushort.MaxValue);
-        columns = clampDimensions(columns, 2, ushort.MaxValue);
+        rows = ClampDimensions(rows, 2, ushort.MaxValue);
+        columns = ClampDimensions(columns, 2, ushort.MaxValue);
         Vector2Int defaultStartingPosition = new Vector2Int(0, 0);
         Vector2Int dimensions = new Vector2Int(rows, columns);
         Vector2Int defaultGoalPosition = new Vector2Int(rows - 1, columns - 1);
@@ -123,15 +122,10 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
         }
     }
     
-    private ushort clampDimensions(ushort value, ushort min, ushort max)
+    private static ushort ClampDimensions(ushort value, ushort min, ushort max)
     {
         if (value < min) return min;
-        if (value > max)
-        {
-            Debug.Log($"returning max: {max}");
-            return max;
-        }
-        return value;
+        return value > max ? max : value;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -160,7 +154,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetSingleSquareType(Vector2Int index, SquareTypes type)
     {
-        squares[index.x, index.y].Type = new SquareType(type);
+        squares[index.x, index.y].TypesSquare = new SquareType(type);
     }
 
     private void OnValidate()
