@@ -35,6 +35,7 @@ public class Square
         }
     }
     
+    // denna ger en kopia inte en referens!!!!
     public SquareType TypesSquare
     {
         get => typesSquaresSquare;

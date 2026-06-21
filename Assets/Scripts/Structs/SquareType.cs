@@ -34,7 +34,6 @@ public struct SquareType
     {
         foreach (SquareTypes newType in newTypes)
         {
-            Debug.Log($"assigning new type: {newType}");
             AssignSingleNewType(newType);
         }
     }
@@ -78,7 +77,6 @@ public struct SquareType
     private void AssignSingleNewType(SquareTypes newType)
     {
         type |= (int)newType;
-        Debug.Log($"new type value: {type}");
     }
 
     /// <summary>

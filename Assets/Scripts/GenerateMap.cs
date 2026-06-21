@@ -58,15 +58,12 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ChangeValueAtIndex(Vector2Int index, Square newSquare)
     {
-        squares[index.x, index.y] = newSquare;
-        Debug.Log($"new value: {squares[index.x, index.y].TypesSquare.Type}");
-    }
+        squares[index.x, index.y] = newSquare; }
 
     private void Awake()
     {
-        SetupValues();
-        CheckValuesAreCorrect();
-        GenerateGrid();
+        CustomEvents._instance.OnReset += Reset;
+        Reset();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -156,11 +153,24 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     {
         squares[index.x, index.y].TypesSquare = new SquareType(type);
     }
+    
+    private void Reset()
+    {
+        SetupValues();
+        CheckValuesAreCorrect();
+        GenerateGrid();
+    }
 
     private void OnValidate()
     {
         CheckValuesAreCorrect();
         // förhindra felmeddelande
         UtilityFunctions.PreventFunctionRunningInEditor(GenerateGrid);
+        CustomEvents._instance.PublishOnReset();
+    }
+
+    private void OnApplicationQuit()
+    {
+        CustomEvents._instance.OnReset -= Reset;
     }
 }

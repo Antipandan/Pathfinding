@@ -16,7 +16,8 @@ public class AStarPathfinding : MonoBehaviour
     [SerializeField] private ushort searchFrequencyDelay;
     // collections
     private readonly List<Square> openList = new List<Square>();
-    private readonly List<Square> closedList = new List<Square>();
+
+    private readonly HashSet<Square> closedList = new HashSet<Square>();
     // member variables
     private Square startingSquare;
     private Square currentSquare;
@@ -25,8 +26,23 @@ public class AStarPathfinding : MonoBehaviour
 
     private void Start()
     {
+        CustomEvents._instance.OnReset += Reset;
         SetupStuff();
         StartCoroutine(AStarAlgorithm());
+    }
+
+    private Square FindCheapestSquare()
+    {
+        Square cheapestSquare = null;
+        foreach (Square square in openList)
+        {
+            if (cheapestSquare == null || CalculateFCost(square) < CalculateFCost(cheapestSquare))
+            {
+                cheapestSquare = square;
+            }
+        }
+        UpdateSquare(ref cheapestSquare, SquareTypes.FoundPathSquare);
+        return cheapestSquare;
     }
     
     // https://www.geeksforgeeks.org/dsa/a-search-algorithm/
@@ -35,25 +51,24 @@ public class AStarPathfinding : MonoBehaviour
         List<Square> neighbours = new List<Square>(); 
         while (openList.Count > 0)
         {
-            // Debug.Log($"iterating!");
-            Square cheapestSquare = null;
-            foreach (Square square in openList)
-            {
-                if (cheapestSquare == null || CalculateFCost(square) < CalculateFCost(cheapestSquare))
-                {
-                    cheapestSquare = square;
-                    UpdateSquare(ref cheapestSquare, SquareTypes.FoundPathSquare);
-                }
-            }
+            Square cheapestSquare = FindCheapestSquare();
             openList.Remove(cheapestSquare);
 
             neighbours = generateMap.GetNeighbours(cheapestSquare);
-            // Debug.Log($"neighbour count: {neighbours.Count}");
             foreach (Square square in neighbours)
             {
                 Square neighbour = square;
                 // steg 1
-                if (neighbour == endingSquare) break;
+                if (neighbour == endingSquare)
+                {
+                    Debug.Log($"goal found!");
+                    closedList.Add(cheapestSquare);
+                    foreach (Square s in closedList)
+                    {
+                        Debug.Log($"position: {s.SquarePosition}"); 
+                    }
+                    yield break;
+                }
                 // steg 2
                 else
                 {
@@ -70,32 +85,13 @@ public class AStarPathfinding : MonoBehaviour
             closedList.Add(cheapestSquare);
             yield return new WaitForSeconds(searchFrequencyDelay / 1000f);
         }
-
-        foreach (Square square in generateMap.GetSquares)
-        {
-            if (square.TypesSquare.GetDominantSquareType() ==  SquareTypes.NeighbourSquare) Debug.Log($"neighbour!");
-        }
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void UpdateSquareType(ref Square square, SquareTypes newType)
-    {
-        square.AddMoreTypes(newType);
-        Debug.Log($"square new type: {square.TypesSquare.Type}");
-    }
+    
 
     private void UpdateSquare(ref Square square, SquareTypes newType)
     {
-        UpdateSquareType(ref square, newType);
-        UpdateSingleSquare(ref square);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void UpdateSingleSquare(ref Square square)
-    {
-        Debug.Log($"before modifying: '{square.TypesSquare.Type}'");
+        square.AddMoreTypes(newType);
         generateMap.ChangeValueAtIndex(new Vector2Int(square.SquarePosition.x, square.SquarePosition.y), square);
-        Debug.Log($"after modifying: '{generateMap.GetSquares[square.SquarePosition.x, square.SquarePosition.y].TypesSquare.Type}'");
     }
 
     private bool DetermineIfSkip(Square successor)
@@ -131,6 +127,24 @@ public class AStarPathfinding : MonoBehaviour
     private void OnDisable()
     {
         StopCoroutine(AStarAlgorithm());
+        CustomEvents._instance.OnReset -= Reset;
+    }
+
+    private void OnEnable()
+    {
+        CustomEvents._instance.OnReset += Reset;
+    }
+
+    private void Reset()
+    {
+        openList.Clear();
+        closedList.Clear();
+        SetupStuff();
+    }
+
+    private void OnValidate()
+    {
+        CustomEvents._instance.PublishOnReset();
     }
 
     private int CalculateDistance(Square square)
@@ -161,5 +175,10 @@ public class AStarPathfinding : MonoBehaviour
                 break;
         }
         return distance;
+    }
+
+    private void OnApplicationQuit()
+    {
+        CustomEvents._instance.OnReset -= Reset;
     }
 }
