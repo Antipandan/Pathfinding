@@ -67,4 +67,9 @@ public class Square
         this.g = weight;
         this.h = 0;
     }
+
+    public void AddMoreTypes(params SquareTypes[] types)
+    {
+        typesSquaresSquare.TryAddMoreTypes(types);
+    }
 }

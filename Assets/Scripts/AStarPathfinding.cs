@@ -80,7 +80,7 @@ public class AStarPathfinding : MonoBehaviour
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void UpdateSquareType(ref Square square, SquareTypes newType)
     {
-        square.TypesSquare.TryAddMoreTypes(newType);
+        square.AddMoreTypes(newType);
         Debug.Log($"square new type: {square.TypesSquare.Type}");
     }
 
