@@ -42,15 +42,16 @@ public class AStarPathfinding : MonoBehaviour
                 if (cheapestSquare == null || CalculateFCost(square) < CalculateFCost(cheapestSquare))
                 {
                     cheapestSquare = square;
-                    UpdateSquare(cheapestSquare, SquareTypes.FoundPathSquare);
+                    UpdateSquare(ref cheapestSquare, SquareTypes.FoundPathSquare);
                 }
             }
             openList.Remove(cheapestSquare);
 
             neighbours = generateMap.GetNeighbours(cheapestSquare);
             // Debug.Log($"neighbour count: {neighbours.Count}");
-            foreach (Square neighbour in neighbours)
+            foreach (Square square in neighbours)
             {
+                Square neighbour = square;
                 // steg 1
                 if (neighbour == endingSquare) break;
                 // steg 2
@@ -63,7 +64,7 @@ public class AStarPathfinding : MonoBehaviour
                 if (!DetermineIfSkip(neighbour))
                 {
                     openList.Add(neighbour);
-                    UpdateSquare(neighbour, SquareTypes.NeighbourSquare);
+                    UpdateSquare(ref neighbour, SquareTypes.NeighbourSquare);
                 }
             }
             closedList.Add(cheapestSquare);
@@ -77,20 +78,20 @@ public class AStarPathfinding : MonoBehaviour
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void UpdateSquareType(Square square, SquareTypes newType)
+    private void UpdateSquareType(ref Square square, SquareTypes newType)
     {
         square.TypesSquare.TryAddMoreTypes(newType);
         Debug.Log($"square new type: {square.TypesSquare.Type}");
     }
 
-    private void UpdateSquare(Square square, SquareTypes newType)
+    private void UpdateSquare(ref Square square, SquareTypes newType)
     {
-        UpdateSquareType(square, newType);
-        UpdateSingleSquare(square);
+        UpdateSquareType(ref square, newType);
+        UpdateSingleSquare(ref square);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void UpdateSingleSquare(Square square)
+    private void UpdateSingleSquare(ref Square square)
     {
         Debug.Log($"before modifying: '{square.TypesSquare.Type}'");
         generateMap.ChangeValueAtIndex(new Vector2Int(square.SquarePosition.x, square.SquarePosition.y), square);
