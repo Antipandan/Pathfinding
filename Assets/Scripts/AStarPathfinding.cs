@@ -14,6 +14,7 @@ public class AStarPathfinding : MonoBehaviour
     [SerializeField] private DistanceFormulaTypes distanceFormula;
     [Tooltip("Delay in milliseconds(ms)")]
     [SerializeField] private ushort searchFrequencyDelay;
+    [SerializeField] private bool runAlgorithm;
     [SerializeField] private CustomEvents customEvents;
     // collections
     private readonly List<Square> openList = new List<Square>();
@@ -28,7 +29,13 @@ public class AStarPathfinding : MonoBehaviour
     {
         customEvents.OnReset += Reset;
         SetupStuff();
-        StartCoroutine(AStarAlgorithm());
+        RunAlgorithm();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void RunAlgorithm()
+    {
+        if (runAlgorithm) StartCoroutine(AStarAlgorithm());
     }
 
     private Square FindCheapestSquare()
@@ -61,7 +68,6 @@ public class AStarPathfinding : MonoBehaviour
                 // steg 1
                 if (neighbour == endingSquare)
                 {
-                    Debug.Log($"goal found!");
                     closedList.Add(cheapestSquare);
                     yield break;
                 }
@@ -128,6 +134,7 @@ public class AStarPathfinding : MonoBehaviour
 
     private void OnEnable()
     {
+        RunAlgorithm();
         customEvents.OnReset += Reset;
     }
 
@@ -137,12 +144,19 @@ public class AStarPathfinding : MonoBehaviour
         closedList.Clear();
         SetupStuff();
         StopCoroutine(AStarAlgorithm());
-        StartCoroutine(AStarAlgorithm());
+        RunAlgorithm();
+    }
+
+    // har denna metod för att undvika en lambda funktion
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void LocalPublishOnReset()
+    {
+        customEvents.PublishOnReset();
     }
 
     private void OnValidate()
     {
-        UtilityFunctions.PreventFunctionsRunningInEditor(()=> customEvents.PublishOnReset());
+        UtilityFunctions.PreventFunctionsRunningInEditor(LocalPublishOnReset);
     }
 
     private int CalculateDistance(Square square)
@@ -178,5 +192,6 @@ public class AStarPathfinding : MonoBehaviour
     private void OnApplicationQuit()
     {
         customEvents.OnReset -= Reset;
+        StopCoroutine(AStarAlgorithm());
     }
 }

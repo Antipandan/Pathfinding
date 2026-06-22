@@ -258,7 +258,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   generateMap: {fileID: 134725750}
   distanceFormula: 1
-  searchFrequencyDelay: 250
+  searchFrequencyDelay: 25
+  runAlgorithm: 0
   customEvents: {fileID: 134725760}
 --- !u!114 &134725759
 MonoBehaviour:
