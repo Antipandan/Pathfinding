@@ -17,6 +17,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     [SerializeField] private Vector2Int goalSquarePosition;
     [SerializeField] [Range(0, 500)] private int maxWeight = 15;
     [SerializeField] private string seed = "";
+    [SerializeField] private CustomEvents customEvents;
 
     private Random rand = new Random();
     private Square[,] squares;
@@ -60,10 +61,10 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     {
         squares[index.x, index.y] = newSquare; }
 
-    private void Awake()
+    private void Start()
     {
-        CustomEvents._instance.OnReset += Reset;
-        Reset();
+        customEvents.OnReset += OtherReset;
+        OtherReset();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -156,6 +157,11 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     
     private void Reset()
     {
+        OtherReset();
+    }
+
+    private void OtherReset()
+    {
         SetupValues();
         CheckValuesAreCorrect();
         GenerateGrid();
@@ -165,12 +171,12 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     {
         CheckValuesAreCorrect();
         // förhindra felmeddelande
-        UtilityFunctions.PreventFunctionRunningInEditor(GenerateGrid);
-        CustomEvents._instance.PublishOnReset();
+        UtilityFunctions.PreventFunctionsRunningInEditor(GenerateGrid,
+            () => customEvents.PublishOnReset());
     }
 
     private void OnApplicationQuit()
     {
-        CustomEvents._instance.OnReset -= Reset;
+        customEvents.OnReset -= Reset;
     }
 }

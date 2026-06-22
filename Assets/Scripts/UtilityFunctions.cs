@@ -202,9 +202,12 @@ namespace Utility
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void PreventFunctionRunningInEditor(Action functionToRun)
+        public static void PreventFunctionsRunningInEditor(params Action[] functionsToRun)
         {
-            if (UnityEditor.EditorApplication.isPlaying) functionToRun();
+            foreach (Action function in functionsToRun)
+            {
+                if (UnityEditor.EditorApplication.isPlaying) function();
+            }
         }
 
         public static void InitializeSquares(ref Square[,] squares)

@@ -158,8 +158,9 @@ MonoBehaviour:
   columns: 3
   startingSquarePosition: {x: 0, y: 0}
   goalSquarePosition: {x: 2, y: 2}
-  maxWeight: 15
+  maxWeight: 131
   seed: 123
+  customEvents: {fileID: 134725760}
 --- !u!114 &134725751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -257,7 +258,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   generateMap: {fileID: 134725750}
   distanceFormula: 1
-  searchFrequencyDelay: 2500
+  searchFrequencyDelay: 250
+  customEvents: {fileID: 134725760}
 --- !u!114 &134725759
 MonoBehaviour:
   m_ObjectHideFlags: 0

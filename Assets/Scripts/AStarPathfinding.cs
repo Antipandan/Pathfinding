@@ -14,9 +14,9 @@ public class AStarPathfinding : MonoBehaviour
     [SerializeField] private DistanceFormulaTypes distanceFormula;
     [Tooltip("Delay in milliseconds(ms)")]
     [SerializeField] private ushort searchFrequencyDelay;
+    [SerializeField] private CustomEvents customEvents;
     // collections
     private readonly List<Square> openList = new List<Square>();
-
     private readonly HashSet<Square> closedList = new HashSet<Square>();
     // member variables
     private Square startingSquare;
@@ -26,7 +26,7 @@ public class AStarPathfinding : MonoBehaviour
 
     private void Start()
     {
-        CustomEvents._instance.OnReset += Reset;
+        customEvents.OnReset += Reset;
         SetupStuff();
         StartCoroutine(AStarAlgorithm());
     }
@@ -63,10 +63,6 @@ public class AStarPathfinding : MonoBehaviour
                 {
                     Debug.Log($"goal found!");
                     closedList.Add(cheapestSquare);
-                    foreach (Square s in closedList)
-                    {
-                        Debug.Log($"position: {s.SquarePosition}"); 
-                    }
                     yield break;
                 }
                 // steg 2
@@ -127,12 +123,12 @@ public class AStarPathfinding : MonoBehaviour
     private void OnDisable()
     {
         StopCoroutine(AStarAlgorithm());
-        CustomEvents._instance.OnReset -= Reset;
+        customEvents.OnReset -= Reset;
     }
 
     private void OnEnable()
     {
-        CustomEvents._instance.OnReset += Reset;
+        customEvents.OnReset += Reset;
     }
 
     private void Reset()
@@ -140,11 +136,13 @@ public class AStarPathfinding : MonoBehaviour
         openList.Clear();
         closedList.Clear();
         SetupStuff();
+        StopCoroutine(AStarAlgorithm());
+        StartCoroutine(AStarAlgorithm());
     }
 
     private void OnValidate()
     {
-        CustomEvents._instance.PublishOnReset();
+        UtilityFunctions.PreventFunctionsRunningInEditor(()=> customEvents.PublishOnReset());
     }
 
     private int CalculateDistance(Square square)
@@ -179,6 +177,6 @@ public class AStarPathfinding : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        CustomEvents._instance.OnReset -= Reset;
+        customEvents.OnReset -= Reset;
     }
 }

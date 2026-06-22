@@ -62,7 +62,7 @@ public class DrawMap : MonoBehaviour
     private void OnValidate()
     {
         // det måste finnas ett bättre sätt att göra detta på!
-        UtilityFunctions.PreventFunctionRunningInEditor(BuildDictionary);
+        UtilityFunctions.PreventFunctionsRunningInEditor(BuildDictionary);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
