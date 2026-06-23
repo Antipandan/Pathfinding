@@ -157,7 +157,7 @@ MonoBehaviour:
   rows: 10
   columns: 10
   startingSquarePosition: {x: 0, y: 0}
-  goalSquarePosition: {x: 2, y: 0}
+  goalSquarePosition: {x: 9, y: 9}
   maxWeight: 131
   seed: 123
   customEvents: {fileID: 134725760}
@@ -303,7 +303,6 @@ GameObject:
   - component: {fileID: 258787625}
   - component: {fileID: 258787624}
   - component: {fileID: 258787623}
-  - component: {fileID: 258787626}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -372,18 +371,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &258787626
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 258787622}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a8e101c3a971704f87e8633c0ee57f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &988729467
 GameObject:
   m_ObjectHideFlags: 0
