@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using TMPro;
 using UnityEngine;
 using Unity;
 using Utility;
@@ -22,6 +23,7 @@ public class Square
     public Square()
     {
         ModifySquare(Vector2Int.zero, 0, SquareTypes.RegularSquare);
+        
     }
     
     public uint Weight
