@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using Unity;
 using Unity.Mathematics;
-using UnityEngine;
 
 public struct SquareType
 {

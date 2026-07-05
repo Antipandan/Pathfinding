@@ -55,7 +55,7 @@ public class AStarPathfinding : MonoBehaviour
     // https://www.geeksforgeeks.org/dsa/a-search-algorithm/
     private IEnumerator AStarAlgorithm()
     {
-        List<Square> neighbours = new List<Square>(); 
+        List<Square> neighbours = new List<Square>();
         while (openList.Count > 0)
         {
             Square cheapestSquare = FindCheapestSquare();

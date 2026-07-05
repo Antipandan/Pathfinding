@@ -19,6 +19,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     [SerializeField] [Range(0, 500)] private int maxWeight = 15;
     [SerializeField] private string seed = "";
     [SerializeField] private CustomEvents customEvents;
+    [SerializeField] private GameObject squarePrefab;
 
     private Random rand = new Random();
     private Square[,] squares;
@@ -65,6 +66,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
 
     private void Start()
     {
+        Debug.Log($"name: {squarePrefab.name}");
         customEvents.OnReset += OtherReset;
         OtherReset();
     }
@@ -137,11 +139,13 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     
     private void GenerateGrid()
     {
-        UtilityFunctions.InitializeSquares(ref squares, rows, columns);
         for (int y = 0; y < columns; y++)
         {
             for (int x = 0; x < rows; x++)
             {
+                Square newSquare = Instantiate(squarePrefab).GetComponent<Square>();
+                Debug.Log($"square: {newSquare.F}");
+                squares[x, y] = newSquare;
                 squares[x, y].ModifySquare(new Vector2Int(x, y), UtilityFunctions.RandomizeWeight(rand, 0, maxWeight), SquareTypes.RegularSquare);
             }
         }

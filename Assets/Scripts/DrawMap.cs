@@ -10,7 +10,6 @@ using static SquareTypes;
 public class DrawMap : MonoBehaviour
 {
     [SerializeField] private GenerateMap generateMap;
-    [SerializeField] [CanBeNull] private GameObject squarePrefab;
     [Space]
     [SerializeField] private Color wallColor = Constants.squareColors[WallSquare];
     [SerializeField] private Color regularColor = Constants.squareColors[RegularSquare];
@@ -22,6 +21,7 @@ public class DrawMap : MonoBehaviour
     [SerializeField] private Color startNodeColor = Constants.squareColors[StartNodeSquare];
     // det finns säker ett bättre sätt att göra detta på men jag har crunch:at lite för mycket idag...
     private Dictionary<SquareTypes, Color> squareColors = new Dictionary<SquareTypes, Color>();
+    private bool drawGizmos = false;
 
     public Dictionary<SquareTypes, Color> SquareColors
     {
@@ -36,7 +36,7 @@ public class DrawMap : MonoBehaviour
 
     private void Start()
     {
-        InstantiateSquarePrefabs();
+        
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -56,23 +56,9 @@ public class DrawMap : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (squarePrefab == null) DrawGizmoMap();
+        if (drawGizmos) return;
     }
-
-    private void InstantiateSquarePrefabs()
-    {
-        if (squarePrefab == null) return;
-        Vector2 dimensions = squarePrefab.GetComponent<SpriteRenderer>().bounds.size;
-        GameObject map = new GameObject("map");
-        Instantiate(map);
-        for (int i = 0; i < generateMap.GetSquares.Length; i++)
-        {
-            squarePrefab.transform.position = new Vector3(
-                1 * i % generateMap.Rows,
-                1 * (int) (i / generateMap.Columns));
-            Instantiate(squarePrefab, map.transform);
-        }
-    }
+    
 
     private void AssignCorrectColors()
     {

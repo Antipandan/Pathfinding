@@ -161,6 +161,7 @@ MonoBehaviour:
   maxWeight: 15
   seed: 123
   customEvents: {fileID: 134725760}
+  squarePrefab: {fileID: 2537812883416603543, guid: 6c8868a22db539446933eb5382ac9754, type: 3}
 --- !u!114 &134725751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -273,7 +274,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generateMap: {fileID: 134725750}
-  squarePrefab: {fileID: 2537812883416603543, guid: 6c8868a22db539446933eb5382ac9754, type: 3}
   wallColor: {r: 0, g: 0, b: 0, a: 1}
   regularColor: {r: 1, g: 1, b: 1, a: 1}
   neighbourColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
