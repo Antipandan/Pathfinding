@@ -94,13 +94,37 @@ namespace Utility
             if (maxVal < 0) throw new ArgumentOutOfRangeException(nameof(maxVal));
             return random.Next(minVal, maxVal);
         }
-
+        
         public static void PreventFunctionsRunningInEditor(params Action[] functionsToRun)
         {
             foreach (Action function in functionsToRun)
             {
                 if (UnityEditor.EditorApplication.isPlaying) function();
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int GetLengthOfInt(int value)
+        {
+            return (int)Mathf.Log(value, 10);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int ParseSeed(string seedString)
+        {
+            return int.TryParse(seedString, out var seedInt) ? seedInt : CountCharValue(seedString);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int CountCharValue(string text)
+        {
+            int total = 0;
+            foreach (char c in text)
+            {
+                // redundant cast men jag tycker att det förtydligar att vi använder ASCII värdet av char:en
+                total += (int)c;
+            }
+            return total;
         }
         
     }

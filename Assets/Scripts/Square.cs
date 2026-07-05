@@ -16,10 +16,12 @@ public class Square : MonoBehaviour
     private float weight;
     private float g;
     private float h;
+    private static CustomEvents customEvent;
 
     public Vector2Int Index
     {
         get => index;
+        set => index = value;
     }
     
     public float G
@@ -31,12 +33,21 @@ public class Square : MonoBehaviour
     public float H
     {
         get => h;
+        private set => h = value;
     }
 
     public float F
     {
         get => g + h;
+        private set
+        {
+            g = value;
+            int maxLength = customEvent.PublishOnGetNumberLength();
+        }
     }
-    
-    
+
+    private static void UpdateText(TextMeshPro textMeshPro, string text)
+    {
+        textMeshPro.text = text;
+    }
 }
