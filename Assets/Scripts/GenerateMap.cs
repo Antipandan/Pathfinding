@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using Utility;
@@ -59,7 +60,8 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ChangeValueAtIndex(Vector2Int index, Square newSquare)
     {
-        squares[index.x, index.y] = newSquare; }
+        squares[index.x, index.y] = newSquare; 
+    }
 
     private void Start()
     {
@@ -113,11 +115,9 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
         Vector2Int defaultGoalPosition = new Vector2Int(rows - 1, columns - 1);
         ResetCorrectly(ref startingSquarePosition, dimensions);
         ResetCorrectly(ref goalSquarePosition, dimensions);
-        if (startingSquarePosition == goalSquarePosition)
-        {
-            startingSquarePosition = defaultStartingPosition;
-            goalSquarePosition = defaultGoalPosition;
-        }
+        if (startingSquarePosition != goalSquarePosition) return;
+        startingSquarePosition = defaultStartingPosition;
+        goalSquarePosition = defaultGoalPosition;
     }
     
     private static ushort ClampDimensions(ushort value, ushort min, ushort max)
@@ -148,6 +148,7 @@ public class GenerateMap : MonoBehaviour, IGenerateMap, ISeedParse
         SetSingleSquareType(startingSquarePosition, SquareTypes.StartNodeSquare);
         SetSingleSquareType(goalSquarePosition, SquareTypes.EndNodeSquare);
     }
+    
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetSingleSquareType(Vector2Int index, SquareTypes type)

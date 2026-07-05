@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 using Unity;
 using UnityEngine;
 using Utility;
@@ -9,6 +10,7 @@ using static SquareTypes;
 public class DrawMap : MonoBehaviour
 {
     [SerializeField] private GenerateMap generateMap;
+    [SerializeField] [CanBeNull] private GameObject squarePrefab;
     [Space]
     [SerializeField] private Color wallColor = Constants.squareColors[WallSquare];
     [SerializeField] private Color regularColor = Constants.squareColors[RegularSquare];
@@ -32,6 +34,11 @@ public class DrawMap : MonoBehaviour
         if (generateMap == null) Debug.LogError($"Warning no reference to {nameof(generateMap)}!");
     }
 
+    private void Start()
+    {
+        InstantiateSquarePrefabs();
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void BuildDictionary()
     {
@@ -48,6 +55,34 @@ public class DrawMap : MonoBehaviour
     
 
     private void OnDrawGizmos()
+    {
+        if (squarePrefab == null) DrawGizmoMap();
+    }
+
+    private void InstantiateSquarePrefabs()
+    {
+        if (squarePrefab == null) return;
+        Vector2 dimensions = squarePrefab.GetComponent<SpriteRenderer>().bounds.size;
+        GameObject map = new GameObject("map");
+        Instantiate(map);
+        for (int i = 0; i < generateMap.GetSquares.Length; i++)
+        {
+            squarePrefab.transform.position = new Vector3(
+                1 * i % generateMap.Rows,
+                1 * (int) (i / generateMap.Columns));
+            Instantiate(squarePrefab, map.transform);
+        }
+    }
+
+    private void AssignCorrectColors()
+    {
+        foreach (Square square in generateMap.GetSquares)
+        {
+            
+        }
+    }
+
+    private void DrawGizmoMap()
     {
         // förhindra att felmeddelanden dycker upp i editmode
         if (!UnityEditor.EditorApplication.isPlaying) return;
