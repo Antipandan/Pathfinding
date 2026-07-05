@@ -9,5 +9,5 @@ using static SquareTypes;
 
 public class DrawMap : MonoBehaviour
 {
-    
+    [SerializeField] private int testing;
 }
