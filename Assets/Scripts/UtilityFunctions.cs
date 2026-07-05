@@ -87,113 +87,7 @@ namespace Utility
         {
             return Mathf.Abs(start.x - end.x) + Mathf.Abs(start.y - end.y);
         }
-
-        /// <summary>
-        /// Generic method used to check if object member variables are null. If so return true else false
-        /// </summary>
-        /// <param name="currentObject">Which object is null. Will not return several objects that may be null.
-        /// Returns only the first object that is null</param>
-        /// <param name="objects">Objects to check for null</param>
-        /// <returns>true if there is a null object. false if there is none</returns>
-        public static bool CheckIfObjectsAreNull(out object currentObject, params object[] objects)
-        {
-            foreach (object obj in objects)
-            {
-                currentObject = obj;
-                if (obj == null) return true;
-            }
-            currentObject = null;
-            return false;
-        }
         
-        /// <summary>
-        /// Generic method used to check if object member variables are null. If so return true else false
-        /// </summary>
-        /// <param name="objects">Objects to check for null</param>
-        /// <returns>true if there is a null object. false if there is none</returns>
-        public static bool CheckIfObjectsAreNull(params object[] objects)
-        {
-            foreach (object obj in objects)
-            {
-                if (obj == null) return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Generic method used to check if object member variables are null. If so return true else false
-        /// </summary>
-        /// <param name="objects">Objects to check for null</param>
-        /// <returns>true if there is a null object. false if there is none</returns>
-        public static bool CheckIfObjectsAreNull(params GameObject[] objects)
-        {
-            foreach (GameObject obj in objects)
-            {
-                if (obj == null) return true;
-            }
-            return false;
-        }
-        
-        /// <summary>
-        /// Generic method used to check if object member variables are null. If so return true else false
-        /// </summary>
-        /// <param name="currentGameObject">Which object is null. Will not return several objects that may be null.
-        /// Returns only the first object that is null</param>
-        /// <param name="objects">Objects to check for null</param>
-        /// <returns>true if there is a null object. false if there is none</returns>
-        public static bool CheckIfObjectsAreNull(out GameObject currentGameObject, params GameObject[] objects)
-        {
-            foreach (GameObject obj in objects)
-            {
-                currentGameObject = obj;
-                if (obj == null) return true;
-            }
-
-            currentGameObject = null;
-            return false;
-        }
-        
-        /// <summary>
-        /// Reizes a grid with a precalculated Vector3
-        /// </summary>
-        /// <param name="grid">Grid to be modified</param>
-        /// <param name="gridSize">Pre-calculated values</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ResizeGrid(ref Grid grid, Vector3 gridSize)
-        {
-            grid.cellSize = gridSize;
-        }
-        
-        /// <summary>
-        /// Resizes a grid by defining the number of rows and columns the new grid shall have. Rounds down in case of
-        /// decimal numbers
-        /// </summary>
-        /// <param name="grid">The grid to be modified</param>
-        /// <param name="rows">Number of rows the newly modified grid shall have</param>
-        /// <param name="columns">Number of column the newly modified grid shall have</param>
-        public static void ResizeGrid(ref Grid grid, int rows, int columns)
-        {
-            int screenWidth = Screen.width;
-            int screenHeight = Screen.height;
-            grid.cellSize = new Vector3((int) (screenWidth / (float) rows), (int) (screenHeight / (float) columns), 0f);
-        }
-        
-        /// <summary>
-        /// Resizes a grid by defining the number of rows and columns the new grid shall have. Rounds down in case of
-        /// decimal numbers
-        /// </summary>
-        /// <param name="grid">The grid to be modified</param>
-        /// <param name="screenDimensions">The dimensions of the screen represented as a Vector2Int.
-        /// The X value represents the screen width and Y represents the screen height</param>
-        /// <param name="rowColumnCount">Number of rows anc columns represented as a Vector2Int. The X value represents the row count and the Y value represents the column count</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ResizeGrid(ref Grid grid, Vector2Int screenDimensions, Vector2Int rowColumnCount)
-        {
-            grid.cellSize = new Vector3(screenDimensions.x / (float)rowColumnCount.x,
-                                        screenDimensions.y / (float)rowColumnCount.y,
-                                        0f);
-        }
         
         public static int RandomizeWeight(System.Random random, int minVal = 0, int maxVal = int.MaxValue)
         {
@@ -201,7 +95,6 @@ namespace Utility
             return random.Next(minVal, maxVal);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void PreventFunctionsRunningInEditor(params Action[] functionsToRun)
         {
             foreach (Action function in functionsToRun)
