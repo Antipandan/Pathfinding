@@ -14,7 +14,7 @@ namespace GameCode
     {
         [SerializeField] private int columns = 3;
         [SerializeField] private int rows = 3;
-        [SerializeField] [Range(0, int.MaxValue)] int maxWeigth = 500;
+        [SerializeField] [Range(0, 500)] int maxWeigth = 15;
         [SerializeField] private Vector2 padding = Vector2.zero;
         [SerializeField] private string seed = "Number or Text here!";
         [SerializeField] private Vector2Int startingPosition = Vector2Int.zero;
@@ -63,6 +63,7 @@ namespace GameCode
         private void GenerateSquareMap()
         {
             Square[] existingObjects = FindObjectsByType<Square>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            Vector2 squareDimensions = squarePrefab.GetComponent<SpriteRenderer>().bounds.size;
             if (existingObjects.Length == 0)
             {
                 squares = new Square[rows, columns];
@@ -72,6 +73,7 @@ namespace GameCode
                     {
                         Square square = Instantiate(squarePrefab, mapHolder).GetComponent<Square>();
                         SetupSquareProperly(square);
+                        square.transform.position = (squareDimensions + padding) * new Vector2(x, y);
                         squares[y, x] = square;
                     }
                 }

@@ -14,7 +14,7 @@ namespace GameCode
     {
         [SerializeField] private TextMeshPro WeightText = null;
         [SerializeField] private TextMeshPro FText = null;
-        [SerializeField] [Range(0f, 999f)]private float weight = 15f;
+        [SerializeField] private float weight = 0f;
         private static CustomEvents customEvent;
         private SquareTypes squareType;
         private Vector2Int index;
@@ -53,8 +53,7 @@ namespace GameCode
             set
             {
                 weight = value;
-                g += weight;
-                UpdateText(WeightText, (int)weight);
+                UpdateText(WeightText, weight);
             }
         }
 
@@ -66,6 +65,11 @@ namespace GameCode
                 squareType = value;
                 customEvent.PublishOnColorUpdate(this);
             } 
+        }
+
+        private void OnValidate()
+        {
+            Weight = Mathf.Clamp(weight, 0f, float.MaxValue);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
