@@ -14,6 +14,7 @@ namespace GameCode
         [SerializeField] private int columns = 3;
         [SerializeField] private int rows = 3;
         [SerializeField] [Range(0, int.MaxValue)] int maxWeigth = 500;
+        [SerializeField] private Vector2 padding = Vector2.zero;
         [SerializeField] private string seed = "Number or Text here!";
         [SerializeField] private Vector2Int startingPosition = Vector2Int.zero;
         [SerializeField] private Vector2Int endingPosition = Vector2Int.zero;
@@ -76,9 +77,7 @@ namespace GameCode
             if (startingPosition != endingPosition) return;
             startingPosition = Vector2Int.zero;
             endingPosition = new Vector2Int(columns - 1, rows - 1);
-            
         }
-        
     }
 }
 

@@ -1,13 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using JetBrains.Annotations;
+using GameCode;
 using Unity;
 using UnityEngine;
 using Utility;
-using static SquareTypes;
+using static GameCode.SquareTypes;
 
-public class DrawMap : MonoBehaviour
+namespace Gamecode
 {
-    [SerializeField] private int testing;
+    public class DrawMap : MonoBehaviour
+    {
+        [SerializeField] private GenerateMap generateMap;
+        [Space] 
+        [SerializeField] private Color wallColor = Constants.squareColors[WallSquare];
+        [SerializeField] private Color regularColor = Constants.squareColors[RegularSquare];
+        [Space] 
+        [SerializeField] private Color neighbourColor = Constants.squareColors[NeighbourSquare];
+        [SerializeField] private Color foundPathColor = Constants.squareColors[FoundPathSquare];
+        [Space] 
+        [SerializeField] private Color endNodeColor = Constants.squareColors[EndNodeSquare];
+        [SerializeField] private Color startNodeColor = Constants.squareColors[StartNodeSquare];
+        private Dictionary<SquareTypes, Color> squareColors = new Dictionary<SquareTypes, Color>(6);
+        private CustomEvents customEvents;
+
+        private void Awake()
+        {
+            customEvents.onColorUpdate += ChangeColor;
+        }
+
+        private void Start()
+        {
+            squareColors = new Dictionary<SquareTypes, Color>(6)
+            {
+                {WallSquare, wallColor},{RegularSquare, regularColor},{NeighbourSquare, neighbourColor},
+                {FoundPathSquare, foundPathColor},{EndNodeSquare, endNodeColor}, {StartNodeSquare, startNodeColor}
+            };
+        }
+        
+        private void ChangeColor(Square square)
+        {
+            square.GetComponent<SpriteRenderer>().color = squareColors[square.SquareType];
+        }
+    }
 }
