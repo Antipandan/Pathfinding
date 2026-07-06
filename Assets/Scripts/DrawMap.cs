@@ -10,8 +10,6 @@ namespace Gamecode
 {
     public class DrawMap : MonoBehaviour
     {
-        [SerializeField] private GenerateMap generateMap;
-        [Space] 
         [SerializeField] private Color wallColor = Constants.squareColors[WallSquare];
         [SerializeField] private Color regularColor = Constants.squareColors[RegularSquare];
         [Space] 
@@ -20,8 +18,9 @@ namespace Gamecode
         [Space] 
         [SerializeField] private Color endNodeColor = Constants.squareColors[EndNodeSquare];
         [SerializeField] private Color startNodeColor = Constants.squareColors[StartNodeSquare];
+        [Space]
+        [SerializeField] private CustomEvents customEvents;
         private Dictionary<SquareTypes, Color> squareColors = new Dictionary<SquareTypes, Color>(6);
-        private CustomEvents customEvents;
 
         private void Awake()
         {

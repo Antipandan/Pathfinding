@@ -31,6 +31,6 @@ public class CustomEvents : MonoBehaviour
 
     public void PublishOnColorUpdate(Square square)
     {
-        
+        onColorUpdate?.Invoke(square);
     }
 }

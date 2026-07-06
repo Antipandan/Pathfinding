@@ -7,7 +7,7 @@ namespace GameCode
 {
     public class AStarPathfinding : MonoBehaviour
     {
-        [SerializeField] private GenerateMap map;
+        [SerializeField] private DistanceFormulaTypes distanceFormula = DistanceFormulaTypes.ManhattanDistance;
         [Tooltip("delay in milliseconds (ms)")]
         [SerializeField] private float searchDelay = 100f;
     }

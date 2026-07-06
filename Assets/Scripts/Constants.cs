@@ -7,6 +7,7 @@ namespace GameCode
     public static class Constants
     {
         public const byte maxNumberLenght = 4;
+        public const uint maxRecursionDepth = 1000;
         public static readonly Dictionary<SquareTypes, Color> squareColors = new Dictionary<SquareTypes, Color>
         {
             { SquareTypes.WallSquare, Color.black },

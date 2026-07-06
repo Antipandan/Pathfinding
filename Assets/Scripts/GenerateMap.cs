@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using Unity;
@@ -20,6 +21,8 @@ namespace GameCode
         [SerializeField] private Vector2Int endingPosition = Vector2Int.zero;
         [SerializeField] private GameObject squarePrefab;
         [SerializeField] private CustomEvents customEvents;
+        [SerializeField] private Transform mapHolder;
+        private Square[,] squares;
 
         private Random random;
 
@@ -43,6 +46,8 @@ namespace GameCode
         private void Start()
         {
             Setup();
+            CreateMapHolder();
+            GenerateSquareMap();
         }
 
         private void Setup()
@@ -57,9 +62,43 @@ namespace GameCode
             rows = (ushort)Mathf.Clamp(rows, 1, int.MaxValue);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void CreateMapHolder()
+        {
+            if (mapHolder == null) Instantiate(new GameObject());
+        }
+
+        private void GenerateSquareMap()
+        {
+            Debug.Log($"running function!");
+            Square[] existingObjects = FindObjectsByType<Square>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            if (existingObjects.Length == 0)
+            {
+                squares = new Square[rows, columns];
+                for (int y = 0; y < columns; y++)
+                {
+                    for (int x = 0; x < rows; x++)
+                    {
+                        squares[y, x] = Instantiate(squarePrefab, mapHolder).GetComponent<Square>();
+                    }
+                }
+            }
+            else if (existingObjects.Length > rows * columns)
+            {
+                return;
+            }
+            
+            else if (existingObjects.Length < rows * columns)
+            {
+                return;
+            }
+        }
+        
+
         private void Reset()
         {
             Setup();
+            PreventFunctionsRunningInEditor(GenerateSquareMap);
         }
 
         private void OnDisable()

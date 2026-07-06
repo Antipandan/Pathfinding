@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using GameCode;
 using Unity;
+using UnityEditor.SearchService;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
@@ -112,7 +114,7 @@ namespace Utility
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int ParseSeed(string seedString)
         {
-            return int.TryParse(seedString, out var seedInt) ? seedInt : CountCharValue(seedString);
+            return int.TryParse(seedString, out int seedInt) ? seedInt : CountCharValue(seedString);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -126,6 +128,42 @@ namespace Utility
             }
             return total;
         }
-        
+
+        public static IEnumerable<T> FindSelectType<T>(Transform parent) where T : MonoBehaviour
+        {
+            /*
+             *             List<T> foundObjects = new List<T>(parent.childCount);
+            foreach (GameObject gameObject in parent)
+            {
+                if (gameObject.TryGetComponent<>(out T component)) foundObjects.Add(component);
+            }
+            return foundObjects;
+             */
+            return null;
+        }
+
+        public static IEnumerable<T> FindAllOfType<T>(Transform parent = null) where T : MonoBehaviour
+        {
+            /*
+             *             List<T> foundObjects = new List<T>();
+            if (parent != null)
+            {
+                foreach (Transform child in parent)
+                {
+                    if (child.gameObject.TryGetComponent<T>(out T component))
+                    {
+                        foundObjects.Add(component);
+                        foundObjects.AddRange(FindSelectType<T>(child));
+                    }
+                    else
+                    {
+                        foundObjects.AddRange(FindSelectType<T>(child));
+                    }
+                }
+            }
+            return foundObjects;
+             */
+            return null;
+        }
     }
 }
