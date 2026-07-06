@@ -23,7 +23,6 @@ namespace GameCode
         [SerializeField] private CustomEvents customEvents;
         [SerializeField] private Transform mapHolder;
         private Square[,] squares;
-
         private Random random;
 
         private void Awake()
@@ -34,13 +33,6 @@ namespace GameCode
         private void SubscribeToAllEvents()
         {
             customEvents.onReset += Reset;
-            customEvents.onGetNumberLength += GetLengthOfWeight;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int GetLengthOfWeight()
-        {
-            return GetLengthOfInt(maxWeigth);
         }
 
         private void Start()
@@ -70,7 +62,6 @@ namespace GameCode
 
         private void GenerateSquareMap()
         {
-            Debug.Log($"running function!");
             Square[] existingObjects = FindObjectsByType<Square>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             if (existingObjects.Length == 0)
             {
@@ -79,7 +70,9 @@ namespace GameCode
                 {
                     for (int x = 0; x < rows; x++)
                     {
-                        squares[y, x] = Instantiate(squarePrefab, mapHolder).GetComponent<Square>();
+                        Square square = Instantiate(squarePrefab, mapHolder).GetComponent<Square>();
+                        SetupSquareProperly(square);
+                        squares[y, x] = square;
                     }
                 }
             }
@@ -92,6 +85,11 @@ namespace GameCode
             {
                 return;
             }
+        }
+
+        private void SetupSquareProperly(Square square)
+        {
+            square.Weight = random.Next(0, maxWeigth);
         }
         
 

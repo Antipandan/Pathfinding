@@ -6,6 +6,7 @@ using UnityEngine;
 using Unity;
 using Utility;
 using Random = System.Random;
+using static GameCode.Constants;
 
 namespace GameCode
 {
@@ -13,10 +14,10 @@ namespace GameCode
     {
         [SerializeField] private TextMeshPro WeightText = null;
         [SerializeField] private TextMeshPro FText = null;
+        [SerializeField] [Range(0f, 999f)]private float weight = 15f;
         private static CustomEvents customEvent;
         private SquareTypes squareType;
         private Vector2Int index;
-        private float weight;
         private float g;
         private float h;
 
@@ -35,16 +36,25 @@ namespace GameCode
         public float H
         {
             get => h;
-            private set => h = value;
+            private set
+            {
+                h = value;
+            }
         }
 
         public float F
         {
             get => g + h;
-            private set
+        }
+
+        public float Weight
+        {
+            get => weight;
+            set
             {
-                g = value;
-                int maxLength = customEvent.PublishOnGetNumberLength();
+                weight = value;
+                g += weight;
+                UpdateText(WeightText, (int)weight);
             }
         }
 
@@ -58,9 +68,28 @@ namespace GameCode
             } 
         }
 
-        private static void UpdateText(TextMeshPro textMeshPro, string text)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool CheckTextLengthUnderMax(int value)
         {
-            textMeshPro.text = text;
+            return maxNumberLenght > UtilityFunctions.GetLengthOfInt(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool CheckTextLengthUnderMax(float value)
+        {
+            return maxNumberLenght > UtilityFunctions.GetLengthOfInt((int)value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void UpdateText(TextMeshPro textMeshPro, int value)
+        {
+            textMeshPro.text = CheckTextLengthUnderMax(value) ? $"{value}" : $"{(int)(Mathf.Pow(10, maxNumberLenght) - 1)}";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void UpdateText(TextMeshPro textMeshPro, float value)
+        {
+            textMeshPro.text = CheckTextLengthUnderMax(value) ? $"{(int)value}" : $"{(int)(Mathf.Pow(10, maxNumberLenght) - 1)}";
         }
     }
 

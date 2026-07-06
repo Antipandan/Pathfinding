@@ -7,8 +7,6 @@ public class CustomEvents : MonoBehaviour
 {
     public event Action onReset;
     
-    public event Func<int> onGetNumberLength;
-    
     public event Action<Square, SquareTypes> onSquareUpdate;
 
     public event Action<Square> onColorUpdate;
@@ -16,11 +14,6 @@ public class CustomEvents : MonoBehaviour
     public void PublishOnReset()
     {
         onReset?.Invoke();
-    }
-    
-    public int PublishOnGetNumberLength()
-    {
-        return onGetNumberLength!.Invoke();
     }
 
     public void PublishOnSquareUpdate(Square square, SquareTypes newType)
