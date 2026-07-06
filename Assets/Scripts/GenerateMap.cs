@@ -27,7 +27,11 @@ namespace GameCode
 
         private void Awake()
         {
+            // jag vet inte om detta är en bra idé? Förmodligen inte
+            Square.CustomEvent = customEvents;
             SubscribeToAllEvents();
+            Setup();
+            CreateMapHolder();
         }
 
         private void SubscribeToAllEvents()
@@ -37,8 +41,6 @@ namespace GameCode
 
         private void Start()
         {
-            Setup();
-            CreateMapHolder();
             GenerateSquareMap();
         }
 
@@ -87,6 +89,21 @@ namespace GameCode
             {
                 return;
             }
+            // detta fungerar men att inkludera den inre koden nedan i den tidigare for loopen fungerar inte?
+            for (int y = 0; y < columns; y++)
+            {
+                for (int x = 0; x < rows; x++)
+                {
+                    squares[y, x].SquareType = SquareTypes.RegularSquare;
+                }
+            }
+            AssignStartEndSquare();
+        }
+
+        private void AssignStartEndSquare()
+        {
+            squares[startingPosition.y, startingPosition.x].SquareType = SquareTypes.StartNodeSquare;
+            squares[endingPosition.y, endingPosition.x].SquareType = SquareTypes.EndNodeSquare;
         }
 
         private void SetupSquareProperly(Square square)
@@ -116,6 +133,7 @@ namespace GameCode
             if (startingPosition != endingPosition) return;
             startingPosition = Vector2Int.zero;
             endingPosition = new Vector2Int(columns - 1, rows - 1);
+            customEvents.PublishOnReset();
         }
     }
 }

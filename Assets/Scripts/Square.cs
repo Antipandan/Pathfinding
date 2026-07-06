@@ -16,7 +16,7 @@ namespace GameCode
         [SerializeField] private TextMeshPro FText = null;
         [SerializeField] private float weight = 0f;
         private static CustomEvents customEvent;
-        private SquareTypes squareType;
+        private SquareTypes squareType = SquareTypes.RegularSquare;
         private Vector2Int index;
         private float g;
         private float h;
@@ -63,8 +63,20 @@ namespace GameCode
             set
             {
                 squareType = value;
+                Debug.Log($"publish on color update!");
                 customEvent.PublishOnColorUpdate(this);
             } 
+        }
+
+        public static CustomEvents CustomEvent
+        {
+            get => customEvent;
+            set => customEvent = value;
+        }
+
+        private void Start()
+        {
+            UpdateText(FText, F);
         }
 
         private void OnValidate()

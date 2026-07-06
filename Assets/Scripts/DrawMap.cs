@@ -6,7 +6,7 @@ using UnityEngine;
 using Utility;
 using static GameCode.SquareTypes;
 
-namespace Gamecode
+namespace GameCode
 {
     public class DrawMap : MonoBehaviour
     {
@@ -25,20 +25,38 @@ namespace Gamecode
         private void Awake()
         {
             customEvents.onColorUpdate += ChangeColor;
+            Setup();
+            BuildDictionary();
         }
-
-        private void Start()
+        private void BuildDictionary()
         {
-            squareColors = new Dictionary<SquareTypes, Color>(6)
+            squareColors = new Dictionary<SquareTypes, Color>
             {
-                {WallSquare, wallColor},{RegularSquare, regularColor},{NeighbourSquare, neighbourColor},
-                {FoundPathSquare, foundPathColor},{EndNodeSquare, endNodeColor}, {StartNodeSquare, startNodeColor}
+                {WallSquare, wallColor},
+                {RegularSquare, regularColor},
+                {NeighbourSquare, neighbourColor},
+                {FoundPathSquare, foundPathColor},
+                {EndNodeSquare, endNodeColor},
+                {StartNodeSquare, startNodeColor}
             };
         }
+
+        private void Setup()
+        {
+            BuildDictionary();
+        }
+        
         
         private void ChangeColor(Square square)
         {
+            Debug.Log($"chaning color!");
             square.GetComponent<SpriteRenderer>().color = squareColors[square.SquareType];
+        }
+
+        private void OnValidate()
+        {
+            Setup();
+            customEvents.PublishOnReset();
         }
     }
 }

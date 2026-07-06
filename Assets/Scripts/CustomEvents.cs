@@ -10,6 +10,8 @@ public class CustomEvents : MonoBehaviour
     public event Action<Square, SquareTypes> onSquareUpdate;
 
     public event Action<Square> onColorUpdate;
+
+    public event Action onChangeSquareOfType;
     
     public void PublishOnReset()
     {
@@ -26,4 +28,5 @@ public class CustomEvents : MonoBehaviour
     {
         onColorUpdate?.Invoke(square);
     }
+    
 }
