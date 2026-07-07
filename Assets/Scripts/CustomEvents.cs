@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using GameCode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -11,7 +12,11 @@ public class CustomEvents : MonoBehaviour
 
     public event Action<Square> onColorUpdate;
 
-    public event Action onChangeSquareOfType;
+    public event Func<Square, List<Square>> onGetNeighbourSquares;
+
+    public event Func<Square> onGetStartingSquare;
+    
+    public event Func<Square> onGetEndingSquare;
     
     public void PublishOnReset()
     {
@@ -21,12 +26,26 @@ public class CustomEvents : MonoBehaviour
     public void PublishOnSquareUpdate(Square square, SquareTypes newType)
     {
         onSquareUpdate?.Invoke(square, newType);
-        onColorUpdate?.Invoke(square);
     }
 
     public void PublishOnColorUpdate(Square square)
     {
         onColorUpdate?.Invoke(square);
+    }
+
+    public List<Square> PublishOnGetNeighbourSquares(Square square)
+    {
+        return onGetNeighbourSquares?.Invoke(square);
+    }
+
+    public Square PublishOnGetStartingSquare()
+    {
+        return onGetStartingSquare?.Invoke();
+    }
+
+    public Square PublishOnGetEndingSquare()
+    {
+        return onGetEndingSquare?.Invoke();
     }
     
 }

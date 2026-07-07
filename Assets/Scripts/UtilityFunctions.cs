@@ -91,12 +91,6 @@ namespace Utility
         }
         
         
-        public static int RandomizeWeight(System.Random random, int minVal = 0, int maxVal = int.MaxValue)
-        {
-            if (maxVal < 0) throw new ArgumentOutOfRangeException(nameof(maxVal));
-            return random.Next(minVal, maxVal);
-        }
-        
         public static void PreventFunctionsRunningInEditor(params Action[] functionsToRun)
         {
             foreach (Action function in functionsToRun)
@@ -127,43 +121,6 @@ namespace Utility
                 total += (int)c;
             }
             return total;
-        }
-
-        public static IEnumerable<T> FindSelectType<T>(Transform parent) where T : MonoBehaviour
-        {
-            /*
-             *             List<T> foundObjects = new List<T>(parent.childCount);
-            foreach (GameObject gameObject in parent)
-            {
-                if (gameObject.TryGetComponent<>(out T component)) foundObjects.Add(component);
-            }
-            return foundObjects;
-             */
-            return null;
-        }
-
-        public static IEnumerable<T> FindAllOfType<T>(Transform parent = null) where T : MonoBehaviour
-        {
-            /*
-             *             List<T> foundObjects = new List<T>();
-            if (parent != null)
-            {
-                foreach (Transform child in parent)
-                {
-                    if (child.gameObject.TryGetComponent<T>(out T component))
-                    {
-                        foundObjects.Add(component);
-                        foundObjects.AddRange(FindSelectType<T>(child));
-                    }
-                    else
-                    {
-                        foundObjects.AddRange(FindSelectType<T>(child));
-                    }
-                }
-            }
-            return foundObjects;
-             */
-            return null;
         }
     }
 }

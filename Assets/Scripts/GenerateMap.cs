@@ -14,7 +14,8 @@ namespace GameCode
     {
         [SerializeField] private int columns = 3;
         [SerializeField] private int rows = 3;
-        [SerializeField] [Range(0, 500)] int maxWeigth = 15;
+        [SerializeField] [Range(0, 500)] int maxWeight = 15;
+        [SerializeField] [Range(0, 499)] private int minWeight = 0;
         [SerializeField] private Vector2 padding = Vector2.zero;
         [SerializeField] private string seed = "Number or Text here!";
         [SerializeField] private Vector2Int startingPosition = Vector2Int.zero;
@@ -28,7 +29,6 @@ namespace GameCode
         private void Awake()
         {
             // jag vet inte om detta är en bra idé? Förmodligen inte
-            Square.CustomEvent = customEvents;
             SubscribeToAllEvents();
             Setup();
             CreateMapHolder();
@@ -37,6 +37,9 @@ namespace GameCode
         private void SubscribeToAllEvents()
         {
             customEvents.onReset += Reset;
+            customEvents.onGetNeighbourSquares += GetNeighbours;
+            customEvents.onGetStartingSquare += GetStartingSquare;
+            customEvents.onGetEndingSquare += GetEndingSquare;
         }
 
         private void Start()
@@ -48,6 +51,18 @@ namespace GameCode
         {
             ClampDimensions();
             random = new Random(ParseSeed(seed));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Square GetStartingSquare()
+        {
+            return squares[startingPosition.y, startingPosition.x];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Square GetEndingSquare()
+        {
+            return squares[endingPosition.y, endingPosition.x];
         }
 
         private void ClampDimensions()
@@ -89,7 +104,8 @@ namespace GameCode
             {
                 return;
             }
-            // detta fungerar men att inkludera den inre koden nedan i den tidigare for loopen fungerar inte?
+            
+            // Tänk som att vi målar ett baslager av färgen specificerad av regularSquare i drawMap
             for (int y = 0; y < columns; y++)
             {
                 for (int x = 0; x < rows; x++)
@@ -100,6 +116,29 @@ namespace GameCode
             AssignStartEndSquare();
         }
 
+        private List<Square> GetNeighbours(Square square)
+        {
+            if (square == null)
+            {
+                Debug.Log($"square is null!");
+                return null;
+            }
+            // much spaghett!
+            List<Square> neighbours = new List<Square>();
+            Vector2Int index = square.Index;
+            if (index.x - 1 > 0) AddSingleNeighbour(squares[index.x - 1, index.y], neighbours);
+            if (index.x + 1 < rows) AddSingleNeighbour(squares[index.x + 1, index.y], neighbours);  
+            if (index.y - 1 > 0) AddSingleNeighbour(squares[index.x, index.y - 1], neighbours);
+            if (index.y + 1 < columns) AddSingleNeighbour(squares[index.x, index.y + 1], neighbours);
+            return neighbours;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void AddSingleNeighbour(Square square, List<Square> neighbours)
+        {
+            neighbours.Add(square);
+        }
+
         private void AssignStartEndSquare()
         {
             squares[startingPosition.y, startingPosition.x].SquareType = SquareTypes.StartNodeSquare;
@@ -108,7 +147,8 @@ namespace GameCode
 
         private void SetupSquareProperly(Square square)
         {
-            square.Weight = random.Next(0, maxWeigth);
+            Square.CustomEvent = customEvents;
+            square.Weight = random.Next(minWeight, maxWeight);
         }
         
 
@@ -133,7 +173,6 @@ namespace GameCode
             if (startingPosition != endingPosition) return;
             startingPosition = Vector2Int.zero;
             endingPosition = new Vector2Int(columns - 1, rows - 1);
-            customEvents.PublishOnReset();
         }
     }
 }

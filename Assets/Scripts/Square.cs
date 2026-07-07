@@ -36,10 +36,7 @@ namespace GameCode
         public float H
         {
             get => h;
-            private set
-            {
-                h = value;
-            }
+            set => h = value;
         }
 
         public float F
@@ -63,7 +60,6 @@ namespace GameCode
             set
             {
                 squareType = value;
-                Debug.Log($"publish on color update!");
                 customEvent.PublishOnColorUpdate(this);
             } 
         }

@@ -10,7 +10,7 @@ namespace GameCode
         public static readonly Dictionary<SquareTypes, Color> squareColors = new Dictionary<SquareTypes, Color>
         {
             { SquareTypes.WallSquare, Color.black },
-            { SquareTypes.RegularSquare, Color.white },
+            { SquareTypes.RegularSquare, Color.blue },
             { SquareTypes.NeighbourSquare, Color.yellow },
             { SquareTypes.FoundPathSquare, Color.red },
             { SquareTypes.EndNodeSquare, Color.magenta },

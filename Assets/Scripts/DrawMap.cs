@@ -49,7 +49,6 @@ namespace GameCode
         
         private void ChangeColor(Square square)
         {
-            Debug.Log($"chaning color!");
             square.GetComponent<SpriteRenderer>().color = squareColors[square.SquareType];
         }
 
