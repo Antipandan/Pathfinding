@@ -42,6 +42,7 @@ namespace GameCode
             // måste sätta de här för att events ska kunna prenumerera i tid?
             endingSquare = customEvent.PublishOnGetEndingSquare();
             Debug.Log($"ending square is now: {endingSquare.Index}");
+            Debug.Log($"ending square weight: {endingSquare.Weight}");
             startingSquare = customEvent.PublishOnGetStartingSquare();
             openList.Add(startingSquare);
             StartCoroutine(AStarPathfindingAlgorithm());
@@ -56,8 +57,10 @@ namespace GameCode
                 openList.Remove(cheapestSquare);
 
                 neighbours = customEvent.PublishOnGetNeighbourSquares(cheapestSquare);
+                Debug.Log($"neighbours length: {neighbours.Count}");
                 foreach (Square square in neighbours)
                 {
+                    Debug.Log($"finding position: {square.Index}");
                     Square neighbour = square;
                     // steg 1
                     if (neighbour == endingSquare)

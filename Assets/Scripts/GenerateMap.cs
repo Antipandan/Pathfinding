@@ -19,7 +19,7 @@ namespace GameCode
         [SerializeField] private Vector2 padding = Vector2.zero;
         [SerializeField] private string seed = "Number or Text here!";
         [SerializeField] private Vector2Int startingPosition = Vector2Int.zero;
-        [SerializeField] private Vector2Int endingPosition = Vector2Int.zero;
+        [SerializeField] private Vector2Int endingPosition = new Vector2Int(2, 2);
         [SerializeField] private GameObject squarePrefab;
         [SerializeField] private CustomEvents customEvents;
         [SerializeField] private Transform mapHolder;
@@ -62,7 +62,6 @@ namespace GameCode
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Square GetEndingSquare()
         {
-            Debug.Log($"ending position: {endingPosition.y}, {endingPosition.x}");
             return squares[endingPosition.y, endingPosition.x];
         }
 
@@ -92,6 +91,7 @@ namespace GameCode
                         Square square = Instantiate(squarePrefab, mapHolder).GetComponent<Square>();
                         SetupSquareProperly(square);
                         square.transform.position = (squareDimensions + padding) * new Vector2(x, y);
+                        square.Index = new Vector2Int(x, y);
                         squares[y, x] = square;
                     }
                 }
@@ -119,12 +119,7 @@ namespace GameCode
 
         private List<Square> GetNeighbours(Square square)
         {
-            if (square == null)
-            {
-                Debug.Log($"square is null!");
-                return null;
-            }
-            // much spaghett!
+            if (square == null) return null;
             List<Square> neighbours = new List<Square>();
             Vector2Int index = square.Index;
             if (index.x - 1 > 0) AddSingleNeighbour(squares[index.x - 1, index.y], neighbours);
