@@ -100,7 +100,12 @@ namespace Utility
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int GetLengthOfInt(int value)
+        public static int GetLengthOfNumber(int value)
+        {
+            return (int)Mathf.Log(value, 10);
+        }
+
+        public static int GetLengthOfNumber(float value)
         {
             return (int)Mathf.Log(value, 10);
         }

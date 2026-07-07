@@ -17,9 +17,9 @@ namespace GameCode
         [SerializeField] private float weight = 0f;
         private static CustomEvents customEvent;
         private SquareTypes squareType = SquareTypes.RegularSquare;
-        private Vector2Int index;
-        private float g;
-        private float h;
+        [SerializeField] private Vector2Int index;
+        [SerializeField] private float g;
+        [SerializeField] private float h;
 
         public Vector2Int Index
         {
@@ -30,13 +30,21 @@ namespace GameCode
         public float G
         {
             get => g;
-            set => g = value;
+            set
+            {
+                g = value;
+                UpdateText(FText, F);
+            }
         }
 
         public float H
         {
             get => h;
-            set => h = value;
+            set
+            {
+                h = value;
+                UpdateText(FText, F);
+            }
         }
 
         public float F
@@ -83,13 +91,13 @@ namespace GameCode
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CheckTextLengthUnderMax(int value)
         {
-            return maxNumberLenght > UtilityFunctions.GetLengthOfInt(value);
+            return maxNumberLenght > UtilityFunctions.GetLengthOfNumber(value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CheckTextLengthUnderMax(float value)
         {
-            return maxNumberLenght > UtilityFunctions.GetLengthOfInt((int)value);
+            return maxNumberLenght > UtilityFunctions.GetLengthOfNumber(value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

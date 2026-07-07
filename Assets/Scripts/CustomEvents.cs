@@ -45,6 +45,7 @@ public class CustomEvents : MonoBehaviour
 
     public Square PublishOnGetEndingSquare()
     {
+        Debug.Log($"value when invoking: {onGetEndingSquare?.Invoke().Index}");
         return onGetEndingSquare?.Invoke();
     }
     

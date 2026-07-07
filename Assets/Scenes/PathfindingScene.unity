@@ -187,7 +187,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   columns: 3
   rows: 3
-  maxWeigth: 15
+  maxWeight: 15
+  minWeight: 0
   padding: {x: 0, y: 0}
   seed: Number or Text here!
   startingPosition: {x: 0, y: 0}
@@ -290,7 +291,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distanceFormula: 1
-  searchDelay: 100
+  searchDelay: 10000
   customEvent: {fileID: 134725760}
 --- !u!114 &134725759
 MonoBehaviour:

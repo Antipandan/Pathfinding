@@ -62,6 +62,7 @@ namespace GameCode
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Square GetEndingSquare()
         {
+            Debug.Log($"ending position: {endingPosition.y}, {endingPosition.x}");
             return squares[endingPosition.y, endingPosition.x];
         }
 
@@ -83,7 +84,7 @@ namespace GameCode
             Vector2 squareDimensions = squarePrefab.GetComponent<SpriteRenderer>().bounds.size;
             if (existingObjects.Length == 0)
             {
-                squares = new Square[rows, columns];
+                squares = new Square[columns, rows];
                 for (int y = 0; y < columns; y++)
                 {
                     for (int x = 0; x < rows; x++)
@@ -136,7 +137,10 @@ namespace GameCode
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void AddSingleNeighbour(Square square, List<Square> neighbours)
         {
-            neighbours.Add(square);
+            if (square.SquareType != SquareTypes.StartNodeSquare && square.SquareType != SquareTypes.WallSquare)
+            {
+                neighbours.Add(square);
+            }
         }
 
         private void AssignStartEndSquare()
@@ -149,6 +153,8 @@ namespace GameCode
         {
             Square.CustomEvent = customEvents;
             square.Weight = random.Next(minWeight, maxWeight);
+            square.G = square.Weight;
+            square.H = 0f;
         }
         
 
