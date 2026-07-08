@@ -41,8 +41,6 @@ namespace GameCode
         {
             // måste sätta de här för att events ska kunna prenumerera i tid?
             endingSquare = customEvent.PublishOnGetEndingSquare();
-            Debug.Log($"ending square is now: {endingSquare.Index}");
-            Debug.Log($"ending square weight: {endingSquare.Weight}");
             startingSquare = customEvent.PublishOnGetStartingSquare();
             openList.Add(startingSquare);
             StartCoroutine(AStarPathfindingAlgorithm());
@@ -54,13 +52,13 @@ namespace GameCode
             while (openList.Count > 0)
             {
                 Square cheapestSquare = FindCheapestSquare();
+                if (cheapestSquare is null) yield break; 
                 openList.Remove(cheapestSquare);
 
                 neighbours = customEvent.PublishOnGetNeighbourSquares(cheapestSquare);
-                Debug.Log($"neighbours length: {neighbours.Count}");
+                neighbours = FilterOutNeighbours(neighbours);
                 foreach (Square square in neighbours)
                 {
-                    Debug.Log($"finding position: {square.Index}");
                     Square neighbour = square;
                     // steg 1
                     if (neighbour == endingSquare)
@@ -70,8 +68,7 @@ namespace GameCode
                     }
                     // steg 2
                     neighbour.G = cheapestSquare!.G + cheapestSquare.Weight;
-                    neighbour.H = CalculateDistance(neighbour, customEvent.PublishOnGetEndingSquare());
-                    Debug.Log($"new H = {neighbour.H}");
+                    neighbour.H = CalculateDistance(neighbour, endingSquare);
                     
                     // steg 3 och 4
                     if (!DetermineIfSkip(neighbour))
@@ -85,6 +82,16 @@ namespace GameCode
             }
 
             Debug.Log($"exiting out of loop!");
+        }
+
+        private List<Square> FilterOutNeighbours(List<Square> neighbours)
+        {
+            List<Square> filteredNeighbours = new List<Square>();
+            foreach (Square neighbour in neighbours)
+            {
+                if (!closedList.Contains(neighbour))filteredNeighbours.Add(neighbour);
+            }
+            return filteredNeighbours;
         }
         
         
