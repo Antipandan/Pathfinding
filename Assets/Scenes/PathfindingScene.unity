@@ -307,7 +307,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wallColor: {r: 0, g: 0, b: 0, a: 1}
   regularColor: {r: 1, g: 1, b: 1, a: 1}
-  neighbourColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  neighbourColor: {r: 0, g: 0, b: 0, a: 1}
   foundPathColor: {r: 1, g: 0, b: 0, a: 1}
   endNodeColor: {r: 1, g: 0, b: 1, a: 1}
   startNodeColor: {r: 0, g: 1, b: 0, a: 1}

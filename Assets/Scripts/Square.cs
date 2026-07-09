@@ -21,7 +21,7 @@ namespace GameCode
         [SerializeField] private Vector2Int index;
         [SerializeField] private float g;
         [SerializeField] private float h;
-        private Square parentSquare = null;
+        [SerializeField] private Square parentSquare = null;
 
         public Vector2Int Index
         {
