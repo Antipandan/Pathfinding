@@ -14,13 +14,14 @@ namespace GameCode
     {
         [SerializeField] private DistanceFormulaTypes distanceFormula = DistanceFormulaTypes.ManhattanDistance;
         [Tooltip("delay in milliseconds (ms)")]
-        [SerializeField] private float searchDelay = 100f;
+        [SerializeField] private float aStarSearchDelay = 100f;
+        [Tooltip("delay in milliseconds (ms)")]
+        [SerializeField] private float tracingSearchDelay = 100f;
         [SerializeField] private CustomEvents customEvent;
         private List<Square> openList;
         private List<Square> closedList;
         private Square startingSquare;
         private Square endingSquare;
-        private Square previousSquare;
 
         private void Awake()
         {
@@ -44,7 +45,6 @@ namespace GameCode
             endingSquare = customEvent.PublishOnGetEndingSquare();
             startingSquare = customEvent.PublishOnGetStartingSquare();
             openList.Add(startingSquare);
-            previousSquare = null;
             StartCoroutine(AStarPathfindingAlgorithm());
         }
 
@@ -86,8 +86,7 @@ namespace GameCode
                     }
                 }
                 closedList.Add(cheapestSquare);
-                previousSquare = cheapestSquare;
-                yield return new WaitForSeconds(searchDelay / 1000f);
+                yield return new WaitForSeconds(aStarSearchDelay / 1000f);
             }
             if (foundPath) StartCoroutine(TraceBackPath());
         }
@@ -163,9 +162,9 @@ namespace GameCode
         {
             HashSet<Square> visitedSquares = new HashSet<Square>();
             Square currentSquare = endingSquare;
-            UpdateSingleTraceSquare(currentSquare, visitedSquares);
             while (currentSquare is not null)
             {
+                UpdateSingleTraceSquare(currentSquare, visitedSquares);
                 List<Square> neighbours = customEvent.PublishOnGetNeighbourSquares(currentSquare);
                 List<Square> borderingNeighbours = new List<Square>();
                 foreach (Square neighbour in neighbours)
@@ -176,10 +175,14 @@ namespace GameCode
                     }
                 }
                 currentSquare = FindCheapestGSquare(borderingNeighbours);
-                UpdateSingleTraceSquare(currentSquare, visitedSquares);
-                yield return new WaitForSeconds(searchDelay / 1000f);
+                Debug.Log($"currentSquare index:  {currentSquare.Index}");
+                if (currentSquare == startingSquare || currentSquare is null)
+                {
+                    Debug.Log($"traceback completed!");
+                    yield break;
+                }
+                yield return new WaitForSeconds(tracingSearchDelay / 1000f);
             }
-            Debug.Log($"traceback completed!");
             
         }
 
