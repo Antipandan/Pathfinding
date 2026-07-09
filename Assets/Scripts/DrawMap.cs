@@ -18,6 +18,7 @@ namespace GameCode
         [Space] 
         [SerializeField] private Color endNodeColor = Constants.squareColors[EndNodeSquare];
         [SerializeField] private Color startNodeColor = Constants.squareColors[StartNodeSquare];
+        [SerializeField] private Color finalPathColor = Constants.squareColors[FinalPathSquare];
         [Space]
         [SerializeField] private CustomEvents customEvents;
         private Dictionary<SquareTypes, Color> squareColors = new Dictionary<SquareTypes, Color>(6);
@@ -37,7 +38,8 @@ namespace GameCode
                 {NeighbourSquare, neighbourColor},
                 {FoundPathSquare, foundPathColor},
                 {EndNodeSquare, endNodeColor},
-                {StartNodeSquare, startNodeColor}
+                {StartNodeSquare, startNodeColor},
+                {FinalPathSquare, finalPathColor}
             };
         }
 

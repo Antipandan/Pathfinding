@@ -40,7 +40,6 @@ namespace GameCode
         
         private void Start()
         {
-            Debug.Log($"start");
             // måste sätta de här för att events ska kunna prenumerera i tid?
             endingSquare = customEvent.PublishOnGetEndingSquare();
             startingSquare = customEvent.PublishOnGetStartingSquare();
@@ -58,7 +57,6 @@ namespace GameCode
                 Square cheapestSquare = FindCheapestSquare();
                 if (cheapestSquare is null)
                 {
-                    Debug.Log($"early no more squares could be found. exiting out of loop!");
                     yield break;
                 } 
                 openList.Remove(cheapestSquare);
@@ -75,8 +73,9 @@ namespace GameCode
                         closedList.Add(neighbour);
                         foundPath = true;
                     }
+
                     // steg 2
-                    neighbour.G += cheapestSquare.Weight;
+                    neighbour.G += cheapestSquare.G;
                     neighbour.H = CalculateDistance(neighbour, endingSquare);
                     
                     // steg 3 och 4
@@ -90,9 +89,7 @@ namespace GameCode
                 previousSquare = cheapestSquare;
                 yield return new WaitForSeconds(searchDelay / 1000f);
             }
-
-            Debug.Log($"starting trace?");
-            StartCoroutine(TraceBackPath());
+            if (foundPath) StartCoroutine(TraceBackPath());
         }
 
         private List<Square> FilterOutNeighbours(List<Square> neighbours)
@@ -161,32 +158,53 @@ namespace GameCode
             if (square.SquareType < squareType) square.SquareType = squareType;
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         private IEnumerator TraceBackPath()
         {
-            // litte spaghetti men jag tror att det är lugnt!
-            Square currentSquare = closedList[closedList.Count - 1]; // detta värde motsvarar 'endingSquare'
+            HashSet<Square> visitedSquares = new HashSet<Square>();
+            Square currentSquare = endingSquare;
+            UpdateSingleTraceSquare(currentSquare, visitedSquares);
             while (currentSquare is not null)
             {
                 List<Square> neighbours = customEvent.PublishOnGetNeighbourSquares(currentSquare);
+                Debug.Log($"currentSquare position: {currentSquare.Index}");
                 List<Square> borderingNeighbours = new List<Square>();
                 foreach (Square neighbour in neighbours)
                 {
-                    if (closedList.Contains(neighbour)) borderingNeighbours.Add(neighbour);
+                    if (closedList.Contains(neighbour) && !visitedSquares.Contains(neighbour))
+                    {
+                        borderingNeighbours.Add(neighbour);
+                    }
                 }
-
+                Debug.Log($"GGGGG");
                 currentSquare = FindCheapestGSquare(borderingNeighbours);
-                if (currentSquare is not null) currentSquare.SquareType = SquareTypes.FinalPathSquare;
+                UpdateSingleTraceSquare(currentSquare, visitedSquares);
+                Debug.Log($"new current square: {currentSquare.Index}");
                 yield return new WaitForSeconds(searchDelay / 1000f);
             }
-            yield break;
+
+            Debug.Log($"traceback completed!");
+            
         }
 
-        private Square FindCheapestGSquare(List<Square> squares)
+        private static void UpdateSingleTraceSquare(Square square, HashSet<Square> visitedSquares)
+        {
+            visitedSquares.Add(square);
+            square.SquareType = SquareTypes.FinalPathSquare;
+        }
+
+        private static Square FindCheapestGSquare(List<Square> squares)
         {
             Square cheapestSquare = null;
             foreach (Square square in squares)
             {
-                if (cheapestSquare is null || cheapestSquare.G < square.G) cheapestSquare = square;
+                
+                if (cheapestSquare is null || cheapestSquare.G > square.G)
+                {
+                    
+                    if (cheapestSquare is not null) Debug.Log($"cheapest square G: {cheapestSquare.G} new cheapest G: {square.G}");
+                    cheapestSquare = square;
+                }
             }
             return cheapestSquare;
         }
