@@ -20,6 +20,7 @@ namespace GameCode
         private List<Square> closedList;
         private Square startingSquare;
         private Square endingSquare;
+        private Square previousSquare;
 
         private void Awake()
         {
@@ -44,13 +45,15 @@ namespace GameCode
             endingSquare = customEvent.PublishOnGetEndingSquare();
             startingSquare = customEvent.PublishOnGetStartingSquare();
             openList.Add(startingSquare);
+            previousSquare = null;
             StartCoroutine(AStarPathfindingAlgorithm());
         }
 
         private IEnumerator AStarPathfindingAlgorithm()
         {
+            bool foundPath = false;
             List<Square> neighbours = new List<Square>(); 
-            while (openList.Count > 0)
+            while (openList.Count > 0 && !foundPath)
             {
                 Square cheapestSquare = FindCheapestSquare();
                 if (cheapestSquare is null)
@@ -68,8 +71,9 @@ namespace GameCode
                     // steg 1
                     if (neighbour == endingSquare)
                     {
+                        Debug.Log($"found ending square");
                         closedList.Add(neighbour);
-                        yield break;
+                        foundPath = true;
                     }
                     // steg 2
                     neighbour.G += cheapestSquare.Weight;
@@ -83,10 +87,12 @@ namespace GameCode
                     }
                 }
                 closedList.Add(cheapestSquare);
+                previousSquare = cheapestSquare;
                 yield return new WaitForSeconds(searchDelay / 1000f);
             }
 
-            Debug.Log($"exiting out of loop!");
+            Debug.Log($"starting trace?");
+            StartCoroutine(TraceBackPath(endingSquare));
         }
 
         private List<Square> FilterOutNeighbours(List<Square> neighbours)
@@ -129,14 +135,20 @@ namespace GameCode
                     if (cheapestSquare == null || square.F < cheapestSquare.F)
                     {
                         cheapestSquare = square;
+                        cheapestSquare.ParentSquare = previousSquare;
                     }
                 }
                 else
                 {
-                    if (cheapestSquare == null || square.G > cheapestSquare.G) cheapestSquare = square;
+                    if (cheapestSquare == null || square.G > cheapestSquare.G)
+                    {
+                        cheapestSquare = square;
+                        cheapestSquare.ParentSquare = previousSquare;
+                    }
                 }
             }
             TryUpdateSquare(cheapestSquare, SquareTypes.FoundPathSquare);
+            
             return cheapestSquare;
         }
 
@@ -152,9 +164,27 @@ namespace GameCode
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void TryUpdateSquare(Square square, SquareTypes squareType)
+        private static void TryUpdateSquare(Square square, SquareTypes squareType)
         {
             if (square.SquareType < squareType) square.SquareType = squareType;
+        }
+
+        private IEnumerator TraceBackPath(Square startSquare)
+        {
+            if (startSquare == null)
+            {
+                Debug.Log($"track path did not run!");
+                yield break;
+            }
+            Square currentSquare = startSquare;
+            Debug.Log($"starting {nameof(TraceBackPath)}");
+            while (currentSquare.ParentSquare is not null)
+            {
+                TryUpdateSquare(currentSquare, SquareTypes.FinalPathSquare);
+                currentSquare = currentSquare.ParentSquare;
+                yield return new WaitForSeconds(searchDelay / 1000f);
+            }
+            yield break;
         }
 
         private void OnDisable()

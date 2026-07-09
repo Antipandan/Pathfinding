@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using Unity;
+using UnityEngine.Serialization;
 using Utility;
 using Random = System.Random;
 using static GameCode.Constants;
@@ -12,14 +13,15 @@ namespace GameCode
 {
     public class Square : MonoBehaviour
     {
-        [SerializeField] private TextMeshPro WeightText = null;
-        [SerializeField] private TextMeshPro FText = null;
+        [SerializeField] private TextMeshPro weightText = null;
+        [SerializeField] private TextMeshPro fText = null;
         [SerializeField] private float weight = 0f;
         private static CustomEvents customEvent;
         private SquareTypes squareType = SquareTypes.RegularSquare;
         [SerializeField] private Vector2Int index;
         [SerializeField] private float g;
         [SerializeField] private float h;
+        private Square parentSquare = null;
 
         public Vector2Int Index
         {
@@ -33,7 +35,7 @@ namespace GameCode
             set
             {
                 g = value;
-                UpdateText(FText, F);
+                UpdateText(fText, F);
             }
         }
 
@@ -43,7 +45,7 @@ namespace GameCode
             set
             {
                 h = value;
-                UpdateText(FText, F);
+                UpdateText(fText, F);
             }
         }
 
@@ -58,7 +60,7 @@ namespace GameCode
             set
             {
                 weight = value;
-                UpdateText(WeightText, weight);
+                UpdateText(weightText, weight);
             }
         }
 
@@ -78,9 +80,15 @@ namespace GameCode
             set => customEvent = value;
         }
 
+        public Square ParentSquare
+        {
+            get => parentSquare;
+            set => parentSquare = value;
+        }
+
         private void Start()
         {
-            UpdateText(FText, F);
+            UpdateText(fText, F);
         }
 
         private void OnValidate()

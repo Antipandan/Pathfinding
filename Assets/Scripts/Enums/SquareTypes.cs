@@ -11,5 +11,6 @@ namespace GameCode
         FoundPathSquare = 0b1000, // 8
         EndNodeSquare = 0b1000_0, // 16
         StartNodeSquare = 0b1000_00, // 32
+        FinalPathSquare = 0b1000_000 // 64
     }
 }

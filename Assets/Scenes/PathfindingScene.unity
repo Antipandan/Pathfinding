@@ -185,14 +185,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ee91131b1400d342a4f46fe78c3f910, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  columns: 3
-  rows: 3
+  columns: 15
+  rows: 15
   maxWeight: 15
   minWeight: 0
   padding: {x: 0, y: 0}
   seed: Number or Text here!
   startingPosition: {x: 0, y: 0}
-  endingPosition: {x: 2, y: 2}
+  endingPosition: {x: 14, y: 14}
   squarePrefab: {fileID: 7954162477002377020, guid: e08e8d860c6219c4388a7ce7ab369adc, type: 3}
   customEvents: {fileID: 134725760}
   mapHolder: {fileID: 24270053}
@@ -275,7 +275,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 959.7069, y: 539.8438}
+  m_AnchoredPosition: {x: 960.01, y: 540.01}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &134725758
@@ -291,7 +291,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distanceFormula: 1
-  searchDelay: 2000
+  searchDelay: 100
   customEvent: {fileID: 134725760}
 --- !u!114 &134725759
 MonoBehaviour:
