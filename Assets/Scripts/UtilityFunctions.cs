@@ -22,8 +22,7 @@ namespace Utility
         {
             int yDiff = end.y - start.y;
             int xDiff = end.x - start.x;
-            // gånger 10 eftersom det ger oss "bra" värden tycker jag
-            return (int)(Mathf.Sqrt(xDiff * xDiff + yDiff * yDiff)) * 10;
+            return (int)(Mathf.Sqrt(xDiff * xDiff + yDiff * yDiff));
         }
         /// <summary>
         /// Calculates the distance between two points using the pythagorean theorem see: https://www.geeksforgeeks.org/maths/euclidean-distance/

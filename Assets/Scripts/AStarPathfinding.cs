@@ -39,6 +39,7 @@ namespace GameCode
         
         private void Start()
         {
+            Debug.Log($"start");
             // måste sätta de här för att events ska kunna prenumerera i tid?
             endingSquare = customEvent.PublishOnGetEndingSquare();
             startingSquare = customEvent.PublishOnGetStartingSquare();
@@ -67,7 +68,8 @@ namespace GameCode
                         yield break;
                     }
                     // steg 2
-                    neighbour.G = cheapestSquare!.G + cheapestSquare.Weight;
+                    Debug.Log($"cheapestSquare g: {cheapestSquare.G}, weight: {cheapestSquare.Weight}");
+                    neighbour.G += 1;
                     neighbour.H = CalculateDistance(neighbour, endingSquare);
                     
                     // steg 3 och 4
@@ -143,7 +145,6 @@ namespace GameCode
             Setup();
             StartCoroutine(AStarPathfindingAlgorithm());
         }
-        
         
         private int CalculateDistance(Square square)
         {
