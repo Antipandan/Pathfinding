@@ -1,3 +1,3 @@
 # Pathfinding
 2D Pathfinding Demo in Unity
-<image src = "Assets/Video/TredjepersonsKameraGIF.gif"/>
+<image src = "Assets/Video/TredjepersonsKameraGIF.gif"/ width="360">
