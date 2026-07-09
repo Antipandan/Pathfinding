@@ -122,9 +122,9 @@ namespace GameCode
             if (square == null) return null;
             List<Square> neighbours = new List<Square>();
             Vector2Int index = square.Index;
-            if (index.x - 1 > 0) AddSingleNeighbour(squares[index.y, index.x - 1], neighbours);
+            if (index.x - 1 >= 0) AddSingleNeighbour(squares[index.y, index.x - 1], neighbours);
             if (index.x + 1 < rows) AddSingleNeighbour(squares[index.y, index.x + 1], neighbours);  
-            if (index.y - 1 > 0) AddSingleNeighbour(squares[index.y - 1, index.x], neighbours);
+            if (index.y - 1 >= 0) AddSingleNeighbour(squares[index.y - 1, index.x], neighbours);
             if (index.y + 1 < columns) AddSingleNeighbour(squares[index.y + 1, index.x], neighbours);
             return neighbours;
         }

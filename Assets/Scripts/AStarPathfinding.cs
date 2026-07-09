@@ -167,7 +167,6 @@ namespace GameCode
             while (currentSquare is not null)
             {
                 List<Square> neighbours = customEvent.PublishOnGetNeighbourSquares(currentSquare);
-                Debug.Log($"currentSquare position: {currentSquare.Index}");
                 List<Square> borderingNeighbours = new List<Square>();
                 foreach (Square neighbour in neighbours)
                 {
@@ -176,13 +175,10 @@ namespace GameCode
                         borderingNeighbours.Add(neighbour);
                     }
                 }
-                Debug.Log($"GGGGG");
                 currentSquare = FindCheapestGSquare(borderingNeighbours);
                 UpdateSingleTraceSquare(currentSquare, visitedSquares);
-                Debug.Log($"new current square: {currentSquare.Index}");
                 yield return new WaitForSeconds(searchDelay / 1000f);
             }
-
             Debug.Log($"traceback completed!");
             
         }
@@ -198,13 +194,7 @@ namespace GameCode
             Square cheapestSquare = null;
             foreach (Square square in squares)
             {
-                
-                if (cheapestSquare is null || cheapestSquare.G > square.G)
-                {
-                    
-                    if (cheapestSquare is not null) Debug.Log($"cheapest square G: {cheapestSquare.G} new cheapest G: {square.G}");
-                    cheapestSquare = square;
-                }
+                if (cheapestSquare is null || cheapestSquare.G > square.G) cheapestSquare = square;
             }
             return cheapestSquare;
         }
