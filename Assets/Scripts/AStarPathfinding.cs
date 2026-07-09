@@ -53,7 +53,11 @@ namespace GameCode
             while (openList.Count > 0)
             {
                 Square cheapestSquare = FindCheapestSquare();
-                if (cheapestSquare is null) yield break; 
+                if (cheapestSquare is null)
+                {
+                    Debug.Log($"early no more squares could be found. exiting out of loop!");
+                    yield break;
+                } 
                 openList.Remove(cheapestSquare);
 
                 neighbours = customEvent.PublishOnGetNeighbourSquares(cheapestSquare);
@@ -68,8 +72,7 @@ namespace GameCode
                         yield break;
                     }
                     // steg 2
-                    Debug.Log($"cheapestSquare g: {cheapestSquare.G}, weight: {cheapestSquare.Weight}");
-                    neighbour.G += 1;
+                    neighbour.G += cheapestSquare.Weight;
                     neighbour.H = CalculateDistance(neighbour, endingSquare);
                     
                     // steg 3 och 4
@@ -118,15 +121,34 @@ namespace GameCode
         private Square FindCheapestSquare()
         {
             Square cheapestSquare = null;
+            bool sameFValue = CheckIfAllSameFValues(openList);
             foreach (Square square in openList)
             {
-                if (cheapestSquare == null || square.F < cheapestSquare.F)
+                if (!sameFValue)
                 {
-                    cheapestSquare = square;
+                    if (cheapestSquare == null || square.F < cheapestSquare.F)
+                    {
+                        cheapestSquare = square;
+                    }
+                }
+                else
+                {
+                    if (cheapestSquare == null || square.G > cheapestSquare.G) cheapestSquare = square;
                 }
             }
             TryUpdateSquare(cheapestSquare, SquareTypes.FoundPathSquare);
             return cheapestSquare;
+        }
+
+        private static bool CheckIfAllSameFValues(List<Square> squares)
+        {
+            Square previousSquare = null;
+            foreach (Square square in squares)
+            {
+                if (previousSquare == null) previousSquare = square;
+                else if (!Mathf.Approximately(previousSquare.F, square.F)) return false;
+            }
+            return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

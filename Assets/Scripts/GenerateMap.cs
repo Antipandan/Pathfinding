@@ -120,7 +120,6 @@ namespace GameCode
         private List<Square> GetNeighbours(Square square)
         {
             if (square == null) return null;
-            Debug.Log($"getting neighbours from index: {square.Index}");
             List<Square> neighbours = new List<Square>();
             Vector2Int index = square.Index;
             if (index.x - 1 > 0) AddSingleNeighbour(squares[index.y, index.x - 1], neighbours);

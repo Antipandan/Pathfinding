@@ -291,7 +291,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distanceFormula: 1
-  searchDelay: 1000
+  searchDelay: 2000
   customEvent: {fileID: 134725760}
 --- !u!114 &134725759
 MonoBehaviour:
