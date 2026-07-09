@@ -92,7 +92,7 @@ namespace GameCode
             }
 
             Debug.Log($"starting trace?");
-            StartCoroutine(TraceBackPath(endingSquare));
+            StartCoroutine(TraceBackPath());
         }
 
         private List<Square> FilterOutNeighbours(List<Square> neighbours)
@@ -132,19 +132,11 @@ namespace GameCode
             {
                 if (!sameFValue)
                 {
-                    if (cheapestSquare == null || square.F < cheapestSquare.F)
-                    {
-                        cheapestSquare = square;
-                        cheapestSquare.ParentSquare = previousSquare;
-                    }
+                    if (cheapestSquare is null || square.F < cheapestSquare.F) cheapestSquare = square;
                 }
                 else
                 {
-                    if (cheapestSquare == null || square.G > cheapestSquare.G)
-                    {
-                        cheapestSquare = square;
-                        cheapestSquare.ParentSquare = previousSquare;
-                    }
+                    if (cheapestSquare is null || square.G > cheapestSquare.G) cheapestSquare = square;
                 }
             }
             TryUpdateSquare(cheapestSquare, SquareTypes.FoundPathSquare);
@@ -157,7 +149,7 @@ namespace GameCode
             Square previousSquare = null;
             foreach (Square square in squares)
             {
-                if (previousSquare == null) previousSquare = square;
+                if (previousSquare is null) previousSquare = square;
                 else if (!Mathf.Approximately(previousSquare.F, square.F)) return false;
             }
             return true;
@@ -169,22 +161,34 @@ namespace GameCode
             if (square.SquareType < squareType) square.SquareType = squareType;
         }
 
-        private IEnumerator TraceBackPath(Square startSquare)
+        private IEnumerator TraceBackPath()
         {
-            if (startSquare == null)
+            // litte spaghetti men jag tror att det är lugnt!
+            Square currentSquare = closedList[closedList.Count - 1]; // detta värde motsvarar 'endingSquare'
+            while (currentSquare is not null)
             {
-                Debug.Log($"track path did not run!");
-                yield break;
-            }
-            Square currentSquare = startSquare;
-            Debug.Log($"starting {nameof(TraceBackPath)}");
-            while (currentSquare.ParentSquare is not null)
-            {
-                TryUpdateSquare(currentSquare, SquareTypes.FinalPathSquare);
-                currentSquare = currentSquare.ParentSquare;
+                List<Square> neighbours = customEvent.PublishOnGetNeighbourSquares(currentSquare);
+                List<Square> borderingNeighbours = new List<Square>();
+                foreach (Square neighbour in neighbours)
+                {
+                    if (closedList.Contains(neighbour)) borderingNeighbours.Add(neighbour);
+                }
+
+                currentSquare = FindCheapestGSquare(borderingNeighbours);
+                if (currentSquare is not null) currentSquare.SquareType = SquareTypes.FinalPathSquare;
                 yield return new WaitForSeconds(searchDelay / 1000f);
             }
             yield break;
+        }
+
+        private Square FindCheapestGSquare(List<Square> squares)
+        {
+            Square cheapestSquare = null;
+            foreach (Square square in squares)
+            {
+                if (cheapestSquare is null || cheapestSquare.G < square.G) cheapestSquare = square;
+            }
+            return cheapestSquare;
         }
 
         private void OnDisable()
