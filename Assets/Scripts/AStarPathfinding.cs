@@ -1,22 +1,25 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using JetBrains.Annotations;
 using UnityEngine;
 using Utility;
 
+// ReSharper disable once CheckNamespace
 namespace GameCode
 {
     public class AStarPathfinding : MonoBehaviour
     {
+        [Header("Settings")]
+        [Tooltip("Determines if the Traceback algorithm should color ending and starting squares")]
+        [SerializeField] private bool colorEntirePath = false;
+        [Tooltip("Which distance formula to use when calculating the distance and new H value for Squares")]
         [SerializeField] private DistanceFormulaTypes distanceFormula = DistanceFormulaTypes.ManhattanDistance;
-        [Tooltip("delay in milliseconds (ms)")]
+        [Tooltip("The delay for having found a treversable square in the Astar algorithm. Delay in milliseconds (ms)")]
         [SerializeField] private float aStarSearchDelay = 100f;
-        [Tooltip("delay in milliseconds (ms)")]
+        [Tooltip("The delay for having found a treversable square in the Traceback algorithm. Delay in milliseconds (ms)")]
         [SerializeField] private float tracingSearchDelay = 100f;
+        [Header("References (dont touch)")]
         [SerializeField] private CustomEvents customEvent;
         private List<Square> openList;
         private List<Square> closedList;
@@ -51,7 +54,6 @@ namespace GameCode
         private IEnumerator AStarPathfindingAlgorithm()
         {
             bool foundPath = false;
-            List<Square> neighbours = new List<Square>(); 
             while (openList.Count > 0 && !foundPath)
             {
                 Square cheapestSquare = FindCheapestSquare();
@@ -61,28 +63,25 @@ namespace GameCode
                 } 
                 openList.Remove(cheapestSquare);
 
-                neighbours = customEvent.PublishOnGetNeighbourSquares(cheapestSquare);
+                List<Square> neighbours = customEvent.PublishOnGetNeighbourSquares(cheapestSquare);
                 neighbours = FilterOutNeighbours(neighbours);
                 foreach (Square square in neighbours)
                 {
-                    Square neighbour = square;
                     // steg 1
-                    if (neighbour == endingSquare)
+                    if (square == endingSquare)
                     {
                         Debug.Log($"found ending square");
-                        closedList.Add(neighbour);
+                        closedList.Add(square);
                         foundPath = true;
                     }
-
                     // steg 2
-                    neighbour.G += cheapestSquare.G;
-                    neighbour.H = CalculateDistance(neighbour, endingSquare);
-                    
+                    square.G += cheapestSquare.G;
+                    square.H = CalculateDistance(square, endingSquare);
                     // steg 3 och 4
-                    if (!DetermineIfSkip(neighbour))
+                    if (!DetermineIfSkip(square))
                     {
-                        openList.Add(neighbour);
-                        TryUpdateSquare(neighbour, SquareTypes.NeighbourSquare);
+                        openList.Add(square);
+                        TryUpdateSquare(square, SquareTypes.NeighbourSquare);
                     }
                 }
                 closedList.Add(cheapestSquare);
@@ -160,10 +159,10 @@ namespace GameCode
         // ReSharper disable Unity.PerformanceAnalysis
         private IEnumerator TraceBackPath()
         {
-            Debug.Log($"closedList containts startingSquare: {closedList.Contains(startingSquare)}");
             HashSet<Square> visitedSquares = new HashSet<Square>();
             Square currentSquare = endingSquare;
-            while (currentSquare is not null)
+            UpdateSingleTraceSquare(currentSquare, visitedSquares);
+            while (currentSquare is not null &&  currentSquare != startingSquare)
             {
                 UpdateSingleTraceSquare(currentSquare, visitedSquares);
                 List<Square> neighbours = customEvent.PublishOnGetNeighbourSquares(currentSquare);
@@ -177,20 +176,19 @@ namespace GameCode
                 }
                 
                 currentSquare = FindCheapestGSquare(borderingNeighbours);
-                if (currentSquare == startingSquare || currentSquare is null)
-                {
-                    Debug.Log($"traceback completed!");
-                    yield break;
-                }
                 yield return new WaitForSeconds(tracingSearchDelay / 1000f);
             }
-                        
+            UpdateSingleTraceSquare(currentSquare, visitedSquares);
+            Debug.Log($"traceback completed!");
         }
 
-        private static void UpdateSingleTraceSquare(Square square, HashSet<Square> visitedSquares)
+        private void UpdateSingleTraceSquare(Square square, HashSet<Square> visitedSquares)
         {
             visitedSquares.Add(square);
-            if (square.SquareType < SquareTypes.FinalPathSquare) square.SquareType = SquareTypes.FinalPathSquare;
+            if (colorEntirePath || square.SquareType < SquareTypes.FinalPathSquare)
+            {
+                square.SquareType = SquareTypes.FinalPathSquare;
+            }
         }
 
         private static Square FindCheapestGSquare(List<Square> squares)
@@ -225,6 +223,8 @@ namespace GameCode
                 case DistanceFormulaTypes.ManhattanDistance:
                     distance = UtilityFunctions.CalculateManhattanDistance(square.Index, endingSquare.Index);
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
             return distance;
         }
@@ -240,6 +240,8 @@ namespace GameCode
                 case DistanceFormulaTypes.ManhattanDistance:
                     distance = UtilityFunctions.CalculateManhattanDistance(startSquare.Index, endSquare.Index);
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
             return distance;
         }

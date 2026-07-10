@@ -12,14 +12,26 @@ namespace GameCode
 {
     public class GenerateMap : MonoBehaviour
     {
-        [SerializeField] private int columns = 3;
+        [Header("Settings")]
+        [Tooltip("Represents the number of Squares in the X axis")]
         [SerializeField] private int rows = 3;
-        [SerializeField] [Range(0, 500)] int maxWeight = 15;
+        [Tooltip("Represents the number of Squares in the Y axis")]
+        [SerializeField] private int columns = 3;
+        [Tooltip("Determines in what direction neighbours can be found")]
+        [SerializeField] private ValidNeighbours validNeighbours = ValidNeighbours.DiagonalVertical;
+        [Tooltip("The minimum randomly generated weight of Squares")]
         [SerializeField] [Range(0, 499)] private int minWeight = 0;
+        [Tooltip("The ceiling for the maximum randomly generated weight of Squares. Actual maxWeight is value of maxWeight - 1")]
+        [SerializeField] [Range(0, 500)] int maxWeight = 15;
+        [Tooltip("Padding for placement of Square instances in the X and Y axis respectively")]
         [SerializeField] private Vector2 padding = Vector2.zero;
+        [Tooltip("Seed to be used for the randomness engine. Same seed across multiple runs will generate the same result")]
         [SerializeField] private string seed = "Number or Text here!";
+        [Tooltip("Position of the starting point for the Astar algorithm. Values will loopback when out of range. Range goes from 0 to rows - 1")]
         [SerializeField] private Vector2Int startingPosition = Vector2Int.zero;
+        [Tooltip("Position of the ending point for the Astar algorithm. Values will loopback when out of range. Range goes from 0 to columns - 1")]
         [SerializeField] private Vector2Int endingPosition = new Vector2Int(2, 2);
+        [Header("References (dont touch)")]
         [SerializeField] private GameObject squarePrefab;
         [SerializeField] private CustomEvents customEvents;
         [SerializeField] private Transform mapHolder;
@@ -117,16 +129,98 @@ namespace GameCode
             AssignStartEndSquare();
         }
 
-        private List<Square> GetNeighbours(Square square)
+        public List<Square> GetNeighbours(Square square)
         {
-            Debug.Log($"getting neighbours from: {square.Index}");
-            if (square == null) return null;
+            if (square is null) return null;
+            switch (validNeighbours)
+            {
+                case ValidNeighbours.Horizontal:
+                    return GetHorizontalNeighbours(square);
+                case ValidNeighbours.Vertical:
+                    return GetVerticalNeighbours(square);
+                case ValidNeighbours.Diagonal:
+                    return GetDiagonalNeigbours(square);
+                case ValidNeighbours.HorizontalVertical:
+                    return GetHorizontalVerticalNeighbours(square);
+                case ValidNeighbours.HorizontalDiagonal:
+                    return GetHorizontalDiagonalNeighbours(square);
+                case ValidNeighbours.DiagonalVertical:
+                    return GetDiagonalVerticalNeighbours(square);
+                case ValidNeighbours.HorizontalVerticalDiagonal:
+                    return GetHorizontalVerticalDiagonalNeigbours(square);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private List<Square> GetHorizontalNeighbours(Square square)
+        {
             List<Square> neighbours = new List<Square>();
             Vector2Int index = square.Index;
             if (index.x - 1 >= 0) AddSingleNeighbour(squares[index.y, index.x - 1], neighbours);
-            if (index.x + 1 < rows) AddSingleNeighbour(squares[index.y, index.x + 1], neighbours);  
+            if (index.x + 1 < rows) AddSingleNeighbour(squares[index.y, index.x + 1], neighbours);
+            return neighbours;
+        }
+
+        private List<Square> GetVerticalNeighbours(Square square)
+        {
+            List<Square> neighbours = new List<Square>();
+            Vector2Int index = square.Index;
             if (index.y - 1 >= 0) AddSingleNeighbour(squares[index.y - 1, index.x], neighbours);
             if (index.y + 1 < columns) AddSingleNeighbour(squares[index.y + 1, index.x], neighbours);
+            return neighbours;
+        }
+
+        private List<Square> GetDiagonalNeigbours(Square square)
+        {
+            List<Square> neighbours = new List<Square>();
+            Vector2Int index = square.Index;
+            // Längst upp i högra hörnet
+            if (index.y + 1 < columns && index.x + 1 < rows) AddSingleNeighbour(squares[index.y + 1, index.x + 1], neighbours);
+            if (index.y + 1 < columns && index.x - 1 >= 0) AddSingleNeighbour(squares[index.y + 1, index.x - 1], neighbours);
+            if (index.y - 1 >= 0 && index.x - 1 >= 0) AddSingleNeighbour(squares[index.y - 1, index.x - 1], neighbours);
+            if (index.y - 1 >= 0 && index.x + 1 < rows) AddSingleNeighbour(squares[index.y - 1, index.x + 1], neighbours);
+            return neighbours;
+        }
+
+        private List<Square> GetHorizontalVerticalNeighbours(Square square)
+        {
+            List<Square> neighbours = new List<Square>();
+            neighbours.AddRange(GetHorizontalNeighbours(square));
+            neighbours.AddRange(GetVerticalNeighbours(square));
+            return neighbours;
+        }
+
+        private List<Square> GetHorizontalDiagonalNeighbours(Square square)
+        {
+            List<Square> neighbours = new List<Square>();
+            neighbours.AddRange(GetDiagonalNeigbours(square));
+            neighbours.AddRange(GetHorizontalNeighbours(square));
+            return neighbours;
+        }
+
+        private List<Square> GetDiagonalVerticalNeighbours(Square square)
+        {
+            List<Square> neighbours = new List<Square>();
+            neighbours.AddRange(GetDiagonalNeigbours(square));
+            neighbours.AddRange(GetVerticalNeighbours(square));
+            return neighbours;
+        }
+
+        private List<Square> GetVerticalDiagonalNeighbours(Square square)
+        {
+            List<Square> neighbours = new List<Square>();
+            neighbours.AddRange(GetDiagonalNeigbours(square));
+            neighbours.AddRange(GetVerticalNeighbours(square));
+            return neighbours;
+        }
+
+        private List<Square> GetHorizontalVerticalDiagonalNeigbours(Square square)
+        {
+            List<Square> neighbours = new List<Square>();
+            neighbours.AddRange(GetHorizontalNeighbours(square));
+            neighbours.AddRange(GetVerticalNeighbours(square));
+            neighbours.AddRange(GetDiagonalNeigbours(square));
             return neighbours;
         }
         
