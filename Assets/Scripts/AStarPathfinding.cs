@@ -160,12 +160,17 @@ namespace GameCode
         // ReSharper disable Unity.PerformanceAnalysis
         private IEnumerator TraceBackPath()
         {
+            Debug.Log($"closedList containts startingSquare: {closedList.Contains(startingSquare)}");
             HashSet<Square> visitedSquares = new HashSet<Square>();
             Square currentSquare = endingSquare;
             while (currentSquare is not null)
             {
                 UpdateSingleTraceSquare(currentSquare, visitedSquares);
                 List<Square> neighbours = customEvent.PublishOnGetNeighbourSquares(currentSquare);
+                foreach (Square neighbour in neighbours)
+                {
+                    Debug.Log($"all neighbour:  {neighbour.Index}");
+                }
                 List<Square> borderingNeighbours = new List<Square>();
                 foreach (Square neighbour in neighbours)
                 {
@@ -174,8 +179,13 @@ namespace GameCode
                         borderingNeighbours.Add(neighbour);
                     }
                 }
+
+                // Debug.Log($"origin: {currentSquare.Index}");
+                foreach (Square neighbour in borderingNeighbours)
+                {
+                    Debug.Log($"neighbour: {neighbour.Index}");
+                }
                 currentSquare = FindCheapestGSquare(borderingNeighbours);
-                Debug.Log($"currentSquare index:  {currentSquare.Index}");
                 if (currentSquare == startingSquare || currentSquare is null)
                 {
                     Debug.Log($"traceback completed!");
@@ -183,7 +193,7 @@ namespace GameCode
                 }
                 yield return new WaitForSeconds(tracingSearchDelay / 1000f);
             }
-            
+                        
         }
 
         private static void UpdateSingleTraceSquare(Square square, HashSet<Square> visitedSquares)

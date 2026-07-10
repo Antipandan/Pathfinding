@@ -119,6 +119,7 @@ namespace GameCode
 
         private List<Square> GetNeighbours(Square square)
         {
+            Debug.Log($"getting neighbours from: {square.Index}");
             if (square == null) return null;
             List<Square> neighbours = new List<Square>();
             Vector2Int index = square.Index;
@@ -132,7 +133,7 @@ namespace GameCode
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void AddSingleNeighbour(Square square, List<Square> neighbours)
         {
-            if (square.SquareType != SquareTypes.StartNodeSquare && square.SquareType != SquareTypes.WallSquare)
+            if (square.SquareType != SquareTypes.WallSquare)
             {
                 neighbours.Add(square);
             }
