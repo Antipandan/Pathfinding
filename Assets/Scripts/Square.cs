@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TMPro;
-using UnityEngine;
 using Unity;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.Serialization;
 using Utility;
-using Random = System.Random;
 using static GameCode.Constants;
+using Random = System.Random;
 
 namespace GameCode
 {

@@ -185,14 +185,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ee91131b1400d342a4f46fe78c3f910, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  columns: 25
-  rows: 25
-  maxWeight: 15
+  rows: 15
+  columns: 15
+  validNeighbours: 3
   minWeight: 0
+  maxWeight: 15
   padding: {x: 0, y: 0}
   seed: Number or Text here!
   startingPosition: {x: 0, y: 0}
-  endingPosition: {x: 20, y: 19}
+  endingPosition: {x: 14, y: 0}
   squarePrefab: {fileID: 7954162477002377020, guid: e08e8d860c6219c4388a7ce7ab369adc, type: 3}
   customEvents: {fileID: 134725760}
   mapHolder: {fileID: 24270053}
@@ -275,7 +276,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 959.7985, y: 540.0893}
+  m_AnchoredPosition: {x: 960, y: 540}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &134725758
@@ -290,6 +291,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1018d9164f025542a035503c730695e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  colorEntirePath: 0
   distanceFormula: 1
   aStarSearchDelay: 10
   tracingSearchDelay: 100
@@ -310,9 +312,9 @@ MonoBehaviour:
   regularColor: {r: 1, g: 1, b: 1, a: 1}
   neighbourColor: {r: 1, g: 0.93849885, b: 0, a: 1}
   foundPathColor: {r: 1, g: 0, b: 0, a: 1}
+  finalPathColor: {r: 0, g: 0, b: 1, a: 1}
   endNodeColor: {r: 1, g: 0, b: 1, a: 1}
   startNodeColor: {r: 0, g: 1, b: 0, a: 1}
-  finalPathColor: {r: 0, g: 0, b: 1, a: 1}
   customEvents: {fileID: 134725760}
 --- !u!114 &134725760
 MonoBehaviour:

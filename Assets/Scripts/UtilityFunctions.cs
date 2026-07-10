@@ -89,7 +89,10 @@ namespace Utility
             return Mathf.Abs(start.x - end.x) + Mathf.Abs(start.y - end.y);
         }
         
-        
+        /// <summary>
+        /// Prevents certain functions from running whilst unity is in editor mode. Intended to not run functions that for example Instantiate gameObjects and other
+        /// </summary>
+        /// <param name="functionsToRun">takes in a variable amount of function pointers of type 'Action'</param>
         public static void PreventFunctionsRunningInEditor(params Action[] functionsToRun)
         {
             foreach (Action function in functionsToRun)
@@ -98,17 +101,33 @@ namespace Utility
             }
         }
 
+        /// <summary>
+        /// Calculates the number of numbers inside a number.
+        /// </summary>
+        /// <param name="value">The number to count the number of numbers</param>
+        /// <returns>number of numbers</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int GetLengthOfNumber(int value)
         {
             return (int)Mathf.Log(value, 10);
         }
-
+        
+        /// <summary>
+        /// Calculates the number of numbers inside a number.
+        /// </summary>
+        /// <param name="value">The number to count the number of numbers</param>
+        /// <returns>number of numbers</returns>
         public static int GetLengthOfNumber(float value)
         {
             return (int)Mathf.Log(value, 10);
         }
 
+        /// <summary>
+        /// Iterates over every single char in a given string. Returns the combinded ASCII value of said chars.
+        /// if string can be directly converted to an int, that will be returned
+        /// </summary>
+        /// <param name="seedString">string to count value of it's chars</param>
+        /// <returns>Combined ASCII value of all chars or the int representation of string</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int ParseSeed(string seedString)
         {
@@ -121,7 +140,6 @@ namespace Utility
             int total = 0;
             foreach (char c in text)
             {
-                // redundant cast men jag tycker att det förtydligar att vi använder ASCII värdet av char:en
                 total += (int)c;
             }
             return total;

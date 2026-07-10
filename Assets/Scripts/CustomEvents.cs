@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
 using GameCode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class CustomEvents : MonoBehaviour
 {
     public event Action onReset;
-    
-    public event Action<Square, SquareTypes> onSquareUpdate;
 
     public event Action<Square> onColorUpdate;
 
@@ -23,11 +20,7 @@ public class CustomEvents : MonoBehaviour
         onReset?.Invoke();
     }
 
-    public void PublishOnSquareUpdate(Square square, SquareTypes newType)
-    {
-        onSquareUpdate?.Invoke(square, newType);
-    }
-
+    // ReSharper disable Unity.PerformanceAnalysis
     public void PublishOnColorUpdate(Square square)
     {
         onColorUpdate?.Invoke(square);
