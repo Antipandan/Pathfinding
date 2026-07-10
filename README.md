@@ -1,7 +1,5 @@
 # Pathfinding
 
-<div align="center">
-    <p>2D Pathfinding Demo in Unity</p>
-    <p>Inspector</p>
-    
-</div>
+<p align="center">
+  <img src="Assets/Video/Pathfinding.GIF" alt="Demo" width="800" />
+</p>
