@@ -36,7 +36,6 @@ namespace GameCode
         {
             customEvents.onColorUpdate += ChangeColor;
             Setup();
-            BuildDictionary();
         }
         private void BuildDictionary()
         {

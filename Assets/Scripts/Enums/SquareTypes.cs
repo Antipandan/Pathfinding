@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace GameCode
 {
     public enum SquareTypes

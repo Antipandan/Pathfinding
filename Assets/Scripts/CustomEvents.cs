@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using GameCode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class CustomEvents : MonoBehaviour
@@ -21,6 +20,7 @@ public class CustomEvents : MonoBehaviour
         onReset?.Invoke();
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     public void PublishOnColorUpdate(Square square)
     {
         onColorUpdate?.Invoke(square);

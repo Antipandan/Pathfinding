@@ -39,7 +39,6 @@ namespace GameCode
             {
                 Debug.LogWarning($"Warning! Reference to {nameof(customEvent)} is null!", this);
             }
-
         }
         
         private void Start()
@@ -70,7 +69,6 @@ namespace GameCode
                     // steg 1
                     if (square == endingSquare)
                     {
-                        Debug.Log($"found ending square");
                         closedList.Add(square);
                         foundPath = true;
                     }
@@ -179,7 +177,6 @@ namespace GameCode
                 yield return new WaitForSeconds(tracingSearchDelay / 1000f);
             }
             UpdateSingleTraceSquare(currentSquare, visitedSquares);
-            Debug.Log($"traceback completed!");
         }
 
         private void UpdateSingleTraceSquare(Square square, HashSet<Square> visitedSquares)
@@ -212,51 +209,25 @@ namespace GameCode
             StartCoroutine(AStarPathfindingAlgorithm());
         }
         
-        private int CalculateDistance(Square square)
-        {
-            int distance = 0;
-            switch (distanceFormula)
-            {
-                case DistanceFormulaTypes.EuclidianDistance:
-                    distance = UtilityFunctions.CalculateEuclidieanDistance(square.Index, endingSquare.Index);
-                    break;
-                case DistanceFormulaTypes.ManhattanDistance:
-                    distance = UtilityFunctions.CalculateManhattanDistance(square.Index, endingSquare.Index);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-            return distance;
-        }
-        
         private int CalculateDistance(Square startSquare, Square endSquare)
         {
-            int distance = 0;
             switch (distanceFormula)
             {
                 case DistanceFormulaTypes.EuclidianDistance:
-                    distance = UtilityFunctions.CalculateEuclidieanDistance(startSquare.Index, endSquare.Index);
-                    break;
+                    return UtilityFunctions.CalculateEuclidieanDistance(startSquare.Index, endSquare.Index);
                 case DistanceFormulaTypes.ManhattanDistance:
-                    distance = UtilityFunctions.CalculateManhattanDistance(startSquare.Index, endSquare.Index);
-                    break;
+                    return UtilityFunctions.CalculateManhattanDistance(startSquare.Index, endSquare.Index);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            return distance;
         }
         
         
         private void OnApplicationQuit()
         {
-            customEvent.onReset -= Reset;
             StopCoroutine(AStarPathfindingAlgorithm());
         }
-
-        private void Reset()
-        {
-            return;
-        }
+        
     }
 }
 

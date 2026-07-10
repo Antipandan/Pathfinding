@@ -1,4 +1,6 @@
-﻿namespace GameCode
+﻿using System;
+
+namespace GameCode
 {
     public enum ValidNeighbours
     {

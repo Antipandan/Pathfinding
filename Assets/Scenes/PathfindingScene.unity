@@ -185,14 +185,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ee91131b1400d342a4f46fe78c3f910, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  columns: 15
   rows: 15
-  maxWeight: 15
+  columns: 15
+  validNeighbours: 3
   minWeight: 0
+  maxWeight: 15
   padding: {x: 0, y: 0}
   seed: Number or Text here!
   startingPosition: {x: 0, y: 0}
-  endingPosition: {x: 14, y: 14}
+  endingPosition: {x: 14, y: 0}
   squarePrefab: {fileID: 7954162477002377020, guid: e08e8d860c6219c4388a7ce7ab369adc, type: 3}
   customEvents: {fileID: 134725760}
   mapHolder: {fileID: 24270053}

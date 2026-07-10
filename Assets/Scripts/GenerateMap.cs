@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using UnityEngine;
 using Unity;
-using UnityEditor;
-using Random = System.Random;
+using UnityEngine;
 using static Utility.UtilityFunctions;
+using Random = System.Random;
 
 namespace GameCode
 {
@@ -18,10 +16,10 @@ namespace GameCode
         [Tooltip("Represents the number of Squares in the Y axis")]
         [SerializeField] private int columns = 3;
         [Tooltip("Determines in what direction neighbours can be found")]
-        [SerializeField] private ValidNeighbours validNeighbours = ValidNeighbours.DiagonalVertical;
+        [SerializeField] private ValidNeighbours validNeighbours = ValidNeighbours.HorizontalVertical;
         [Tooltip("The minimum randomly generated weight of Squares")]
         [SerializeField] [Range(0, 499)] private int minWeight = 0;
-        [Tooltip("The ceiling for the maximum randomly generated weight of Squares. Actual maxWeight is value of maxWeight - 1")]
+        [Tooltip("The ceiling for the maximum randomly generated weight of Squares")]
         [SerializeField] [Range(0, 500)] int maxWeight = 15;
         [Tooltip("Padding for placement of Square instances in the X and Y axis respectively")]
         [SerializeField] private Vector2 padding = Vector2.zero;
@@ -37,6 +35,11 @@ namespace GameCode
         [SerializeField] private Transform mapHolder;
         private Square[,] squares;
         private Random random;
+
+        public int GetNrSquares
+        {
+            get => rows * columns;
+        }
 
         private void Awake()
         {
@@ -108,12 +111,12 @@ namespace GameCode
                     }
                 }
             }
-            else if (existingObjects.Length > rows * columns)
+            else if (existingObjects.Length > GetNrSquares)
             {
                 return;
             }
             
-            else if (existingObjects.Length < rows * columns)
+            else if (existingObjects.Length < GetNrSquares)
             {
                 return;
             }
@@ -200,14 +203,6 @@ namespace GameCode
         }
 
         private List<Square> GetDiagonalVerticalNeighbours(Square square)
-        {
-            List<Square> neighbours = new List<Square>();
-            neighbours.AddRange(GetDiagonalNeigbours(square));
-            neighbours.AddRange(GetVerticalNeighbours(square));
-            return neighbours;
-        }
-
-        private List<Square> GetVerticalDiagonalNeighbours(Square square)
         {
             List<Square> neighbours = new List<Square>();
             neighbours.AddRange(GetDiagonalNeigbours(square));

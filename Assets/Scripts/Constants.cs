@@ -16,7 +16,6 @@ namespace GameCode
             { SquareTypes.FinalPathSquare, Color.blue},
             { SquareTypes.EndNodeSquare, Color.magenta },
             { SquareTypes.StartNodeSquare, Color.green },
-
         };
     }
 }
