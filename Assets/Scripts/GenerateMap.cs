@@ -148,7 +148,7 @@ namespace GameCode
         private void SetupSquareProperly(Square square)
         {
             Square.CustomEvent = customEvents;
-            square.Weight = random.Next(minWeight, maxWeight);
+            square.Weight = random.Next(minWeight, maxWeight + 1);
             square.G = square.Weight;
             square.H = 0f;
         }

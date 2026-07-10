@@ -9,8 +9,9 @@ namespace GameCode
         RegularSquare = 0b10, // 2
         NeighbourSquare = 0b100, // 4
         FoundPathSquare = 0b1000, // 8
-        EndNodeSquare = 0b1000_0, // 16
-        StartNodeSquare = 0b1000_00, // 32
-        FinalPathSquare = 0b1000_000 // 64
+        FinalPathSquare = 0b1000_0, // 16
+        EndNodeSquare = 0b1000_00, // 32
+        StartNodeSquare = 0b1000_000, // 64
+
     }
 }

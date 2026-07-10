@@ -179,12 +179,7 @@ namespace GameCode
                         borderingNeighbours.Add(neighbour);
                     }
                 }
-
-                // Debug.Log($"origin: {currentSquare.Index}");
-                foreach (Square neighbour in borderingNeighbours)
-                {
-                    Debug.Log($"neighbour: {neighbour.Index}");
-                }
+                
                 currentSquare = FindCheapestGSquare(borderingNeighbours);
                 if (currentSquare == startingSquare || currentSquare is null)
                 {
@@ -199,7 +194,7 @@ namespace GameCode
         private static void UpdateSingleTraceSquare(Square square, HashSet<Square> visitedSquares)
         {
             visitedSquares.Add(square);
-            square.SquareType = SquareTypes.FinalPathSquare;
+            if (square.SquareType < SquareTypes.FinalPathSquare) square.SquareType = SquareTypes.FinalPathSquare;
         }
 
         private static Square FindCheapestGSquare(List<Square> squares)
