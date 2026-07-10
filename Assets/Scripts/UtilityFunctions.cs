@@ -1,13 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using GameCode;
 using Unity;
+using UnityEditor.SearchService;
 using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 namespace Utility
 {
     public static class UtilityFunctions
     {
+
+        /// <summary>
+        /// Calculates the distance between two points using the pythagorean theorem see: https://www.geeksforgeeks.org/maths/euclidean-distance/
+        /// </summary>
+        /// <param name="start">Starting point</param>
+        /// <param name="end">End point</param>
+        /// <returns>Distance between two points</returns>
+        public static int CalculateEuclidieanDistance(Vector2Int start, Vector2Int end)
+        {
+            int yDiff = end.y - start.y;
+            int xDiff = end.x - start.x;
+            return (int)(Mathf.Sqrt(xDiff * xDiff + yDiff * yDiff));
+        }
         /// <summary>
         /// Calculates the distance between two points using the pythagorean theorem see: https://www.geeksforgeeks.org/maths/euclidean-distance/
         /// </summary>
@@ -35,6 +51,7 @@ namespace Utility
         {
             return Mathf.Sqrt(deltaDistanceX * deltaDistanceX + deltaDistanceY * deltaDistanceY);
         }
+        
 
         /// <summary>
         /// Calculates the manhattan distance between two points see: https://www.geeksforgeeks.org/data-science/manhattan-distance/
@@ -54,77 +71,60 @@ namespace Utility
         /// <param name="deltaDistanceX">Difference between X position</param>
         /// <param name="deltaDistanceY">Difference between Y position</param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float CalculateManhattanDistance(float deltaDistanceX, float deltaDistanceY)
         {
             return Mathf.Abs(deltaDistanceX) + Mathf.Abs(deltaDistanceY);
         }
 
-
         /// <summary>
-        /// Generic method used to check if object member variables are null. If so return true else false
+        /// Calculates the manhattan distance between two points see: https://www.geeksforgeeks.org/data-science/manhattan-distance/
         /// </summary>
-        /// <param name="currentObject">Which object is null. Will not return several objects that may be null.
-        /// Returns only the first object that is null</param>
-        /// <param name="objects">Objects to check for null</param>
-        /// <returns>true if there is a null object. false if there is none</returns>
-        public static bool CheckIfObjectsAreNull(out object currentObject, params object[] objects)
+        /// <param name="start">Starting point</param>
+        /// <param name="end">End point</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int CalculateManhattanDistance(Vector2Int start, Vector2Int end)
         {
-            foreach (object obj in objects)
-            {
-                currentObject = obj;
-                if (obj == null) return true;
-            }
-            currentObject = null;
-            return false;
+            return Mathf.Abs(start.x - end.x) + Mathf.Abs(start.y - end.y);
         }
         
-        /// <summary>
-        /// Generic method used to check if object member variables are null. If so return true else false
-        /// </summary>
-        /// <param name="objects">Objects to check for null</param>
-        /// <returns>true if there is a null object. false if there is none</returns>
-        public static bool CheckIfObjectsAreNull(params object[] objects)
-        {
-            foreach (object obj in objects)
-            {
-                if (obj == null) return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Generic method used to check if object member variables are null. If so return true else false
-        /// </summary>
-        /// <param name="objects">Objects to check for null</param>
-        /// <returns>true if there is a null object. false if there is none</returns>
-        public static bool CheckIfObjectsAreNull(params GameObject[] objects)
-        {
-            foreach (GameObject obj in objects)
-            {
-                if (obj == null) return true;
-            }
-            return false;
-        }
         
-        /// <summary>
-        /// Generic method used to check if object member variables are null. If so return true else false
-        /// </summary>
-        /// <param name="currentGameObject">Which object is null. Will not return several objects that may be null.
-        /// Returns only the first object that is null</param>
-        /// <param name="objects">Objects to check for null</param>
-        /// <returns>true if there is a null object. false if there is none</returns>
-        public static bool CheckIfObjectsAreNull(out GameObject currentGameObject, params GameObject[] objects)
+        public static void PreventFunctionsRunningInEditor(params Action[] functionsToRun)
         {
-            foreach (GameObject obj in objects)
+            foreach (Action function in functionsToRun)
             {
-                currentGameObject = obj;
-                if (obj == null) return true;
+                if (UnityEditor.EditorApplication.isPlaying) function();
             }
-
-            currentGameObject = null;
-            return false;
         }
-        
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int GetLengthOfNumber(int value)
+        {
+            return (int)Mathf.Log(value, 10);
+        }
+
+        public static int GetLengthOfNumber(float value)
+        {
+            return (int)Mathf.Log(value, 10);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int ParseSeed(string seedString)
+        {
+            return int.TryParse(seedString, out int seedInt) ? seedInt : CountCharValue(seedString);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int CountCharValue(string text)
+        {
+            int total = 0;
+            foreach (char c in text)
+            {
+                // redundant cast men jag tycker att det förtydligar att vi använder ASCII värdet av char:en
+                total += (int)c;
+            }
+            return total;
+        }
     }
 }

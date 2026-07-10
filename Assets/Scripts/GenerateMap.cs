@@ -1,73 +1,180 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
-using Utility;
-using Screen = UnityEngine.Device.Screen;
+using Unity;
+using UnityEditor;
+using Random = System.Random;
+using static Utility.UtilityFunctions;
 
-public class GenerateMap : MonoBehaviour
+namespace GameCode
 {
-    [Header("Padding")]
-    [SerializeField] private Vector2Int screenPadding = new Vector2Int(0, 0);
-    [SerializeField] private ushort rows = 10;
-    [SerializeField] private ushort columns = 10;
-    [Header("Other Settings")] 
-    [SerializeField] private Transform parentTransform = null;
-    [SerializeField] private GameObject squarePrefab;
-    [SerializeField] [Range(0, 500)] private uint maxWeight = 50;
-    private int width = 0;
-    private int height = 0;
-
-
-    private void Awake()
+    public class GenerateMap : MonoBehaviour
     {
-        object nullObject = null;
-        if (!UtilityFunctions.CheckIfObjectsAreNull(out nullObject, parentTransform, squarePrefab))
+        [SerializeField] private int columns = 3;
+        [SerializeField] private int rows = 3;
+        [SerializeField] [Range(0, 500)] int maxWeight = 15;
+        [SerializeField] [Range(0, 499)] private int minWeight = 0;
+        [SerializeField] private Vector2 padding = Vector2.zero;
+        [SerializeField] private string seed = "Number or Text here!";
+        [SerializeField] private Vector2Int startingPosition = Vector2Int.zero;
+        [SerializeField] private Vector2Int endingPosition = new Vector2Int(2, 2);
+        [SerializeField] private GameObject squarePrefab;
+        [SerializeField] private CustomEvents customEvents;
+        [SerializeField] private Transform mapHolder;
+        private Square[,] squares;
+        private Random random;
+
+        private void Awake()
         {
-            GetDimensions(squarePrefab.GetComponent<RectTransform>());
-            GenerateGrid();
+            // jag vet inte om detta är en bra idé? Förmodligen inte
+            SubscribeToAllEvents();
+            Setup();
+            CreateMapHolder();
         }
-        else Debug.LogError($"Error!\nOne or more objects are null! Check the inspector for missing references", gameObject);
-    }
 
-    private void GetDimensions(RectTransform transform)
-    {
-        width = (int) transform.rect.width;
-        height = (int) transform.rect.height;
-    }
-    
-    private void GenerateGrid()
-    {
-        for (int column = 0; column < columns; column++)
+        private void SubscribeToAllEvents()
         {
-            for (int row = 0; row < rows; row++)
+            customEvents.onReset += Reset;
+            customEvents.onGetNeighbourSquares += GetNeighbours;
+            customEvents.onGetStartingSquare += GetStartingSquare;
+            customEvents.onGetEndingSquare += GetEndingSquare;
+        }
+
+        private void Start()
+        {
+            GenerateSquareMap();
+        }
+
+        private void Setup()
+        {
+            ClampDimensions();
+            random = new Random(ParseSeed(seed));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Square GetStartingSquare()
+        {
+            return squares[startingPosition.y, startingPosition.x];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Square GetEndingSquare()
+        {
+            return squares[endingPosition.y, endingPosition.x];
+        }
+
+        private void ClampDimensions()
+        {
+            columns = (ushort)Mathf.Clamp(columns, 1, int.MaxValue);
+            rows = (ushort)Mathf.Clamp(rows, 1, int.MaxValue);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void CreateMapHolder()
+        {
+            if (mapHolder == null) Instantiate(new GameObject());
+        }
+
+        private void GenerateSquareMap()
+        {
+            Square[] existingObjects = FindObjectsByType<Square>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            Vector2 squareDimensions = squarePrefab.GetComponent<SpriteRenderer>().bounds.size;
+            if (existingObjects.Length == 0)
             {
-                float xPosition = GiveSquareExtraXIndent(row + columns * column)
-                    ? row * width + 5 * row : row * width; 
-                
-                float yPosition = GiveSquareExtraYindent(row + columns * column) ?
-                    Screen.height - height - (height) * column - 5 * column: Screen.height - height - (height) * column;
-                
-                Instantiate(squarePrefab, 
-                    new Vector3(xPosition, yPosition, 0),
-                    Quaternion.identity ,parentTransform);
+                squares = new Square[columns, rows];
+                for (int y = 0; y < columns; y++)
+                {
+                    for (int x = 0; x < rows; x++)
+                    {
+                        Square square = Instantiate(squarePrefab, mapHolder).GetComponent<Square>();
+                        SetupSquareProperly(square);
+                        square.transform.position = (squareDimensions + padding) * new Vector2(x, y);
+                        square.Index = new Vector2Int(x, y);
+                        squares[y, x] = square;
+                    }
+                }
+            }
+            else if (existingObjects.Length > rows * columns)
+            {
+                return;
+            }
+            
+            else if (existingObjects.Length < rows * columns)
+            {
+                return;
+            }
+            
+            // Tänk som att vi målar ett baslager av färgen specificerad av regularSquare i drawMap
+            for (int y = 0; y < columns; y++)
+            {
+                for (int x = 0; x < rows; x++)
+                {
+                    squares[y, x].SquareType = SquareTypes.RegularSquare;
+                }
+            }
+            AssignStartEndSquare();
+        }
+
+        private List<Square> GetNeighbours(Square square)
+        {
+            if (square == null) return null;
+            List<Square> neighbours = new List<Square>();
+            Vector2Int index = square.Index;
+            if (index.x - 1 >= 0) AddSingleNeighbour(squares[index.y, index.x - 1], neighbours);
+            if (index.x + 1 < rows) AddSingleNeighbour(squares[index.y, index.x + 1], neighbours);  
+            if (index.y - 1 >= 0) AddSingleNeighbour(squares[index.y - 1, index.x], neighbours);
+            if (index.y + 1 < columns) AddSingleNeighbour(squares[index.y + 1, index.x], neighbours);
+            return neighbours;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void AddSingleNeighbour(Square square, List<Square> neighbours)
+        {
+            if (square.SquareType != SquareTypes.StartNodeSquare && square.SquareType != SquareTypes.WallSquare)
+            {
+                neighbours.Add(square);
             }
         }
-    }
 
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool GiveSquareExtraXIndent(int squareIndex)
-    {
-        if (squareIndex == 0) return false;
-        return squareIndex % columns != 0;
-    }
+        private void AssignStartEndSquare()
+        {
+            squares[startingPosition.y, startingPosition.x].SquareType = SquareTypes.StartNodeSquare;
+            squares[endingPosition.y, endingPosition.x].SquareType = SquareTypes.EndNodeSquare;
+        }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool GiveSquareExtraYindent(int squareIndex)
-    {
-        if (squareIndex < rows + 0 * columns) return false; // anledning bakom att vi skriver 0 * column är att vi inte vill indentera rutor som befinner sig 0:e kolumnen
-        return true;
+        private void SetupSquareProperly(Square square)
+        {
+            Square.CustomEvent = customEvents;
+            square.Weight = random.Next(minWeight, maxWeight);
+            square.G = square.Weight;
+            square.H = 0f;
+        }
+        
+
+        private void Reset()
+        {
+            Setup();
+            PreventFunctionsRunningInEditor(GenerateSquareMap);
+        }
+
+        private void OnDisable()
+        {
+            customEvents.onReset -= Reset;
+        }
+
+        private void OnEnable()
+        {
+            customEvents.onReset += Reset;
+        }
+        
+        private void OnValidate()
+        {
+            if (startingPosition != endingPosition) return;
+            startingPosition = Vector2Int.zero;
+            endingPosition = new Vector2Int(columns - 1, rows - 1);
+        }
     }
-    
 }
+

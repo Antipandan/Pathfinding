@@ -1,16 +1,51 @@
+using System;
+using System.Collections.Generic;
+using GameCode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CustomEvents : MonoBehaviour
 {
-    private static CustomEvents _instance;
-    private void Start()
+    public event Action onReset;
+    
+    public event Action<Square, SquareTypes> onSquareUpdate;
+
+    public event Action<Square> onColorUpdate;
+
+    public event Func<Square, List<Square>> onGetNeighbourSquares;
+
+    public event Func<Square> onGetStartingSquare;
+    
+    public event Func<Square> onGetEndingSquare;
+    
+    public void PublishOnReset()
     {
-        if (_instance != null) _instance = this;
-        else Destroy(this);
+        onReset?.Invoke();
     }
 
-    private void Update()
+    public void PublishOnSquareUpdate(Square square, SquareTypes newType)
     {
-        return;
+        onSquareUpdate?.Invoke(square, newType);
     }
+
+    public void PublishOnColorUpdate(Square square)
+    {
+        onColorUpdate?.Invoke(square);
+    }
+
+    public List<Square> PublishOnGetNeighbourSquares(Square square)
+    {
+        return onGetNeighbourSquares?.Invoke(square);
+    }
+
+    public Square PublishOnGetStartingSquare()
+    {
+        return onGetStartingSquare?.Invoke();
+    }
+
+    public Square PublishOnGetEndingSquare()
+    {
+        return onGetEndingSquare?.Invoke();
+    }
+    
 }

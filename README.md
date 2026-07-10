@@ -1,2 +1,7 @@
 # Pathfinding
-2D Pathfinding Demo in Unity
+
+<div align="center">
+    <p>2D Pathfinding Demo in Unity</p>
+    <p>Inspector</p>
+    
+</div>
