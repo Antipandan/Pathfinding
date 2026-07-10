@@ -172,7 +172,23 @@ namespace GameCode
         
         private void OnValidate()
         {
-            if (startingPosition != endingPosition) return;
+            CheckIfPositionIsOutside(ref startingPosition);
+            CheckIfPositionIsOutside(ref endingPosition);
+            CheckIfPositionIsSame();
+        }
+        
+        private void CheckIfPositionIsOutside(ref Vector2Int position)
+        {
+            Vector2Int newPosition = new Vector2Int(position.x % rows, position.y % columns);
+            if (newPosition.x < 0) newPosition.x += rows; 
+            if (newPosition.y < 0) newPosition.y += columns;
+            position = newPosition;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void CheckIfPositionIsSame()
+        {
+            if (startingPosition.y != endingPosition.y || startingPosition.x != endingPosition.x) return;
             startingPosition = Vector2Int.zero;
             endingPosition = new Vector2Int(columns - 1, rows - 1);
         }

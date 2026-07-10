@@ -167,10 +167,6 @@ namespace GameCode
             {
                 UpdateSingleTraceSquare(currentSquare, visitedSquares);
                 List<Square> neighbours = customEvent.PublishOnGetNeighbourSquares(currentSquare);
-                foreach (Square neighbour in neighbours)
-                {
-                    Debug.Log($"all neighbour:  {neighbour.Index}");
-                }
                 List<Square> borderingNeighbours = new List<Square>();
                 foreach (Square neighbour in neighbours)
                 {
