@@ -101,7 +101,7 @@ namespace GameCode
         }
         
 
-        private void ResetBoard()
+        private void ResetBoard(bool instantiateObjects = true)
         {
             Vector2 squareDimensions = GetDimensionsOfSquarePrefab(squarePrefab);
             squares = new Square[columns, rows];
@@ -109,7 +109,7 @@ namespace GameCode
             {
                 for (int x = 0; x < rows; x++)
                 {
-                    Square square = Instantiate(squarePrefab, mapHolder).GetComponent<Square>();
+                    Square square = instantiateObjects ? Instantiate(squarePrefab, mapHolder).GetComponent<Square>() : squares[y, x];
                     SetupSquareProperly(square, new Vector2Int(x, y), squareDimensions.x, squareDimensions.y);
                 }
             }
@@ -122,6 +122,7 @@ namespace GameCode
             if (existingSquares.Length > squares.Length)
             {
                 SetupSquares(existingSquares, squareDimensions);
+                DeleteExcessSquares(FindExcessSquares(existingSquares));
             }
             else if (existingSquares.Length < squares.Length)
             {
@@ -159,6 +160,7 @@ namespace GameCode
                     for (int x = 0; x < rows; x++)
                     {
                         Square existingSquare = squares[y, x];
+                        if (square != existingSquare) deltaSquares.Add(square);
                     }
                 } 
             }
@@ -166,9 +168,13 @@ namespace GameCode
         }
         
 
-        private void DeleteExcessSquares(Square[,] squaresToDelete)
+        private static void DeleteExcessSquares(List<Square> squaresToDelete)
         {
-            
+            for (int i = squaresToDelete.Count - 1; i >= 0; i--)
+            {
+                Destroy(squaresToDelete[i]);
+                squaresToDelete.RemoveAt(i);
+            }
         }
 
         private void ReColorSquares()
@@ -189,14 +195,6 @@ namespace GameCode
             if (existingObjects.Length == 0)
             {
                 ResetBoard();
-            }
-            
-            // Tänk som att vi målar ett baslager av färgen specificerad av regularSquare i drawMap
-            for (int y = 0; y < columns; y++)
-            {
-                for (int x = 0; x < rows; x++)
-                {
-                }
             }
             AssignStartEndSquare();
         }
