@@ -82,8 +82,8 @@ namespace GameCode
 
         private void ClampDimensions()
         {
-            columns = (ushort)Mathf.Clamp(columns, 1, int.MaxValue);
-            rows = (ushort)Mathf.Clamp(rows, 1, int.MaxValue);
+            columns = Mathf.Clamp(columns, 1, int.MaxValue);
+            rows = Mathf.Clamp(rows, 1, int.MaxValue);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -92,33 +92,90 @@ namespace GameCode
             if (mapHolder == null) Instantiate(new GameObject());
         }
 
-        private void GenerateSquareMap()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Vector2 GetDimensionsOfSquarePrefab(GameObject square)
         {
-            Square[] existingObjects = FindObjectsByType<Square>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-            Vector2 squareDimensions = squarePrefab.GetComponent<SpriteRenderer>().bounds.size;
-            if (existingObjects.Length == 0)
+            if (square is null) return Vector2.zero;
+            return square.GetComponent<SpriteRenderer>().bounds.size;
+        }
+        
+
+        private void ResetBoard()
+        {
+            Vector2 squareDimensions = GetDimensionsOfSquarePrefab(squarePrefab);
+            squares = new Square[columns, rows];
+            for (int y = 0; y < columns; y++)
             {
-                squares = new Square[columns, rows];
+                for (int x = 0; x < rows; x++)
+                {
+                    Square square = Instantiate(squarePrefab, mapHolder).GetComponent<Square>();
+                    SetupSquareProperly(square, new Vector2Int(x, y), squareDimensions.x, squareDimensions.y);
+                }
+            }
+        }
+
+        private void ResetBoard(Square[] existingSquares)
+        {
+            Vector2 squareDimensions = GetDimensionsOfSquarePrefab(squarePrefab);
+            squares = new Square[columns, rows];
+            if (existingSquares.Length > squares.Length)
+            {
+                SetupSquares(existingSquares, squareDimensions);
+            }
+            else if (existingSquares.Length < squares.Length)
+            {
+                
+            }
+
+            else
+            {
+                SetupSquares(existingSquares, squareDimensions);
+            }
+            
+        }
+
+        private void SetupSquares(Square[] existingSquares, Vector2 squareDimensions)
+        {
+            for (int y = 0; y < columns; y++)
+            {
+                for (int x = 0; x < rows; x++)
+                {
+                    Square currentSquare = existingSquares[x + x * y];
+                    currentSquare.GetComponent<GameObject>().transform.SetParent(mapHolder, false);
+                    SetupSquare(currentSquare, new Vector2Int(x, y), squareDimensions.x, squareDimensions.y);
+                }
+            } 
+        }
+
+        private List<Square> FindExcessSquares(Square[] existingSquares)
+        {
+            
+            List<Square> deltaSquares = new List<Square>();
+            foreach (Square square in existingSquares)
+            {
                 for (int y = 0; y < columns; y++)
                 {
                     for (int x = 0; x < rows; x++)
                     {
-                        Square square = Instantiate(squarePrefab, mapHolder).GetComponent<Square>();
-                        SetupSquareProperly(square);
-                        square.transform.position = (squareDimensions + padding) * new Vector2(x, y);
-                        square.Index = new Vector2Int(x, y);
-                        squares[y, x] = square;
+                        Square existingSquare = squares[y, x];
                     }
-                }
+                } 
             }
-            else if (existingObjects.Length > GetNrSquares)
-            {
-                return;
-            }
+            return  deltaSquares;
+        }
+        
+
+        private void DeleteExcessSquares(Square[,] squaresToDelete)
+        {
             
-            else if (existingObjects.Length < GetNrSquares)
+        }
+
+        private void GenerateSquareMap()
+        {
+            Square[] existingObjects = FindObjectsByType<Square>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            if (existingObjects.Length == 0)
             {
-                return;
+                ResetBoard();
             }
             
             // Tänk som att vi målar ett baslager av färgen specificerad av regularSquare i drawMap
@@ -126,7 +183,6 @@ namespace GameCode
             {
                 for (int x = 0; x < rows; x++)
                 {
-                    squares[y, x].SquareType = SquareTypes.RegularSquare;
                 }
             }
             AssignStartEndSquare();
@@ -234,14 +290,27 @@ namespace GameCode
             squares[endingPosition.y, endingPosition.x].SquareType = SquareTypes.EndNodeSquare;
         }
 
-        private void SetupSquareProperly(Square square)
+        private void InitializeSquareValues(Square square, SquareTypes squareType = SquareTypes.RegularSquare)
         {
             Square.CustomEvent = customEvents;
             square.Weight = random.Next(minWeight, maxWeight + 1);
             square.G = square.Weight;
             square.H = 0f;
+            square.SquareType = squareType;
         }
         
+        private void SetupSquare(Square square, Vector2Int index, float dimensionsX = 0f, float dimensionsY = 0f)
+        {
+            square.transform.position = (new Vector2(dimensionsX, dimensionsY) + padding) * new Vector2(index.x, index.y);
+            square.Index = new Vector2Int(index.x, index.y);
+            squares[index.y, index.x] = square;
+        }
+
+        private void SetupSquareProperly(Square square, Vector2Int index, float dimensionsX = 0f, float dimensionsY = 0f)
+        {
+            InitializeSquareValues(square);
+            SetupSquare(square, index, dimensionsX, dimensionsY);
+        }
 
         private void Reset()
         {
@@ -264,6 +333,7 @@ namespace GameCode
             CheckIfPositionIsOutside(ref startingPosition);
             CheckIfPositionIsOutside(ref endingPosition);
             CheckIfPositionIsSame();
+            customEvents.PublishOnReset();
         }
         
         private void CheckIfPositionIsOutside(ref Vector2Int position)

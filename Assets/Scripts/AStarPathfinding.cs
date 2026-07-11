@@ -221,8 +221,13 @@ namespace GameCode
                     throw new ArgumentOutOfRangeException();
             }
         }
-        
-        
+
+        private void OnValidate()
+        {
+            customEvent.PublishOnReset();
+        }
+
+
         private void OnApplicationQuit()
         {
             StopCoroutine(AStarPathfindingAlgorithm());
