@@ -144,5 +144,62 @@ namespace Utility
             }
             return total;
         }
+
+        public static void DoubleForLoop(Vector2Int bounds, Action body)
+        {
+            for (int i = 0; i < bounds.x; i++)
+            {
+                for (int j = 0; j < bounds.y; j++)
+                {
+                    body.Invoke();
+                }
+            }
+        }
+
+        public static void DoubleForLoop<T>(Vector2Int bounds, Action<T> body, T argument)
+        {
+            for (int i = 0; i < bounds.x; i++)
+            {
+                for (int j = 0; j < bounds.y; j++)
+                {
+                    body.Invoke(argument);
+                }
+            } 
+        }
+
+        public static void DoubleForLoop<T1, T2>(Vector2Int bounds, Action<T1, T2> body, T1 argument1, T2 argument2)
+        {
+            for (int i = 0; i < bounds.x; i++)
+            {
+                for (int j = 0; j < bounds.y; j++)
+                {
+                    body.Invoke(argument1, argument2);
+                }
+            }
+        }
+
+        public static void DoubleForLoop<T1, T2, T3>(Vector2Int bounds, Action<T1, T2, T3> body, T1 argument1,
+            T2 argument2, T3 argument3)
+        {
+            for (int i = 0; i < bounds.x; i++)
+            {
+                for (int j = 0; j < bounds.y; j++)
+                {
+                    body.Invoke(argument1, argument2, argument3);
+                }
+            }  
+        }
+
+        public static void DoubleForLoop<T1, T2, T3, T4>(Vector2Int bounds, Action<T1, T2, T3, T4> body, T1 argument1,
+            T2 argument2, T3 argument3, T4 argument4)
+        {
+            for (int i = 0; i < bounds.x; i++)
+            {
+                for (int j = 0; j < bounds.y; j++)
+                {
+                    body.Invoke(argument1, argument2, argument3, argument4);
+                }
+            }
+        }
     }
 }

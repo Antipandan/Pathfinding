@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity;
 using UnityEngine;
+using Utility;
 using static Utility.UtilityFunctions;
 using Random = System.Random;
 
@@ -170,6 +171,18 @@ namespace GameCode
             
         }
 
+        private void ReColorSquares()
+        {
+            for (int y = 0; y < columns; y++)
+            {
+                for (int x = 0; x < rows; x++)
+                {
+                    // kommer också att kalla metod som uppdaterar färgen via setter
+                    squares[y, x].SquareType = squares[y, x].SquareType;
+                }
+            }
+        }
+
         private void GenerateSquareMap()
         {
             Square[] existingObjects = FindObjectsByType<Square>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
@@ -316,6 +329,7 @@ namespace GameCode
         {
             Setup();
             PreventFunctionsRunningInEditor(GenerateSquareMap);
+            ReColorSquares(); 
         }
 
         private void OnDisable()
