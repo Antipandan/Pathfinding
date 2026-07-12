@@ -8,7 +8,7 @@ using static GameCode.Constants;
 
 namespace GameCode
 {
-    [RootEditor]
+    [ExecuteAlways]
     public class Square : MonoBehaviour
     {
         [Header("Settings")]
@@ -117,6 +117,7 @@ namespace GameCode
         private void OnValidate()
         {
             Weight = Mathf.Clamp(weight, 0f, float.MaxValue);
+            squareType = SquareType;
         }
 
 
