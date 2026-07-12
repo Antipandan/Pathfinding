@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using GameCode;
-using Unity;
-using UnityEditor.SearchService;
 using UnityEngine;
-using Random = Unity.Mathematics.Random;
 
 namespace Utility
 {

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
-using Utility;
 using static Utility.UtilityFunctions;
 using Random = System.Random;
 
@@ -144,15 +143,15 @@ namespace GameCode
         
         private void SetupSquares(Square[] existingSquares, Vector2 squareDimensions)
         {
-            for (int y = 0; y < columns; y++)
+            DoubleForLoop(new Vector2Int(columns, rows), LocalFunction, existingSquares, squareDimensions);
+            return;
+
+            void LocalFunction(Vector2Int index, Square[] localExistingSquares, Vector2 dimensions)
             {
-                for (int x = 0; x < rows; x++)
-                {
-                    Square currentSquare = IndexProperly(existingSquares, new Vector2Int(x, y));
-                    currentSquare.GetComponent<GameObject>().transform.SetParent(mapHolder, false);
-                    SetupSquare(currentSquare, new Vector2Int(x, y), squareDimensions.x, squareDimensions.y);
-                }
-            } 
+                Square currentSquare = IndexProperly(localExistingSquares, index);
+                currentSquare.GetComponent<GameObject>().transform.SetParent(mapHolder, false);
+                SetupSquare(currentSquare, index, dimensions.x, dimensions.y);
+            }
         }
 
         private void InitializeSquareValues(Square square)
@@ -212,13 +211,13 @@ namespace GameCode
         {
             Vector2 squareDimensions = GetDimensionsOfSquarePrefab(squarePrefab);
             squares = new Square[columns, rows];
-            for (int y = 0; y < columns; y++)
+            DoubleForLoop(new Vector2Int(columns, rows), LocalFunction, squareDimensions);
+            return;
+
+            void LocalFunction(Vector2Int index, Vector2 dimensions)
             {
-                for (int x = 0; x < rows; x++)
-                {
-                    Square square = Instantiate(squarePrefab, mapHolder).GetComponent<Square>();
-                    SetupSquareProperly(square, new Vector2Int(x, y), squareDimensions.x, squareDimensions.y);
-                }
+                Square square = Instantiate(squarePrefab, mapHolder).GetComponent<Square>();
+                SetupSquareProperly(square, index, dimensions.x, dimensions.y);
             }
         }
 
@@ -226,14 +225,14 @@ namespace GameCode
         {
             Vector2 squareDimensions = GetDimensionsOfSquarePrefab(squarePrefab);
             squares = new Square[columns, rows];
-            for (int y = 0; y < columns; y++)
+            DoubleForLoop(new Vector2Int(columns, rows), LocalFunction, squareDimensions);
+            return;
+            
+            void LocalFunction(Vector2Int index, Vector2 dimensions)
             {
-                for (int x = 0; x < rows; x++)
-                {
-                    Square square = IndexProperly(existingObjects, new Vector2Int(x, y));
-                    InitializeSquareValues(square);
-                    SetupSquare(square, new Vector2Int(x, y), squareDimensions.x, squareDimensions.y);
-                }
+                Square square = IndexProperly(existingObjects, index);
+                InitializeSquareValues(square);
+                SetupSquare(square, index, dimensions.x, dimensions.y); 
             }
         }
 
@@ -248,39 +247,36 @@ namespace GameCode
                 
             }
         }
-        
-        
 
         private void FillSquares()
         {
-            for (int y = 0; y < columns; y++)
+            DoubleForLoop(new Vector2Int(columns, rows), LocalFunction);
+            return;
+
+            void LocalFunction(Vector2Int index)
             {
-                for (int x = 0; x < rows; x++)
-                {
-                    
-                }
+                return;
             }
         }
 
         #endregion
 
-        #region ShrinkExistingSquares
+        #region ShrinkScaleExistingSquares
 
         private List<Square> FindExcessSquares(Square[] existingSquares)
         {
             List<Square> deltaSquares = new List<Square>();
             foreach (Square square in existingSquares)
             {
-                for (int y = 0; y < columns; y++)
-                {
-                    for (int x = 0; x < rows; x++)
-                    {
-                        Square existingSquare = squares[y, x];
-                        if (square != existingSquare) deltaSquares.Add(square);
-                    }
-                } 
+                DoubleForLoop(new Vector2Int(columns, rows), LocalFunction, square, deltaSquares);
             }
             return  deltaSquares;
+
+            void LocalFunction(Vector2Int index, Square comparisonSquare, List<Square> listSquares)
+            {
+                Square existingSquare = squares[index.y, index.x];
+                if (comparisonSquare != existingSquare) listSquares.Add(comparisonSquare);
+            }
         }
         
 
