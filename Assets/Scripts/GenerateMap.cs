@@ -141,18 +141,6 @@ namespace GameCode
             return square.GetComponent<SpriteRenderer>().bounds.size;
         }
         
-        private void SetupSquares(Square[] existingSquares, Vector2 squareDimensions)
-        {
-            DoubleForLoop(new Vector2Int(columns, rows), LocalFunction, existingSquares, squareDimensions);
-            return;
-
-            void LocalFunction(Vector2Int index, Square[] localExistingSquares, Vector2 dimensions)
-            {
-                Square currentSquare = IndexProperly(localExistingSquares, index);
-                currentSquare.GetComponent<GameObject>().transform.SetParent(mapHolder, false);
-                SetupSquare(currentSquare, index, dimensions.x, dimensions.y);
-            }
-        }
 
         private void InitializeSquareValues(Square square)
         {
@@ -203,7 +191,6 @@ namespace GameCode
             Square[] existingObjects = FindObjectsByType<Square>(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID);
             if (existingObjects.Length == 0) ResetBoard();
             else if (existingObjects.Length == GetNrSquares) ResetBoard(existingObjects);
-            else ResizeBoard(existingObjects);
             AssignStartEndSquare();
         }
 
@@ -233,59 +220,6 @@ namespace GameCode
                 Square square = IndexProperly(existingObjects, index);
                 InitializeSquareValues(square);
                 SetupSquare(square, index, dimensions.x, dimensions.y); 
-            }
-        }
-
-        private void ResizeBoard(Square[] existingObjects)
-        {
-            
-            squares = new Square[columns, rows];
-            
-            if (existingObjects.Length > GetNrSquares) DeleteExcessSquares(FindExcessSquares(existingObjects));
-            else
-            {
-                
-            }
-        }
-
-        private void FillSquares()
-        {
-            DoubleForLoop(new Vector2Int(columns, rows), LocalFunction);
-            return;
-
-            void LocalFunction(Vector2Int index)
-            {
-                return;
-            }
-        }
-
-        #endregion
-
-        #region ShrinkScaleExistingSquares
-
-        private List<Square> FindExcessSquares(Square[] existingSquares)
-        {
-            List<Square> deltaSquares = new List<Square>();
-            foreach (Square square in existingSquares)
-            {
-                DoubleForLoop(new Vector2Int(columns, rows), LocalFunction, square, deltaSquares);
-            }
-            return  deltaSquares;
-
-            void LocalFunction(Vector2Int index, Square comparisonSquare, List<Square> listSquares)
-            {
-                Square existingSquare = squares[index.y, index.x];
-                if (comparisonSquare != existingSquare) listSquares.Add(comparisonSquare);
-            }
-        }
-        
-
-        private static void DeleteExcessSquares(List<Square> squaresToDelete)
-        {
-            for (int i = squaresToDelete.Count - 1; i >= 0; i--)
-            {
-                Destroy(squaresToDelete[i]);
-                squaresToDelete.RemoveAt(i);
             }
         }
 
