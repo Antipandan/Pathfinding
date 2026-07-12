@@ -1,28 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TMPro;
-using Unity;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Utility;
 using static GameCode.Constants;
-using Random = System.Random;
 
 namespace GameCode
 {
     [RootEditor]
     public class Square : MonoBehaviour
     {
-        [SerializeField] private TextMeshPro weightText = null;
-        [SerializeField] private TextMeshPro fText = null;
+        [Header("Settings")]
         [SerializeField] private float weight = 0f;
-        private static CustomEvents customEvent;
-        private SquareTypes squareType = SquareTypes.RegularSquare;
-        [SerializeField] private Vector2Int index;
         [SerializeField] private float g;
         [SerializeField] private float h;
+        [Header("References (dont touch)")]
+        [SerializeField] private TextMeshPro weightText = null;
+        [SerializeField] private TextMeshPro fText = null;
+
+        
+        private SquareTypes squareType = SquareTypes.RegularSquare;
+        private static CustomEvents customEvent;
+        private Vector2Int index;
+
 
         public Vector2Int Index
         {
@@ -81,15 +82,7 @@ namespace GameCode
             set => customEvent = value;
         }
 
-        private void Start()
-        {
-            UpdateText(fText, F);
-        }
-
-        private void OnValidate()
-        {
-            Weight = Mathf.Clamp(weight, 0f, float.MaxValue);
-        }
+        #region UpdateText
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CheckTextLengthUnderMax(int value)
@@ -114,6 +107,20 @@ namespace GameCode
         {
             textMeshPro.text = CheckTextLengthUnderMax(value) ? $"{(int)value}" : $"{(int)(Mathf.Pow(10, maxNumberLenght) - 1)}";
         }
+
+        #endregion
+
+        private void Start()
+        {
+            UpdateText(fText, F);
+        }
+
+        private void OnValidate()
+        {
+            Weight = Mathf.Clamp(weight, 0f, float.MaxValue);
+        }
+
+
     }
 
 }
