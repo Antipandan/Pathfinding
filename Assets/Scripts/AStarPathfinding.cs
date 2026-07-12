@@ -15,6 +15,8 @@ namespace GameCode
         [SerializeField] private bool colorEntirePath = false;
         [Tooltip("Which distance formula to use when calculating the distance and new H value for Squares")]
         [SerializeField] private DistanceFormulaTypes distanceFormula = DistanceFormulaTypes.ManhattanDistance;
+        [Tooltip("Puts extra emphasis on the H value of a square, potentially leading to shorter paths")]
+        [SerializeField] [Range(0, ushort.MaxValue)] private ushort HeuristicMultiplier = 1;
         [Tooltip("The delay for having found a treversable square in the Astar algorithm. Delay in milliseconds (ms)")]
         [SerializeField] private float aStarSearchDelay = 100f;
         [Tooltip("The delay for having found a treversable square in the Traceback algorithm. Delay in milliseconds (ms)")]
@@ -46,9 +48,9 @@ namespace GameCode
             switch (distanceFormula)
             {
                 case DistanceFormulaTypes.EuclidianDistance:
-                    return UtilityFunctions.CalculateEuclidieanDistance(startSquare.Index, endSquare.Index);
+                    return UtilityFunctions.CalculateEuclidieanDistance(startSquare.Index, endSquare.Index) * HeuristicMultiplier;
                 case DistanceFormulaTypes.ManhattanDistance:
-                    return UtilityFunctions.CalculateManhattanDistance(startSquare.Index, endSquare.Index);
+                    return UtilityFunctions.CalculateManhattanDistance(startSquare.Index, endSquare.Index) * HeuristicMultiplier;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

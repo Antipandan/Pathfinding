@@ -66,6 +66,7 @@ namespace GameCode
         }
         #endregion
 
+        [ExecuteAlways]
         private void OnValidate()
         {
             Setup();

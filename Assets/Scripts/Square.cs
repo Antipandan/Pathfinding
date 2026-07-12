@@ -12,15 +12,13 @@ namespace GameCode
     public class Square : MonoBehaviour
     {
         [Header("Settings")]
+        [SerializeField] private SquareTypes squareType = SquareTypes.RegularSquare;
         [SerializeField] private float weight = 0f;
         [SerializeField] private float g;
         [SerializeField] private float h;
         [Header("References (dont touch)")]
         [SerializeField] private TextMeshPro weightText = null;
         [SerializeField] private TextMeshPro fText = null;
-
-        
-        private SquareTypes squareType = SquareTypes.RegularSquare;
         private static CustomEvents customEvent;
         private Vector2Int index;
 
@@ -66,6 +64,7 @@ namespace GameCode
             }
         }
 
+        [ExecuteAlways]
         public SquareTypes SquareType
         {
             get => squareType;
