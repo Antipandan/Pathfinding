@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using Utility;
 using static Utility.UtilityFunctions;
 using Random = System.Random;
 
 namespace GameCode
 {
+    
     public class GenerateMap : MonoBehaviour
     {
         [Header("Settings")]
@@ -184,9 +186,9 @@ namespace GameCode
         
         #region GenerateMapFunctions
         
+
         private void ReColorSquares()
         {
-            Debug.Log($"recolor");
             for (int y = 0; y < columns; y++)
             {
                 for (int x = 0; x < rows; x++)
@@ -201,10 +203,8 @@ namespace GameCode
         {
             Square[] existingObjects = FindObjectsByType<Square>(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID);
             if (existingObjects.Length == 0) ResetBoard();
-            else if (existingObjects.Length == GetNrSquares)
-            {
-                ResetBoard(existingObjects);
-            }
+            else if (existingObjects.Length == GetNrSquares) ResetBoard(existingObjects);
+            else ResizeBoard(existingObjects);
             AssignStartEndSquare();
         }
 
@@ -237,13 +237,37 @@ namespace GameCode
             }
         }
 
+        private void ResizeBoard(Square[] existingObjects)
+        {
+            
+            squares = new Square[columns, rows];
+            
+            if (existingObjects.Length > GetNrSquares) DeleteExcessSquares(FindExcessSquares(existingObjects));
+            else
+            {
+                
+            }
+        }
+        
+        
+
+        private void FillSquares()
+        {
+            for (int y = 0; y < columns; y++)
+            {
+                for (int x = 0; x < rows; x++)
+                {
+                    
+                }
+            }
+        }
+
         #endregion
 
         #region ShrinkExistingSquares
 
         private List<Square> FindExcessSquares(Square[] existingSquares)
         {
-            
             List<Square> deltaSquares = new List<Square>();
             foreach (Square square in existingSquares)
             {

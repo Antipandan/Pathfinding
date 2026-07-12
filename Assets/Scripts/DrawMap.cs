@@ -8,6 +8,7 @@ using static GameCode.SquareTypes;
 
 namespace GameCode
 {
+    [ExecuteAlways]
     public class DrawMap : MonoBehaviour
     {
         [Header("Settings")]
@@ -66,7 +67,6 @@ namespace GameCode
         }
         #endregion
 
-        [ExecuteAlways]
         private void OnValidate()
         {
             Setup();

@@ -24,13 +24,14 @@ namespace Utility
             int xDiff = end.x - start.x;
             return (int)(Mathf.Sqrt(xDiff * xDiff + yDiff * yDiff));
         }
+
         /// <summary>
         /// Calculates the distance between two points using the pythagorean theorem see: https://www.geeksforgeeks.org/maths/euclidean-distance/
         /// </summary>
         /// <param name="start">Starting point</param>
         /// <param name="end">End point</param>
         /// <returns>Distance between two points</returns>
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float CalculateEuclidieanDistance(Vector2 start, Vector2 end)
         {
@@ -38,7 +39,7 @@ namespace Utility
             float yDiff = end.y - start.y;
             return Mathf.Sqrt(xDiff * xDiff + yDiff * yDiff);
         }
-        
+
         /// <summary>
         /// Calculates the distance between two points using the pythagorean theorem see: https://www.geeksforgeeks.org/maths/euclidean-distance/
         /// </summary>
@@ -51,7 +52,7 @@ namespace Utility
         {
             return Mathf.Sqrt(deltaDistanceX * deltaDistanceX + deltaDistanceY * deltaDistanceY);
         }
-        
+
 
         /// <summary>
         /// Calculates the manhattan distance between two points see: https://www.geeksforgeeks.org/data-science/manhattan-distance/
@@ -88,7 +89,7 @@ namespace Utility
         {
             return Mathf.Abs(start.x - end.x) + Mathf.Abs(start.y - end.y);
         }
-        
+
         /// <summary>
         /// Prevents certain functions from running whilst unity is in editor mode. Intended to not run functions that for example Instantiate gameObjects and other
         /// </summary>
@@ -111,7 +112,7 @@ namespace Utility
         {
             return (int)Mathf.Log(value, 10);
         }
-        
+
         /// <summary>
         /// Calculates the number of numbers inside a number.
         /// </summary>
@@ -123,8 +124,7 @@ namespace Utility
         }
 
         /// <summary>
-        /// Iterates over every single char in a given string. Returns the combinded ASCII value of said chars.
-        /// if string can be directly converted to an int, that will be returned
+        /// Either converts string to int if possible. If not counts the ASCII char value in a string
         /// </summary>
         /// <param name="seedString">string to count value of it's chars</param>
         /// <returns>Combined ASCII value of all chars or the int representation of string</returns>
@@ -134,6 +134,11 @@ namespace Utility
             return int.TryParse(seedString, out int seedInt) ? seedInt : CountCharValue(seedString);
         }
 
+        /// <summary>
+        /// Counts the ASCII char value in a string
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int CountCharValue(string text)
         {
@@ -145,62 +150,231 @@ namespace Utility
             return total;
         }
 
-        public static void DoubleForLoop(Vector2Int bounds, Action body)
+        /// <summary>
+        /// Runs a function inside a double for loop
+        /// </summary>
+        /// <param name="bounds">Where should both loops end. x value represents where the outer for loop should end.
+        /// Y value represents where the inner for loop should end</param>
+        /// <param name="body">Function to run</param>
+        public static void DoubleForLoop(Vector2Int bounds, Action<Vector2Int> body)
         {
-            for (int i = 0; i < bounds.x; i++)
+            for (int y = 0; y < bounds.x; y++)
             {
-                for (int j = 0; j < bounds.y; j++)
+                for (int x = 0; x < bounds.y; x++)
                 {
-                    body.Invoke();
+                    body.Invoke(new Vector2Int(x, y));
                 }
             }
         }
 
-        public static void DoubleForLoop<T>(Vector2Int bounds, Action<T> body, T argument)
+        
+        /// <summary>
+        /// Runs a function inside a double for loop
+        /// </summary>
+        /// <param name="bounds">Where should both loops end. x value represents where the outer for loop should end.
+        /// Y value represents where the inner for loop should end</param>
+        /// <param name="body">Function to run</param>
+        /// <param name="argument">Argument needed to run function</param>
+        /// <typeparam name="T1">Type of the first argument</typeparam>
+        public static void DoubleForLoop<T1>(Vector2Int bounds, Action<Vector2Int, T1> body, T1 argument)
         {
-            for (int i = 0; i < bounds.x; i++)
+            for (int y = 0; y < bounds.x; y++)
             {
-                for (int j = 0; j < bounds.y; j++)
+                for (int x = 0; x < bounds.y; x++)
                 {
-                    body.Invoke(argument);
-                }
-            } 
-        }
-
-        public static void DoubleForLoop<T1, T2>(Vector2Int bounds, Action<T1, T2> body, T1 argument1, T2 argument2)
-        {
-            for (int i = 0; i < bounds.x; i++)
-            {
-                for (int j = 0; j < bounds.y; j++)
-                {
-                    body.Invoke(argument1, argument2);
+                    body.Invoke(new Vector2Int(x, y), argument);
                 }
             }
         }
 
-        public static void DoubleForLoop<T1, T2, T3>(Vector2Int bounds, Action<T1, T2, T3> body, T1 argument1,
-            T2 argument2, T3 argument3)
+        /// <summary>
+        /// Runs a function inside a double for loop
+        /// </summary>
+        /// <param name="bounds">Where should both loops end. x value represents where the outer for loop should end.
+        /// Y value represents where the inner for loop should end</param>
+        /// <param name="body">Function to run</param>
+        /// <param name="argument1">First argument needed to run the function</param>
+        /// <param name="argument2">Second argument needed to run the function</param>
+        /// <typeparam name="T1">Type of the first argument</typeparam>
+        /// <typeparam name="T2">Type of the second argument</typeparam>
+        public static void DoubleForLoop<T1, T2>(Vector2Int bounds, Action<Vector2Int, T1, T2> body, T1 argument1, T2 argument2)
         {
-            for (int i = 0; i < bounds.x; i++)
+            for (int y = 0; y < bounds.x; y++)
             {
-                for (int j = 0; j < bounds.y; j++)
+                for (int x = 0; x < bounds.y; x++)
                 {
-                    body.Invoke(argument1, argument2, argument3);
+                    body.Invoke(new Vector2Int(x, y), argument1, argument2);
                 }
-            }  
+            }
         }
 
-        public static void DoubleForLoop<T1, T2, T3, T4>(Vector2Int bounds, Action<T1, T2, T3, T4> body, T1 argument1,
-            T2 argument2, T3 argument3, T4 argument4)
+        /// <summary>
+        /// Runs a function inside a double for loop
+        /// </summary>
+        /// <param name="bounds">Where should both loops end. x value represents where the outer for loop should end.
+        /// Y value represents where the inner for loop should end</param>
+        /// <param name="body">Function to run</param>
+        /// <param name="argument1">First argument needed to run the function</param>
+        /// <param name="argument2">Second argument needed to run the function</param>
+        /// <param name="argument3">Third argument needed to run the function</param>
+        /// <typeparam name="T1">Type of the first argument</typeparam>
+        /// <typeparam name="T2">Type of the second argument</typeparam>
+        /// <typeparam name="T3">Type of the third argument</typeparam>
+        public static void DoubleForLoop<T1, T2, T3>(Vector2Int bounds, Action<Vector2Int, T1, T2, T3> body,
+            T1 argument1, T2 argument2, T3 argument3)
         {
-            for (int i = 0; i < bounds.x; i++)
+            for (int y = 0; y < bounds.x; y++)
             {
-                for (int j = 0; j < bounds.y; j++)
+                for (int x = 0; x < bounds.y; x++)
                 {
-                    body.Invoke(argument1, argument2, argument3, argument4);
+                    body.Invoke(new Vector2Int(x, y), argument1, argument2, argument3);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Runs a function inside a double for loop
+        /// </summary>
+        /// <param name="bounds">Where should both loops end. x value represents where the outer for loop should end.
+        /// Y value represents where the inner for loop should end</param>
+        /// <param name="body">Function to run</param>
+        /// <param name="argument1">First argument needed to run the function</param>
+        /// <param name="argument2">Second argument needed to run the function</param>
+        /// <param name="argument3">Third argument needed to run the function</param>
+        /// <param name="argument4">Fourth argument needed to run the function</param>
+        /// <typeparam name="T1">Type of the first argument</typeparam>
+        /// <typeparam name="T2">Type of the second argument</typeparam>
+        /// <typeparam name="T3">Type of the third argument</typeparam>
+        /// <typeparam name="T4">Type of the fourth argument</typeparam>
+        public static void DoubleForLoop<T1, T2, T3, T4>(Vector2Int bounds, Action<Vector2Int, T1, T2, T3, T4> body,
+            T1 argument1, T2 argument2, T3 argument3, T4 argument4)
+        {
+            for (int y = 0; y < bounds.x; y++)
+            {
+                for (int x = 0; x < bounds.y; x++)
+                {
+                    body.Invoke(new Vector2Int(x, y), argument1, argument2, argument3, argument4);
                 }
             }
         }
         
+        /// <summary>
+        /// Runs a function inside a double for loop. Returns values iteratively
+        /// </summary>
+        /// <param name="bounds">Where should both loops end. x value represents where the outer for loop should end.
+        /// Y value represents where the inner for loop should end</param>
+        /// <param name="body">Function to run</param>
+        /// <typeparam name="TResult">Type of the return value</typeparam>
+        public static IEnumerable<TResult> DoubleForLoop<TResult>(Vector2Int bounds, Func<Vector2Int, TResult> body)
+        {
+            for (int y = 0; y < bounds.x; y++)
+            {
+                for (int x = 0; x < bounds.y; x++)
+                {
+                    yield return body.Invoke(new Vector2Int(x, y));
+                }
+            }
+            yield return default;
+        }
+        
+        /// <summary>
+        /// Runs a function inside a double for loop. Returns values iteratively
+        /// </summary>
+        /// <param name="bounds">Where should both loops end. x value represents where the outer for loop should end.
+        /// Y value represents where the inner for loop should end</param>
+        /// <param name="body">Function to run</param>
+        /// <param name="argument1">First argument needed to run the function</param>
+        /// <typeparam name="T1">Type of the first argument</typeparam>
+        /// <typeparam name="TResult">Type of the return value</typeparam>
+        public static IEnumerable<TResult> DoubleForLoop<T1, TResult>(Vector2Int bounds, Func<Vector2Int, T1, TResult> body,
+            T1 argument1)
+        {
+            for (int y = 0; y < bounds.x; y++)
+            {
+                for (int x = 0; x < bounds.y; x++)
+                {
+                   yield return body.Invoke(new Vector2Int(x, y), argument1);
+                }
+            }
+            yield return default;
+        }
+        
+        /// <summary>
+        /// Runs a function inside a double for loop. Returns values iteratively
+        /// </summary>
+        /// <param name="bounds">Where should both loops end. x value represents where the outer for loop should end.
+        /// Y value represents where the inner for loop should end</param>
+        /// <param name="body">Function to run</param>
+        /// <param name="argument1">First argument needed to run the function</param>
+        /// <param name="argument2">Second Argument needed to run the function</param>
+        /// <typeparam name="T1">Type of the first argument</typeparam>
+        /// <typeparam name="T2">Type of the second argument</typeparam>
+        /// <typeparam name="TResult">Type of the return value</typeparam>
+        public static IEnumerable<TResult> DoubleForLoop<T1, T2, TResult>(Vector2Int bounds, Func<Vector2Int, T1, T2, TResult> body,
+            T1 argument1, T2 argument2)
+        {
+            for (int y = 0; y < bounds.x; y++)
+            {
+                for (int x = 0; x < bounds.y; x++)
+                {
+                    yield return body.Invoke(new Vector2Int(x, y), argument1, argument2);
+                }
+            }
+            yield return default;
+        }
+
+        /// <summary>
+        /// Runs a function inside a double for loop. Returns values iteratively
+        /// </summary>
+        /// <param name="bounds">Where should both loops end. x value represents where the outer for loop should end.
+        /// Y value represents where the inner for loop should end</param>
+        /// <param name="body">Function to run</param>
+        /// <param name="argument1">First argument needed to run the function</param>
+        /// <param name="argument2">Second Argument needed to run the function</param>
+        /// <param name="argument3">Third argument needed to run the function</param>
+        /// <typeparam name="T1">Type of the first argument</typeparam>
+        /// <typeparam name="T2">Type of the second argument</typeparam>
+        /// <typeparam name="T3">Type of the third argument</typeparam>
+        /// <typeparam name="TResult">Type of the return value</typeparam>
+        public static IEnumerable<TResult> DoubleForLoop<T1, T2, T3, TResult>(Vector2Int bounds,
+            Func<Vector2Int, T1, T2, T3, TResult> body, T1 argument1, T2 argument2, T3 argument3)
+        {
+            for (int y = 0; y < bounds.x; y++)
+            {
+                for (int x = 0; x < bounds.y; x++)
+                {
+                    yield return body.Invoke(new Vector2Int(x, y), argument1, argument2, argument3);
+                }
+            }
+            yield return default;
+        }
+
+        /// <summary>
+        /// Runs a function inside a double for loop. Returns values iteratively
+        /// </summary>
+        /// <param name="bounds">Where should both loops end. x value represents where the outer for loop should end.
+        /// Y value represents where the inner for loop should end</param>
+        /// <param name="body">Function to run</param>
+        /// <param name="argument1">First argument needed to run the function</param>
+        /// <param name="argument2">Second Argument needed to run the function</param>
+        /// <param name="argument3">Third argument needed to run the function</param>
+        /// <param name="argument4"></param>
+        /// <typeparam name="T1">Type of the first argument</typeparam>
+        /// <typeparam name="T2">Type of the second argument</typeparam>
+        /// <typeparam name="T3">Type of the third argument</typeparam>
+        /// <typeparam name="T4">Type of the fourth argument</typeparam>
+        /// <typeparam name="TResult">Type of the return value</typeparam>
+        public static IEnumerable<TResult> DoubleForLoop<T1, T2, T3, T4, TResult>(Vector2Int bounds,
+            Func<Vector2Int, T1, T2, T3, T4, TResult> body, T1 argument1, T2 argument2, T3 argument3, T4 argument4)
+        {
+            for (int y = 0; y < bounds.x; y++)
+            {
+                for (int x = 0; x < bounds.y; x++)
+                {
+                    yield return body.Invoke(new Vector2Int(x, y), argument1, argument2, argument3, argument4);
+                }
+            }
+            yield return default;
+        }
     }
 }
