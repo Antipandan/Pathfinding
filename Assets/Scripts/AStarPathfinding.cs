@@ -15,6 +15,8 @@ namespace GameCode
         [SerializeField] private bool colorEntirePath = false;
         [Tooltip("Which distance formula to use when calculating the distance and new H value for Squares")]
         [SerializeField] private DistanceFormulaTypes distanceFormula = DistanceFormulaTypes.ManhattanDistance;
+        [Tooltip("Puts extra emphasis on the H value of a square, potentially leading to shorter paths")]
+        [SerializeField] [Range(0, ushort.MaxValue)] private ushort HeuristicMultiplier = 1;
         [Tooltip("The delay for having found a treversable square in the Astar algorithm. Delay in milliseconds (ms)")]
         [SerializeField] private float aStarSearchDelay = 100f;
         [Tooltip("The delay for having found a treversable square in the Traceback algorithm. Delay in milliseconds (ms)")]
@@ -30,7 +32,30 @@ namespace GameCode
         {
             Setup();
         }
+        
+        private void Start()
+        {
+            endingSquare = customEvent.PublishOnGetEndingSquare();
+            startingSquare = customEvent.PublishOnGetStartingSquare();
+            openList.Add(startingSquare);
+            StartCoroutine(AStarPathfindingAlgorithm());
+        }
 
+        #region EssentialFunctions
+
+        private int CalculateDistance(Square startSquare, Square endSquare)
+        {
+            switch (distanceFormula)
+            {
+                case DistanceFormulaTypes.EuclidianDistance:
+                    return UtilityFunctions.CalculateEuclidieanDistance(startSquare.Index, endSquare.Index) * HeuristicMultiplier;
+                case DistanceFormulaTypes.ManhattanDistance:
+                    return UtilityFunctions.CalculateManhattanDistance(startSquare.Index, endSquare.Index) * HeuristicMultiplier;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        
         private void Setup()
         {
             openList = new List<Square>();
@@ -40,15 +65,10 @@ namespace GameCode
                 Debug.LogWarning($"Warning! Reference to {nameof(customEvent)} is null!", this);
             }
         }
-        
-        private void Start()
-        {
-            // måste sätta de här för att events ska kunna prenumerera i tid?
-            endingSquare = customEvent.PublishOnGetEndingSquare();
-            startingSquare = customEvent.PublishOnGetStartingSquare();
-            openList.Add(startingSquare);
-            StartCoroutine(AStarPathfindingAlgorithm());
-        }
+
+        #endregion
+
+        #region AStarPathfindingAlgorithm
 
         private IEnumerator AStarPathfindingAlgorithm()
         {
@@ -87,7 +107,37 @@ namespace GameCode
             }
             if (foundPath) StartCoroutine(TraceBackPath());
         }
-
+        
+        private static bool CheckIfAllSameFValues(List<Square> squares)
+        {
+            Square previousSquare = null;
+            foreach (Square square in squares)
+            {
+                if (previousSquare is null) previousSquare = square;
+                else if (!Mathf.Approximately(previousSquare.F, square.F)) return false;
+            }
+            return true;
+        }
+        
+        private Square FindCheapestSquare()
+        {
+            Square cheapestSquare = null;
+            bool sameFValue = CheckIfAllSameFValues(openList);
+            foreach (Square square in openList)
+            {
+                if (!sameFValue)
+                {
+                    if (cheapestSquare is null || square.F < cheapestSquare.F) cheapestSquare = square;
+                }
+                else
+                {
+                    if (cheapestSquare is null || square.G > cheapestSquare.G) cheapestSquare = square;
+                }
+            }
+            TryUpdateSquare(cheapestSquare, SquareTypes.FoundPathSquare);
+            return cheapestSquare;
+        }
+        
         private List<Square> FilterOutNeighbours(List<Square> neighbours)
         {
             List<Square> filteredNeighbours = new List<Square>();
@@ -97,7 +147,6 @@ namespace GameCode
             }
             return filteredNeighbours;
         }
-        
         
         private bool DetermineIfSkip(Square successor)
         {
@@ -116,43 +165,15 @@ namespace GameCode
             return skip;
         }
         
-        
-        private Square FindCheapestSquare()
-        {
-            Square cheapestSquare = null;
-            bool sameFValue = CheckIfAllSameFValues(openList);
-            foreach (Square square in openList)
-            {
-                if (!sameFValue)
-                {
-                    if (cheapestSquare is null || square.F < cheapestSquare.F) cheapestSquare = square;
-                }
-                else
-                {
-                    if (cheapestSquare is null || square.G > cheapestSquare.G) cheapestSquare = square;
-                }
-            }
-            TryUpdateSquare(cheapestSquare, SquareTypes.FoundPathSquare);
-            
-            return cheapestSquare;
-        }
-
-        private static bool CheckIfAllSameFValues(List<Square> squares)
-        {
-            Square previousSquare = null;
-            foreach (Square square in squares)
-            {
-                if (previousSquare is null) previousSquare = square;
-                else if (!Mathf.Approximately(previousSquare.F, square.F)) return false;
-            }
-            return true;
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void TryUpdateSquare(Square square, SquareTypes squareType)
         {
             if (square.SquareType < squareType) square.SquareType = squareType;
         }
+
+        #endregion
+
+        #region TraceBackAlgorithm
 
         // ReSharper disable Unity.PerformanceAnalysis
         private IEnumerator TraceBackPath()
@@ -178,16 +199,7 @@ namespace GameCode
             }
             UpdateSingleTraceSquare(currentSquare, visitedSquares);
         }
-
-        private void UpdateSingleTraceSquare(Square square, HashSet<Square> visitedSquares)
-        {
-            visitedSquares.Add(square);
-            if (colorEntirePath || square.SquareType < SquareTypes.FinalPathSquare)
-            {
-                square.SquareType = SquareTypes.FinalPathSquare;
-            }
-        }
-
+        
         private static Square FindCheapestGSquare(List<Square> squares)
         {
             Square cheapestSquare = null;
@@ -197,6 +209,17 @@ namespace GameCode
             }
             return cheapestSquare;
         }
+        
+        private void UpdateSingleTraceSquare(Square square, HashSet<Square> visitedSquares)
+        {
+            visitedSquares.Add(square);
+            if (colorEntirePath || square.SquareType < SquareTypes.FinalPathSquare)
+            {
+                square.SquareType = SquareTypes.FinalPathSquare;
+            }
+        }
+
+        #endregion
 
         private void OnDisable()
         {
@@ -208,26 +231,16 @@ namespace GameCode
             Setup();
             StartCoroutine(AStarPathfindingAlgorithm());
         }
-        
-        private int CalculateDistance(Square startSquare, Square endSquare)
+
+        private void OnValidate()
         {
-            switch (distanceFormula)
-            {
-                case DistanceFormulaTypes.EuclidianDistance:
-                    return UtilityFunctions.CalculateEuclidieanDistance(startSquare.Index, endSquare.Index);
-                case DistanceFormulaTypes.ManhattanDistance:
-                    return UtilityFunctions.CalculateManhattanDistance(startSquare.Index, endSquare.Index);
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            customEvent.PublishOnReset();
         }
-        
-        
+
         private void OnApplicationQuit()
         {
             StopCoroutine(AStarPathfindingAlgorithm());
         }
-        
     }
 }
 

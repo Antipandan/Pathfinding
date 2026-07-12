@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Unity;
 using UnityEngine;
 using static Utility.UtilityFunctions;
 using Random = System.Random;
 
 namespace GameCode
 {
+    
     public class GenerateMap : MonoBehaviour
     {
         [Header("Settings")]
@@ -43,11 +43,44 @@ namespace GameCode
 
         private void Awake()
         {
-            // jag vet inte om detta är en bra idé? Förmodligen inte
             SubscribeToAllEvents();
             Setup();
             CreateMapHolder();
         }
+        
+        private void Start()
+        {
+            GenerateSquareMap();
+            ReColorSquares();
+        }
+        
+        private void Reset()
+        {
+            Setup();
+            PreventFunctionsRunningInEditor(GenerateSquareMap);
+            ReColorSquares(); 
+        }
+
+        private void OnDisable()
+        {
+            customEvents.onReset -= Reset;
+        }
+
+        private void OnEnable()
+        {
+            customEvents.onReset += Reset;
+        }
+        
+        [ExecuteAlways]
+        private void OnValidate()
+        {
+            CheckIfPositionIsOutside(ref startingPosition);
+            CheckIfPositionIsOutside(ref endingPosition);
+            CheckIfPositionIsSame();
+            customEvents.PublishOnReset();
+        }
+        
+        #region EssentialFunctions
 
         private void SubscribeToAllEvents()
         {
@@ -56,17 +89,22 @@ namespace GameCode
             customEvents.onGetStartingSquare += GetStartingSquare;
             customEvents.onGetEndingSquare += GetEndingSquare;
         }
-
-        private void Start()
-        {
-            GenerateSquareMap();
-        }
-
+        
         private void Setup()
         {
             ClampDimensions();
             random = new Random(ParseSeed(seed));
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private  Square IndexProperly(Square[] s, Vector2Int index)
+        {
+            return s[index.x + index.y * columns];
+        }
+
+        #endregion
+
+        #region SetEssentialSquares
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Square GetStartingSquare()
@@ -79,12 +117,16 @@ namespace GameCode
         {
             return squares[endingPosition.y, endingPosition.x];
         }
-
-        private void ClampDimensions()
+        
+        private void AssignStartEndSquare()
         {
-            columns = (ushort)Mathf.Clamp(columns, 1, int.MaxValue);
-            rows = (ushort)Mathf.Clamp(rows, 1, int.MaxValue);
+            squares[startingPosition.y, startingPosition.x].SquareType = SquareTypes.StartNodeSquare;
+            squares[endingPosition.y, endingPosition.x].SquareType = SquareTypes.EndNodeSquare;
         }
+
+        #endregion
+        
+        #region SetupSquareFunctions
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void CreateMapHolder()
@@ -92,46 +134,99 @@ namespace GameCode
             if (mapHolder == null) Instantiate(new GameObject());
         }
 
-        private void GenerateSquareMap()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Vector2 GetDimensionsOfSquarePrefab(GameObject square)
         {
-            Square[] existingObjects = FindObjectsByType<Square>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-            Vector2 squareDimensions = squarePrefab.GetComponent<SpriteRenderer>().bounds.size;
-            if (existingObjects.Length == 0)
-            {
-                squares = new Square[columns, rows];
-                for (int y = 0; y < columns; y++)
-                {
-                    for (int x = 0; x < rows; x++)
-                    {
-                        Square square = Instantiate(squarePrefab, mapHolder).GetComponent<Square>();
-                        SetupSquareProperly(square);
-                        square.transform.position = (squareDimensions + padding) * new Vector2(x, y);
-                        square.Index = new Vector2Int(x, y);
-                        squares[y, x] = square;
-                    }
-                }
-            }
-            else if (existingObjects.Length > GetNrSquares)
-            {
-                return;
-            }
-            
-            else if (existingObjects.Length < GetNrSquares)
-            {
-                return;
-            }
-            
-            // Tänk som att vi målar ett baslager av färgen specificerad av regularSquare i drawMap
+            if (square is null) return Vector2.zero;
+            return square.GetComponent<SpriteRenderer>().bounds.size;
+        }
+        
+
+        private void InitializeSquareValues(Square square)
+        {
+            Square.CustomEvent = customEvents;
+            square.Weight = random.Next(minWeight, maxWeight + 1);
+            square.G = square.Weight;
+            square.H = 0f;
+        }
+        
+        private void InitializeSquareValues(Square square, SquareTypes newSquareType)
+        {
+            InitializeSquareValues(square);
+            square.SquareType = newSquareType;
+        }
+        
+        private void SetupSquare(Square square, Vector2Int index, float dimensionsX = 0f, float dimensionsY = 0f)
+        {
+            square.transform.position = (new Vector2(dimensionsX, dimensionsY) + padding) * new Vector2(index.x, index.y);
+            square.Index = new Vector2Int(index.x, index.y);
+            squares[index.y, index.x] = square;
+        }
+
+        private void SetupSquareProperly(Square square, Vector2Int index, float dimensionsX = 0f, float dimensionsY = 0f)
+        {
+            InitializeSquareValues(square);
+            SetupSquare(square, index, dimensionsX, dimensionsY);
+        }
+
+        #endregion
+        
+        #region GenerateMapFunctions
+        
+
+        private void ReColorSquares()
+        {
             for (int y = 0; y < columns; y++)
             {
                 for (int x = 0; x < rows; x++)
                 {
-                    squares[y, x].SquareType = SquareTypes.RegularSquare;
+                    // kommer också att kalla metod som uppdaterar färgen via setter
+                    squares[y, x].SquareType = squares[y, x].SquareType;
                 }
             }
+        }
+
+        private void GenerateSquareMap()
+        {
+            Square[] existingObjects = FindObjectsByType<Square>(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID);
+            if (existingObjects.Length == 0) ResetBoard();
+            else if (existingObjects.Length == GetNrSquares) ResetBoard(existingObjects);
             AssignStartEndSquare();
         }
 
+        private void ResetBoard()
+        {
+            Vector2 squareDimensions = GetDimensionsOfSquarePrefab(squarePrefab);
+            squares = new Square[columns, rows];
+            DoubleForLoop(new Vector2Int(columns, rows), LocalFunction, squareDimensions);
+            return;
+
+            void LocalFunction(Vector2Int index, Vector2 dimensions)
+            {
+                Square square = Instantiate(squarePrefab, mapHolder).GetComponent<Square>();
+                SetupSquareProperly(square, index, dimensions.x, dimensions.y);
+            }
+        }
+
+        private void ResetBoard(Square[] existingObjects)
+        {
+            Vector2 squareDimensions = GetDimensionsOfSquarePrefab(squarePrefab);
+            squares = new Square[columns, rows];
+            DoubleForLoop(new Vector2Int(columns, rows), LocalFunction, squareDimensions);
+            return;
+            
+            void LocalFunction(Vector2Int index, Vector2 dimensions)
+            {
+                Square square = IndexProperly(existingObjects, index);
+                InitializeSquareValues(square);
+                SetupSquare(square, index, dimensions.x, dimensions.y); 
+            }
+        }
+
+        #endregion
+        
+        #region Neighbour
+        
         public List<Square> GetNeighbours(Square square)
         {
             if (square is null) return null;
@@ -155,7 +250,16 @@ namespace GameCode
                     throw new ArgumentOutOfRangeException();
             }
         }
-
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void AddSingleNeighbour(Square square, List<Square> neighbours)
+        {
+            if (square.SquareType != SquareTypes.WallSquare)
+            {
+                neighbours.Add(square);
+            }
+        }
+        
         private List<Square> GetHorizontalNeighbours(Square square)
         {
             List<Square> neighbours = new List<Square>();
@@ -178,7 +282,6 @@ namespace GameCode
         {
             List<Square> neighbours = new List<Square>();
             Vector2Int index = square.Index;
-            // Längst upp i högra hörnet
             if (index.y + 1 < columns && index.x + 1 < rows) AddSingleNeighbour(squares[index.y + 1, index.x + 1], neighbours);
             if (index.y + 1 < columns && index.x - 1 >= 0) AddSingleNeighbour(squares[index.y + 1, index.x - 1], neighbours);
             if (index.y - 1 >= 0 && index.x - 1 >= 0) AddSingleNeighbour(squares[index.y - 1, index.x - 1], neighbours);
@@ -218,52 +321,14 @@ namespace GameCode
             neighbours.AddRange(GetDiagonalNeigbours(square));
             return neighbours;
         }
+        #endregion
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void AddSingleNeighbour(Square square, List<Square> neighbours)
-        {
-            if (square.SquareType != SquareTypes.WallSquare)
-            {
-                neighbours.Add(square);
-            }
-        }
+        #region ClampInspectorValues
 
-        private void AssignStartEndSquare()
+        private void ClampDimensions()
         {
-            squares[startingPosition.y, startingPosition.x].SquareType = SquareTypes.StartNodeSquare;
-            squares[endingPosition.y, endingPosition.x].SquareType = SquareTypes.EndNodeSquare;
-        }
-
-        private void SetupSquareProperly(Square square)
-        {
-            Square.CustomEvent = customEvents;
-            square.Weight = random.Next(minWeight, maxWeight + 1);
-            square.G = square.Weight;
-            square.H = 0f;
-        }
-        
-
-        private void Reset()
-        {
-            Setup();
-            PreventFunctionsRunningInEditor(GenerateSquareMap);
-        }
-
-        private void OnDisable()
-        {
-            customEvents.onReset -= Reset;
-        }
-
-        private void OnEnable()
-        {
-            customEvents.onReset += Reset;
-        }
-        
-        private void OnValidate()
-        {
-            CheckIfPositionIsOutside(ref startingPosition);
-            CheckIfPositionIsOutside(ref endingPosition);
-            CheckIfPositionIsSame();
+            columns = Mathf.Clamp(columns, 1, int.MaxValue);
+            rows = Mathf.Clamp(rows, 1, int.MaxValue);
         }
         
         private void CheckIfPositionIsOutside(ref Vector2Int position)
@@ -281,6 +346,9 @@ namespace GameCode
             startingPosition = Vector2Int.zero;
             endingPosition = new Vector2Int(columns - 1, rows - 1);
         }
+
+        #endregion
+        
     }
 }
 

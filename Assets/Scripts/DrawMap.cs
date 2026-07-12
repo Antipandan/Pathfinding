@@ -8,6 +8,7 @@ using static GameCode.SquareTypes;
 
 namespace GameCode
 {
+    [ExecuteAlways]
     public class DrawMap : MonoBehaviour
     {
         [Header("Settings")]
@@ -37,6 +38,10 @@ namespace GameCode
             customEvents.onColorUpdate += ChangeColor;
             Setup();
         }
+
+        #region EssentialFunctions
+
+        
         private void BuildDictionary()
         {
             squareColors = new Dictionary<SquareTypes, Color>
@@ -60,6 +65,7 @@ namespace GameCode
         {
             square.GetComponent<SpriteRenderer>().color = squareColors[square.SquareType];
         }
+        #endregion
 
         private void OnValidate()
         {
