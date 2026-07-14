@@ -38,10 +38,26 @@ namespace GameCode
             endingSquare = customEvent.PublishOnGetEndingSquare();
             startingSquare = customEvent.PublishOnGetStartingSquare();
             openList.Add(startingSquare);
+            SubscribeToEvents();
             StartCoroutine(AStarPathfindingAlgorithm());
+            
         }
 
         #region EssentialFunctions
+
+        private void Reset()
+        {
+            openList.Clear();
+            closedList.Clear();
+            openList.Add(startingSquare);
+            StopCoroutine(AStarPathfindingAlgorithm());
+            StartCoroutine(AStarPathfindingAlgorithm());
+        }
+
+        private void SubscribeToEvents()
+        {
+            customEvent.onReset += Reset;
+        }
 
         private int CalculateDistance(Square startSquare, Square endSquare)
         {

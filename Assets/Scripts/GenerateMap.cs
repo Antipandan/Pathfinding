@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using static Utility.UtilityFunctions;
@@ -43,6 +44,7 @@ namespace GameCode
 
         private void Awake()
         {
+            Square.CustomEvent = customEvents;
             SubscribeToAllEvents();
             Setup();
             CreateMapHolder();
@@ -57,7 +59,7 @@ namespace GameCode
         private void Reset()
         {
             Setup();
-            PreventFunctionsRunningInEditor(GenerateSquareMap);
+            GenerateSquareMap();
             ReColorSquares(); 
         }
 
@@ -74,6 +76,7 @@ namespace GameCode
         [ExecuteAlways]
         private void OnValidate()
         {
+            Square.CustomEvent = customEvents;
             CheckIfPositionIsOutside(ref startingPosition);
             CheckIfPositionIsOutside(ref endingPosition);
             CheckIfPositionIsSame();
@@ -99,7 +102,7 @@ namespace GameCode
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private  Square IndexProperly(Square[] s, Vector2Int index)
         {
-            return s[index.x + index.y * columns];
+            return s[index.x + index.y * rows];
         }
 
         #endregion
@@ -144,7 +147,6 @@ namespace GameCode
 
         private void InitializeSquareValues(Square square)
         {
-            Square.CustomEvent = customEvents;
             square.Weight = random.Next(minWeight, maxWeight + 1);
             square.G = square.Weight;
             square.H = 0f;
@@ -166,6 +168,13 @@ namespace GameCode
         private void SetupSquareProperly(Square square, Vector2Int index, float dimensionsX = 0f, float dimensionsY = 0f)
         {
             InitializeSquareValues(square);
+            SetupSquare(square, index, dimensionsX, dimensionsY);
+        }
+
+        private void SetupSquareProperly(Square square, Vector2Int index, SquareTypes newSquareType,
+            float dimensionsX = 0f, float dimensionsY = 0f)
+        {
+            InitializeSquareValues(square, newSquareType);
             SetupSquare(square, index, dimensionsX, dimensionsY);
         }
 
@@ -209,17 +218,26 @@ namespace GameCode
         }
 
         private void ResetBoard(Square[] existingObjects)
-        {
+        { 
             Vector2 squareDimensions = GetDimensionsOfSquarePrefab(squarePrefab);
             squares = new Square[columns, rows];
             DoubleForLoop(new Vector2Int(columns, rows), LocalFunction, squareDimensions);
+            Flushboard();
             return;
             
             void LocalFunction(Vector2Int index, Vector2 dimensions)
             {
-                Square square = IndexProperly(existingObjects, index);
-                InitializeSquareValues(square);
-                SetupSquare(square, index, dimensions.x, dimensions.y); 
+                // av någon anledning så kommer existingObjects vara reversed???
+                Square square = IndexProperly(existingObjects.Reverse().ToArray(), index);
+                SetupSquareProperly(square, index, dimensions.x, dimensions.y);
+            }
+        }
+
+        private void Flushboard()
+        {
+            foreach (Square square in squares)
+            {
+                if (square.SquareType != SquareTypes.WallSquare) square.SquareType = SquareTypes.RegularSquare;
             }
         }
 

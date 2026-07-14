@@ -20,7 +20,7 @@ namespace GameCode
         [SerializeField] private TextMeshPro weightText = null;
         [SerializeField] private TextMeshPro fText = null;
         private static CustomEvents customEvent;
-        private Vector2Int index;
+        [SerializeField] private Vector2Int index;
 
 
         public Vector2Int Index
@@ -120,7 +120,10 @@ namespace GameCode
             squareType = SquareType;
         }
 
-
+        public override string ToString()
+        {
+            return $"G: {G}, H: {H}, F: {F}, Weight: {Weight}, SquareType: {squareType}";
+        }
     }
 
 }
