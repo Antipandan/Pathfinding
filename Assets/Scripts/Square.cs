@@ -20,8 +20,7 @@ namespace GameCode
         [SerializeField] private TextMeshPro weightText = null;
         [SerializeField] private TextMeshPro fText = null;
         private static CustomEvents customEvent;
-        [SerializeField] private Vector2Int index;
-
+        private Vector2Int index;
 
         public Vector2Int Index
         {
@@ -70,8 +69,9 @@ namespace GameCode
             get => squareType;
             set
             {
+                if (customEvent == null) Debug.Log($"null!!!!!!dnbwa");
                 squareType = value;
-                customEvent.PublishOnColorUpdate(this);
+                customEvent?.PublishOnColorUpdate(this);
             } 
         }
 
@@ -117,7 +117,7 @@ namespace GameCode
         private void OnValidate()
         {
             Weight = Mathf.Clamp(weight, 0f, float.MaxValue);
-            squareType = SquareType;
+            SquareType = SquareType;
         }
 
         public override string ToString()

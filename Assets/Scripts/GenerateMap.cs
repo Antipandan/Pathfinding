@@ -58,14 +58,22 @@ namespace GameCode
         
         private void Reset()
         {
+            Debug.Log($"reset from generate");
+            Square.CustomEvent = customEvents;
             Setup();
             GenerateSquareMap();
             ReColorSquares(); 
         }
-        
+
+        private void OnEnable()
+        {
+            Square.CustomEvent = customEvents;
+        }
+
         [ExecuteAlways]
         private void OnValidate()
         {
+            Debug.Log($"validate and all the other stuff according to the W.H.O");
             Square.CustomEvent = customEvents;
             CheckIfPositionIsOutside(ref startingPosition);
             CheckIfPositionIsOutside(ref endingPosition);
@@ -177,7 +185,6 @@ namespace GameCode
         {
             DoubleForLoop(new Vector2Int(columns, rows), InternalFunction);
             return;
-
             void InternalFunction(Vector2Int index)
             {
                 squares[index.y, index.x].SquareType = squares[index.y, index.x].SquareType;
@@ -217,7 +224,6 @@ namespace GameCode
             
             void LocalFunction(Vector2Int index, Vector2 dimensions)
             {
-                // av någon anledning så kommer existingObjects vara reversed???
                 Square square = IndexProperly(existingObjects, index);
                 SetupSquareProperly(square, index, dimensions.x, dimensions.y);
             }

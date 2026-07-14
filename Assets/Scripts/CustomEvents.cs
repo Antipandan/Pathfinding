@@ -24,9 +24,11 @@ public class CustomEvents : MonoBehaviour
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
+    [ExecuteAlways]
     public void PublishOnColorUpdate(Square square)
     {
-        onColorUpdate?.Invoke(square);
+        Debug.Log($"color update");
+        onColorUpdate.Invoke(square);
     }
 
     public List<Square> PublishOnGetNeighbourSquares(Square square)
