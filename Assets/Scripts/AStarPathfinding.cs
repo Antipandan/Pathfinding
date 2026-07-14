@@ -224,7 +224,7 @@ namespace GameCode
             foreach (Square square in squares)
             {
                 if (cheapestSquare is null) cheapestSquare = square;
-                if (Mathf.Approximately(square.G, cheapestSquare.G)) cheapestSquare = FindMostExpensiveHSquare(squares);
+                else if (Mathf.Approximately(square.G, cheapestSquare.G)) cheapestSquare = FindMostExpensiveHSquare(squares);
                 else if (cheapestSquare.G > square.G) cheapestSquare = square;
             }
             return cheapestSquare;
