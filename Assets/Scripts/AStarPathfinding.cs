@@ -47,7 +47,6 @@ namespace GameCode
 
         private void Reset()
         {
-            Debug.Log($"reset pathfinding");
             openList.Clear();
             closedList.Clear();
             openList.Add(startingSquare);

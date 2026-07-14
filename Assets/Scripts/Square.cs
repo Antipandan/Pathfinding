@@ -69,7 +69,6 @@ namespace GameCode
             get => squareType;
             set
             {
-                if (customEvent == null) Debug.Log($"null!!!!!!dnbwa");
                 squareType = value;
                 customEvent?.PublishOnColorUpdate(this);
             } 

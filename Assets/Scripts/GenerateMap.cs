@@ -58,7 +58,6 @@ namespace GameCode
         
         private void Reset()
         {
-            Debug.Log($"reset from generate");
             Square.CustomEvent = customEvents;
             Setup();
             GenerateSquareMap();
@@ -73,7 +72,6 @@ namespace GameCode
         [ExecuteAlways]
         private void OnValidate()
         {
-            Debug.Log($"validate and all the other stuff according to the W.H.O");
             Square.CustomEvent = customEvents;
             CheckIfPositionIsOutside(ref startingPosition);
             CheckIfPositionIsOutside(ref endingPosition);

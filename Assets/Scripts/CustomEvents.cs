@@ -27,8 +27,7 @@ public class CustomEvents : MonoBehaviour
     [ExecuteAlways]
     public void PublishOnColorUpdate(Square square)
     {
-        Debug.Log($"color update");
-        onColorUpdate.Invoke(square);
+        onColorUpdate?.Invoke(square);
     }
 
     public List<Square> PublishOnGetNeighbourSquares(Square square)
