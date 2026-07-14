@@ -45,13 +45,13 @@ namespace GameCode
         private void Awake()
         {
             Square.CustomEvent = customEvents;
-            SubscribeToAllEvents();
             Setup();
             CreateMapHolder();
         }
         
         private void Start()
         {
+            SubscribeToAllEvents();
             GenerateSquareMap();
             ReColorSquares();
         }
@@ -61,16 +61,6 @@ namespace GameCode
             Setup();
             GenerateSquareMap();
             ReColorSquares(); 
-        }
-
-        private void OnDisable()
-        {
-            customEvents.onReset -= Reset;
-        }
-
-        private void OnEnable()
-        {
-            customEvents.onReset += Reset;
         }
         
         [ExecuteAlways]
@@ -185,13 +175,13 @@ namespace GameCode
 
         private void ReColorSquares()
         {
-            for (int y = 0; y < columns; y++)
+            DoubleForLoop(new Vector2Int(columns, rows), InternalFunction);
+            return;
+
+            void InternalFunction(Vector2Int index)
             {
-                for (int x = 0; x < rows; x++)
-                {
-                    // kommer också att kalla metod som uppdaterar färgen via setter
-                    squares[y, x].SquareType = squares[y, x].SquareType;
-                }
+                squares[index.y, index.x].SquareType = squares[index.y, index.x].SquareType;
+
             }
         }
 

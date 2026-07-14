@@ -7,6 +7,8 @@ public class CustomEvents : MonoBehaviour
 {
     public event Action onReset;
 
+    public event Action onPathfindingReset;
+
     public event Action<Square> onColorUpdate;
 
     public event Func<Square, List<Square>> onGetNeighbourSquares;
@@ -17,6 +19,7 @@ public class CustomEvents : MonoBehaviour
     
     public void PublishOnReset()
     {
+        onPathfindingReset?.Invoke();
         onReset?.Invoke();
     }
 

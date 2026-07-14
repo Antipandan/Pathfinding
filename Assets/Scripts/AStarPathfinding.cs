@@ -47,16 +47,18 @@ namespace GameCode
 
         private void Reset()
         {
+            Debug.Log($"reset pathfinding");
             openList.Clear();
             closedList.Clear();
             openList.Add(startingSquare);
+            StopCoroutine(TraceBackPath());
             StopCoroutine(AStarPathfindingAlgorithm());
             StartCoroutine(AStarPathfindingAlgorithm());
         }
 
         private void SubscribeToEvents()
         {
-            customEvent.onReset += Reset;
+            customEvent.onPathfindingReset += Reset;
         }
 
         private int CalculateDistance(Square startSquare, Square endSquare)
@@ -80,6 +82,7 @@ namespace GameCode
             {
                 Debug.LogWarning($"Warning! Reference to {nameof(customEvent)} is null!", this);
             }
+            
         }
 
         #endregion
@@ -209,7 +212,6 @@ namespace GameCode
                         borderingNeighbours.Add(neighbour);
                     }
                 }
-                
                 currentSquare = FindCheapestGSquare(borderingNeighbours);
                 yield return new WaitForSeconds(tracingSearchDelay / 1000f);
             }
@@ -221,13 +223,37 @@ namespace GameCode
             Square cheapestSquare = null;
             foreach (Square square in squares)
             {
-                if (cheapestSquare is null || cheapestSquare.G > square.G) cheapestSquare = square;
+                if (cheapestSquare is null) cheapestSquare = square;
+                if (Mathf.Approximately(square.G, cheapestSquare.G)) cheapestSquare = FindMostExpensiveHSquare(squares);
+                else if (cheapestSquare.G > square.G) cheapestSquare = square;
+            }
+            return cheapestSquare;
+        }
+
+        private static Square FindMostExpensiveHSquare(List<Square> squares)
+        {
+            Square cheapestSquare = null;
+            foreach (Square square in squares)
+            {
+                if (cheapestSquare is null || square.H > cheapestSquare.H) cheapestSquare = square;
+                else if (Mathf.Approximately(cheapestSquare.H, square.H)) cheapestSquare = FindCheapestFSquare(squares);
+            }
+            return cheapestSquare;
+        }
+
+        private static Square FindCheapestFSquare(List<Square> squares)
+        {
+            Square cheapestSquare = null;
+            foreach (Square square in squares)
+            {
+                if (cheapestSquare is null || cheapestSquare.F > square.F) cheapestSquare = square ;
             }
             return cheapestSquare;
         }
         
         private void UpdateSingleTraceSquare(Square square, HashSet<Square> visitedSquares)
         {
+            if (square is null) return;
             visitedSquares.Add(square);
             if (colorEntirePath || square.SquareType < SquareTypes.FinalPathSquare)
             {
@@ -241,6 +267,7 @@ namespace GameCode
         {
             StopCoroutine(AStarPathfindingAlgorithm());
         }
+        
 
         private void OnEnable()
         {
