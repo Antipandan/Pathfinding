@@ -218,7 +218,7 @@ namespace GameCode
             void LocalFunction(Vector2Int index, Vector2 dimensions)
             {
                 // av någon anledning så kommer existingObjects vara reversed???
-                Square square = IndexProperly(existingObjects.Reverse().ToArray(), index);
+                Square square = IndexProperly(existingObjects, index);
                 SetupSquareProperly(square, index, dimensions.x, dimensions.y);
             }
         }
