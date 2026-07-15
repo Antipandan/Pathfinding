@@ -72,6 +72,7 @@ namespace GameCode
         [ExecuteAlways]
         private void OnValidate()
         {
+            SubscribeToAllEvents();
             Square.CustomEvent = customEvents;
             CheckIfPositionIsOutside(ref startingPosition);
             CheckIfPositionIsOutside(ref endingPosition);
@@ -193,6 +194,7 @@ namespace GameCode
 
         private void GenerateSquareMap()
         {
+            Debug.Log($"generate map!");
             Square[] existingObjects = FindObjectsByType<Square>(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID);
             List<GameObject> existingGameObjects = new List<GameObject>(existingObjects.Length);
             // TODO bökig lösning fixa!

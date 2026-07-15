@@ -19,6 +19,7 @@ public class CustomEvents : MonoBehaviour
     
     public void PublishOnReset()
     {
+        Debug.Log($"publishing on reset");
         onPathfindingReset?.Invoke();
         onReset?.Invoke();
     }
