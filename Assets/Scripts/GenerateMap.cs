@@ -206,6 +206,15 @@ namespace GameCode
             }
             if (existingObjects.Length == 0) ResetBoard();
             else if (existingObjects.Length == GetNrSquares) ResetBoard(existingObjects);
+            else
+            {
+                for (int i = existingGameObjects.Count - 1; i >= 0; i--)
+                {
+                    Debug.Log($"destroying: {existingGameObjects[i].name}");
+                    Destroy(existingGameObjects[i]);
+                }
+                ResetBoard();
+            }
             AssignStartEndSquare();
         }
 
@@ -356,6 +365,7 @@ namespace GameCode
         
         private void CheckIfPositionIsOutside(ref Vector2Int position)
         {
+            Debug.Log($"rows: {rows}, columns: {columns}");
             Vector2Int newPosition = new Vector2Int(position.x % rows, position.y % columns);
             if (newPosition.x < 0) newPosition.x += rows; 
             if (newPosition.y < 0) newPosition.y += columns;

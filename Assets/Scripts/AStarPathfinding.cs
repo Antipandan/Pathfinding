@@ -49,6 +49,8 @@ namespace GameCode
         {
             openList.Clear();
             closedList.Clear();
+            startingSquare = customEvent.PublishOnGetStartingSquare();
+            endingSquare = customEvent.PublishOnGetEndingSquare();
             openList.Add(startingSquare);
             StopCoroutine(TraceBackPath());
             StopCoroutine(AStarPathfindingAlgorithm());
@@ -199,6 +201,7 @@ namespace GameCode
             HashSet<Square> visitedSquares = new HashSet<Square>();
             Square currentSquare = endingSquare;
             UpdateSingleTraceSquare(currentSquare, visitedSquares);
+            Debug.Log($"startingSquare index: {startingSquare.Index}");
             while (currentSquare is not null &&  currentSquare != startingSquare)
             {
                 UpdateSingleTraceSquare(currentSquare, visitedSquares);
