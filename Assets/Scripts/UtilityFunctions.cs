@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using GameCode;
 using UnityEngine;
 
 namespace Utility
 {
     public static class UtilityFunctions
     {
-
+        
         /// <summary>
         /// Calculates the distance between two points using the pythagorean theorem see: https://www.geeksforgeeks.org/maths/euclidean-distance/
         /// </summary>
@@ -144,6 +146,22 @@ namespace Utility
                 total += (int)c;
             }
             return total;
+        }
+        
+        public static List<GameObject> SortBySiblingIndex(IEnumerable<GameObject> gameObjects)
+        {
+            List<GameObject> sortedObjects = new List<GameObject>();
+            sortedObjects.AddRange(gameObjects);
+            sortedObjects.Sort(new CompareGameObjects());
+            return sortedObjects;
+        }
+
+        public static List<GameObject> SortBySiblingIndex(GameObject[] gameObjects)
+        {
+            List<GameObject> sortedObjects = new List<GameObject>();
+            sortedObjects.AddRange(gameObjects);
+            sortedObjects.Sort(new CompareGameObjects());
+            return sortedObjects;
         }
 
         /// <summary>
@@ -371,6 +389,18 @@ namespace Utility
                 }
             }
             yield return default;
+        }
+        
+        public class CompareGameObjects : IComparer<GameObject>
+        {
+            public int Compare(GameObject x, GameObject y)
+            {
+                if (x == null || y == null) return 0;
+                if (x.gameObject.transform.GetSiblingIndex() == y.gameObject.transform.GetSiblingIndex()) return 0;
+                if (x.gameObject.transform.GetSiblingIndex() < y.gameObject.transform.GetSiblingIndex()) return -1;
+                if (x.gameObject.transform.GetSiblingIndex() > y.gameObject.transform.GetSiblingIndex()) return 1;
+                return 0;
+            }
         }
     }
 }

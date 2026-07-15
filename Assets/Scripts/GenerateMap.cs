@@ -193,6 +193,17 @@ namespace GameCode
         private void GenerateSquareMap()
         {
             Square[] existingObjects = FindObjectsByType<Square>(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID);
+            List<GameObject> existingGameObjects = new List<GameObject>(existingObjects.Length);
+            // TODO bökig lösning fixa!
+            foreach (Square s in existingObjects)
+            {
+                existingGameObjects.Add(s.gameObject);
+            }
+            existingGameObjects = SortBySiblingIndex(existingGameObjects);
+            for (int i = 0; i < existingObjects.Length; i++)
+            {
+                existingObjects[i] = existingGameObjects[i].GetComponent<Square>();
+            }
             if (existingObjects.Length == 0) ResetBoard();
             else if (existingObjects.Length == GetNrSquares) ResetBoard(existingObjects);
             AssignStartEndSquare();
