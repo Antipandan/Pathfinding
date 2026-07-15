@@ -40,7 +40,6 @@ namespace GameCode
             openList.Add(startingSquare);
             SubscribeToEvents();
             StartCoroutine(AStarPathfindingAlgorithm());
-            
         }
 
         #region EssentialFunctions
@@ -52,14 +51,14 @@ namespace GameCode
             startingSquare = customEvent.PublishOnGetStartingSquare();
             endingSquare = customEvent.PublishOnGetEndingSquare();
             openList.Add(startingSquare);
-            StopCoroutine(TraceBackPath());
-            StopCoroutine(AStarPathfindingAlgorithm());
             StartCoroutine(AStarPathfindingAlgorithm());
         }
+        
 
         private void SubscribeToEvents()
         {
-            customEvent.onPathfindingReset += Reset;
+            customEvent.onReset += Reset;
+            customEvent.onPathfindingReset += StopAllCoroutines;
         }
 
         private int CalculateDistance(Square startSquare, Square endSquare)
@@ -92,6 +91,7 @@ namespace GameCode
 
         private IEnumerator AStarPathfindingAlgorithm()
         {
+            Debug.Log($"pathfinding!!!!");
             bool foundPath = false;
             while (openList.Count > 0 && !foundPath)
             {
@@ -201,7 +201,6 @@ namespace GameCode
             HashSet<Square> visitedSquares = new HashSet<Square>();
             Square currentSquare = endingSquare;
             UpdateSingleTraceSquare(currentSquare, visitedSquares);
-            Debug.Log($"startingSquare index: {startingSquare.Index}");
             while (currentSquare is not null &&  currentSquare != startingSquare)
             {
                 UpdateSingleTraceSquare(currentSquare, visitedSquares);
