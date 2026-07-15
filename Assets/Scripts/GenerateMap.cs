@@ -76,6 +76,8 @@ namespace GameCode
             CheckIfPositionIsOutside(ref startingPosition);
             CheckIfPositionIsOutside(ref endingPosition);
             CheckIfPositionIsSame();
+            ClampDimensions();
+            ClampWeightValue();
             customEvents.PublishOnReset();
         }
         
@@ -359,6 +361,11 @@ namespace GameCode
         {
             columns = Mathf.Clamp(columns, 1, int.MaxValue);
             rows = Mathf.Clamp(rows, 1, int.MaxValue);
+        }
+
+        private void ClampWeightValue()
+        {
+            if (minWeight > maxWeight) minWeight = maxWeight - 1;
         }
         
         private void CheckIfPositionIsOutside(ref Vector2Int position)
