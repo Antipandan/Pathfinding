@@ -35,7 +35,6 @@ namespace GameCode
 
         private void Awake()
         {
-            customEvents.onColorUpdate += ChangeColor;
             Setup();
         }
 
@@ -58,15 +57,17 @@ namespace GameCode
 
         private void Setup()
         {
+            customEvents.onColorUpdate += ChangeColor;
             BuildDictionary();
         }
         
+        [ExecuteAlways]
         private void ChangeColor(Square square)
         {
             square.GetComponent<SpriteRenderer>().color = squareColors[square.SquareType];
         }
         #endregion
-
+        
         private void OnValidate()
         {
             Setup();

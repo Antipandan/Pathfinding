@@ -13,6 +13,8 @@ namespace GameCode
         [Header("Settings")]
         [Tooltip("Determines if the Traceback algorithm should color ending and starting squares")]
         [SerializeField] private bool colorEntirePath = false;
+        [Tooltip("should the Algorithm automatically restart when it's finished?")]
+        [SerializeField] private bool restartOnEnd = false;
         [Tooltip("Which distance formula to use when calculating the distance and new H value for Squares")]
         [SerializeField] private DistanceFormulaTypes distanceFormula = DistanceFormulaTypes.ManhattanDistance;
         [Tooltip("Puts extra emphasis on the H value of a square, potentially leading to shorter paths")]
@@ -38,10 +40,28 @@ namespace GameCode
             endingSquare = customEvent.PublishOnGetEndingSquare();
             startingSquare = customEvent.PublishOnGetStartingSquare();
             openList.Add(startingSquare);
+            SubscribeToEvents();
             StartCoroutine(AStarPathfindingAlgorithm());
         }
 
         #region EssentialFunctions
+
+        private void Reset()
+        {
+            openList.Clear();
+            closedList.Clear();
+            startingSquare = customEvent.PublishOnGetStartingSquare();
+            endingSquare = customEvent.PublishOnGetEndingSquare();
+            openList.Add(startingSquare);
+            StartCoroutine(AStarPathfindingAlgorithm());
+        }
+        
+
+        private void SubscribeToEvents()
+        {
+            customEvent.onReset += Reset;
+            customEvent.onPathfindingReset += StopAllCoroutines;
+        }
 
         private int CalculateDistance(Square startSquare, Square endSquare)
         {
@@ -64,6 +84,7 @@ namespace GameCode
             {
                 Debug.LogWarning($"Warning! Reference to {nameof(customEvent)} is null!", this);
             }
+            
         }
 
         #endregion
@@ -193,11 +214,11 @@ namespace GameCode
                         borderingNeighbours.Add(neighbour);
                     }
                 }
-                
                 currentSquare = FindCheapestGSquare(borderingNeighbours);
                 yield return new WaitForSeconds(tracingSearchDelay / 1000f);
             }
             UpdateSingleTraceSquare(currentSquare, visitedSquares);
+            if (restartOnEnd) customEvent.PublishOnReset();
         }
         
         private static Square FindCheapestGSquare(List<Square> squares)
@@ -205,13 +226,37 @@ namespace GameCode
             Square cheapestSquare = null;
             foreach (Square square in squares)
             {
-                if (cheapestSquare is null || cheapestSquare.G > square.G) cheapestSquare = square;
+                if (cheapestSquare is null) cheapestSquare = square;
+                else if (Mathf.Approximately(square.G, cheapestSquare.G)) cheapestSquare = FindMostExpensiveHSquare(squares);
+                else if (cheapestSquare.G > square.G) cheapestSquare = square;
+            }
+            return cheapestSquare;
+        }
+
+        private static Square FindMostExpensiveHSquare(List<Square> squares)
+        {
+            Square cheapestSquare = null;
+            foreach (Square square in squares)
+            {
+                if (cheapestSquare is null || square.H > cheapestSquare.H) cheapestSquare = square;
+                else if (Mathf.Approximately(cheapestSquare.H, square.H)) cheapestSquare = FindCheapestFSquare(squares);
+            }
+            return cheapestSquare;
+        }
+
+        private static Square FindCheapestFSquare(List<Square> squares)
+        {
+            Square cheapestSquare = null;
+            foreach (Square square in squares)
+            {
+                if (cheapestSquare is null || cheapestSquare.F > square.F) cheapestSquare = square ;
             }
             return cheapestSquare;
         }
         
         private void UpdateSingleTraceSquare(Square square, HashSet<Square> visitedSquares)
         {
+            if (square is null) return;
             visitedSquares.Add(square);
             if (colorEntirePath || square.SquareType < SquareTypes.FinalPathSquare)
             {
@@ -225,6 +270,7 @@ namespace GameCode
         {
             StopCoroutine(AStarPathfindingAlgorithm());
         }
+        
 
         private void OnEnable()
         {

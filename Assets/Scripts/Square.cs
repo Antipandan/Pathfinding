@@ -22,7 +22,6 @@ namespace GameCode
         private static CustomEvents customEvent;
         private Vector2Int index;
 
-
         public Vector2Int Index
         {
             get => index;
@@ -71,7 +70,7 @@ namespace GameCode
             set
             {
                 squareType = value;
-                customEvent.PublishOnColorUpdate(this);
+                customEvent?.PublishOnColorUpdate(this);
             } 
         }
 
@@ -117,10 +116,13 @@ namespace GameCode
         private void OnValidate()
         {
             Weight = Mathf.Clamp(weight, 0f, float.MaxValue);
-            squareType = SquareType;
+            SquareType = SquareType;
         }
 
-
+        public override string ToString()
+        {
+            return $"G: {G}, H: {H}, F: {F}, Weight: {Weight}, SquareType: {squareType}";
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using static Utility.UtilityFunctions;
@@ -43,37 +44,35 @@ namespace GameCode
 
         private void Awake()
         {
-            SubscribeToAllEvents();
+            Square.CustomEvent = customEvents;
             Setup();
             CreateMapHolder();
         }
         
         private void Start()
         {
+            SubscribeToAllEvents();
             GenerateSquareMap();
             ReColorSquares();
         }
         
         private void Reset()
         {
+            Square.CustomEvent = customEvents;
             Setup();
-            PreventFunctionsRunningInEditor(GenerateSquareMap);
+            GenerateSquareMap();
             ReColorSquares(); 
-        }
-
-        private void OnDisable()
-        {
-            customEvents.onReset -= Reset;
         }
 
         private void OnEnable()
         {
-            customEvents.onReset += Reset;
+            Square.CustomEvent = customEvents;
         }
-        
+
         [ExecuteAlways]
         private void OnValidate()
         {
+            Square.CustomEvent = customEvents;
             CheckIfPositionIsOutside(ref startingPosition);
             CheckIfPositionIsOutside(ref endingPosition);
             CheckIfPositionIsSame();
@@ -99,7 +98,7 @@ namespace GameCode
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private  Square IndexProperly(Square[] s, Vector2Int index)
         {
-            return s[index.x + index.y * columns];
+            return s[index.x + index.y * rows];
         }
 
         #endregion
@@ -144,7 +143,6 @@ namespace GameCode
 
         private void InitializeSquareValues(Square square)
         {
-            Square.CustomEvent = customEvents;
             square.Weight = random.Next(minWeight, maxWeight + 1);
             square.G = square.Weight;
             square.H = 0f;
@@ -169,6 +167,13 @@ namespace GameCode
             SetupSquare(square, index, dimensionsX, dimensionsY);
         }
 
+        private void SetupSquareProperly(Square square, Vector2Int index, SquareTypes newSquareType,
+            float dimensionsX = 0f, float dimensionsY = 0f)
+        {
+            InitializeSquareValues(square, newSquareType);
+            SetupSquare(square, index, dimensionsX, dimensionsY);
+        }
+
         #endregion
         
         #region GenerateMapFunctions
@@ -176,21 +181,38 @@ namespace GameCode
 
         private void ReColorSquares()
         {
-            for (int y = 0; y < columns; y++)
+            DoubleForLoop(new Vector2Int(columns, rows), InternalFunction);
+            return;
+            void InternalFunction(Vector2Int index)
             {
-                for (int x = 0; x < rows; x++)
-                {
-                    // kommer också att kalla metod som uppdaterar färgen via setter
-                    squares[y, x].SquareType = squares[y, x].SquareType;
-                }
+                squares[index.y, index.x].SquareType = squares[index.y, index.x].SquareType;
             }
         }
 
         private void GenerateSquareMap()
         {
             Square[] existingObjects = FindObjectsByType<Square>(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID);
+            List<GameObject> existingGameObjects = new List<GameObject>(existingObjects.Length);
+            // TODO bökig lösning fixa!
+            foreach (Square s in existingObjects)
+            {
+                existingGameObjects.Add(s.gameObject);
+            }
+            existingGameObjects = SortBySiblingIndex(existingGameObjects);
+            for (int i = 0; i < existingObjects.Length; i++)
+            {
+                existingObjects[i] = existingGameObjects[i].GetComponent<Square>();
+            }
             if (existingObjects.Length == 0) ResetBoard();
             else if (existingObjects.Length == GetNrSquares) ResetBoard(existingObjects);
+            else
+            {
+                for (int i = existingGameObjects.Count - 1; i >= 0; i--)
+                {
+                    Destroy(existingGameObjects[i]);
+                }
+                ResetBoard();
+            }
             AssignStartEndSquare();
         }
 
@@ -209,17 +231,25 @@ namespace GameCode
         }
 
         private void ResetBoard(Square[] existingObjects)
-        {
+        { 
             Vector2 squareDimensions = GetDimensionsOfSquarePrefab(squarePrefab);
             squares = new Square[columns, rows];
             DoubleForLoop(new Vector2Int(columns, rows), LocalFunction, squareDimensions);
+            Flushboard();
             return;
             
             void LocalFunction(Vector2Int index, Vector2 dimensions)
             {
                 Square square = IndexProperly(existingObjects, index);
-                InitializeSquareValues(square);
-                SetupSquare(square, index, dimensions.x, dimensions.y); 
+                SetupSquareProperly(square, index, dimensions.x, dimensions.y);
+            }
+        }
+
+        private void Flushboard()
+        {
+            foreach (Square square in squares)
+            {
+                if (square.SquareType != SquareTypes.WallSquare) square.SquareType = SquareTypes.RegularSquare;
             }
         }
 
