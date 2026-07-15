@@ -13,6 +13,8 @@ namespace GameCode
         [Header("Settings")]
         [Tooltip("Determines if the Traceback algorithm should color ending and starting squares")]
         [SerializeField] private bool colorEntirePath = false;
+        [Tooltip("should the Algorithm automatically restart when it's finished?")]
+        [SerializeField] private bool restartOnEnd = false;
         [Tooltip("Which distance formula to use when calculating the distance and new H value for Squares")]
         [SerializeField] private DistanceFormulaTypes distanceFormula = DistanceFormulaTypes.ManhattanDistance;
         [Tooltip("Puts extra emphasis on the H value of a square, potentially leading to shorter paths")]
@@ -91,7 +93,6 @@ namespace GameCode
 
         private IEnumerator AStarPathfindingAlgorithm()
         {
-            Debug.Log($"pathfinding!!!!");
             bool foundPath = false;
             while (openList.Count > 0 && !foundPath)
             {
@@ -217,6 +218,7 @@ namespace GameCode
                 yield return new WaitForSeconds(tracingSearchDelay / 1000f);
             }
             UpdateSingleTraceSquare(currentSquare, visitedSquares);
+            if (restartOnEnd) customEvent.PublishOnReset();
         }
         
         private static Square FindCheapestGSquare(List<Square> squares)
