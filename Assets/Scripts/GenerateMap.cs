@@ -95,7 +95,6 @@ namespace GameCode
             customEvents.onGetNeighbourSquares += GetNeighbours;
             customEvents.onGetStartingSquare += GetStartingSquare;
             customEvents.onGetEndingSquare += GetEndingSquare;
-            customEvents.onReColor += ReColorSquares;
         }
 
         private void UnsubscribeFromAllEvents()
