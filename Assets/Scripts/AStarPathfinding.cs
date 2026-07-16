@@ -132,6 +132,12 @@ namespace GameCode
                 yield return new WaitForSeconds(aStarSearchDelay / 1000f);
             }
             if (foundPath) StartCoroutine(TraceBackPath());
+            else
+            {
+                if (!restartOnEnd) yield break;
+                Debug.Log($"no squares found!");
+                customEvent.PublishOnReset();
+            }
         }
         
         private static bool CheckIfAllSameFValues(List<Square> squares)
@@ -223,7 +229,18 @@ namespace GameCode
                 yield return new WaitForSeconds(tracingSearchDelay / 1000f);
             }
             UpdateSingleTraceSquare(currentSquare, visitedSquares);
+            Debug.Log($"Total cost for path: {CalculatePathCost(visitedSquares)}");
             if (restartOnEnd) customEvent.PublishOnReset();
+        }
+
+        private long CalculatePathCost(HashSet<Square> squares)
+        {
+            long total = 0;
+            foreach (Square square in squares)
+            {
+                total += (long)square.F;
+            }
+            return total;
         }
         
         private static Square FindCheapestGSquare(List<Square> squares)

@@ -34,7 +34,6 @@ namespace GameCode
         [SerializeField] private GameObject squarePrefab;
         [SerializeField] private CustomEvents customEvents;
         [SerializeField] private Transform mapHolder;
-        private bool shouldReset = false;
         private Square[,] squares;
         private Random random;
 
