@@ -64,14 +64,17 @@ namespace GameCode
         [ExecuteAlways]
         private void ChangeColor(Square square)
         {
-            square.GetComponent<SpriteRenderer>().color = squareColors[square.SquareType];
+            if (square is not null)
+            {
+                square.GetComponent<SpriteRenderer>().color = squareColors[square.SquareType];
+            }
         }
         #endregion
         
         private void OnValidate()
         {
             Setup();
-            customEvents.PublishOnReset();
+            customEvents.PublishOnReset(); 
         }
     }
 }

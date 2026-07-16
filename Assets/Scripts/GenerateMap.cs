@@ -34,6 +34,7 @@ namespace GameCode
         [SerializeField] private GameObject squarePrefab;
         [SerializeField] private CustomEvents customEvents;
         [SerializeField] private Transform mapHolder;
+        private bool shouldReset = false;
         private Square[,] squares;
         private Random random;
 
@@ -51,7 +52,6 @@ namespace GameCode
         
         private void Start()
         {
-            SubscribeToAllEvents();
             GenerateSquareMap();
             ReColorSquares();
         }
@@ -61,12 +61,18 @@ namespace GameCode
             Square.CustomEvent = customEvents;
             Setup();
             GenerateSquareMap();
-            ReColorSquares(); 
+            PreventFunctionsRunningInEditor(ReColorSquares);
         }
 
         private void OnEnable()
         {
             Square.CustomEvent = customEvents;
+            SubscribeToAllEvents();
+        }
+
+        private void OnDisable()
+        {
+            UnsubscribeFromAllEvents();
         }
 
         [ExecuteAlways]
@@ -89,6 +95,15 @@ namespace GameCode
             customEvents.onGetNeighbourSquares += GetNeighbours;
             customEvents.onGetStartingSquare += GetStartingSquare;
             customEvents.onGetEndingSquare += GetEndingSquare;
+            customEvents.onReColor += ReColorSquares;
+        }
+
+        private void UnsubscribeFromAllEvents()
+        {
+            customEvents.onReset -= Reset;
+            customEvents.onGetNeighbourSquares -= GetNeighbours;
+            customEvents.onGetStartingSquare -= GetStartingSquare;
+            customEvents.onGetEndingSquare -= GetEndingSquare;
         }
         
         private void Setup()
@@ -182,25 +197,38 @@ namespace GameCode
         
 
         private void ReColorSquares()
-        {
-            DoubleForLoop(new Vector2Int(columns, rows), InternalFunction);
+        {                
+            DoubleForLoop(new Vector2Int(columns, rows), ReDrawExistingSquares);
             return;
-            void InternalFunction(Vector2Int index)
+            void ReDrawExistingSquares(Vector2Int index)
             {
                 squares[index.y, index.x].SquareType = squares[index.y, index.x].SquareType;
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Square[] FindExistingSquares()
+        {
+            return FindObjectsByType<Square>(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID);
+        }
+
+        private static List<GameObject> GetSortedGameObjects(Square[] existingSquares)
+        {
+            List<GameObject> sortedGameObjects = new List<GameObject>();
+            foreach (Square s in existingSquares)
+            {
+                sortedGameObjects.Add(s.gameObject);
+            }
+            return SortBySiblingIndex(sortedGameObjects);
+            
+        }
+
         private void GenerateSquareMap()
         {
-            Square[] existingObjects = FindObjectsByType<Square>(FindObjectsInactive.Exclude, FindObjectsSortMode.InstanceID);
+            Square[] existingObjects = FindExistingSquares();
             List<GameObject> existingGameObjects = new List<GameObject>(existingObjects.Length);
+            existingGameObjects = GetSortedGameObjects(existingObjects);
             // TODO bökig lösning fixa!
-            foreach (Square s in existingObjects)
-            {
-                existingGameObjects.Add(s.gameObject);
-            }
-            existingGameObjects = SortBySiblingIndex(existingGameObjects);
             for (int i = 0; i < existingObjects.Length; i++)
             {
                 existingObjects[i] = existingGameObjects[i].GetComponent<Square>();

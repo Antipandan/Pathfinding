@@ -60,7 +60,12 @@ namespace GameCode
         private void SubscribeToEvents()
         {
             customEvent.onReset += Reset;
-            customEvent.onPathfindingReset += StopAllCoroutines;
+            customEvent.onPathfindingReset += Stop;
+        }
+
+        private void Stop()
+        {
+            StopAllCoroutines();
         }
 
         private int CalculateDistance(Square startSquare, Square endSquare)
