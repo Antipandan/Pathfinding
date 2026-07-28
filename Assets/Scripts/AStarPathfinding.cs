@@ -35,13 +35,19 @@ namespace GameCode
             Setup();
         }
         
+        private void OnEnable()
+        {
+            Setup();
+            StartCoroutine(AStarPathfindingAlgorithm());
+        }
+        
         private void Start()
         {
             endingSquare = customEvent.PublishOnGetEndingSquare();
             startingSquare = customEvent.PublishOnGetStartingSquare();
             openList.Add(startingSquare);
             SubscribeToEvents();
-            StartCoroutine(AStarPathfindingAlgorithm());
+            Reset();
         }
 
         #region EssentialFunctions
@@ -103,8 +109,7 @@ namespace GameCode
 
         private IEnumerator AStarPathfindingAlgorithm()
         {
-            startingSquare.G = 0;
-            startingSquare.H = CalculateDistance(startingSquare, endingSquare);
+            if (startingSquare is null || endingSquare is null) yield break;
             bool foundPath = false;
             while (openList.Count > 0 && !foundPath)
             {
@@ -118,31 +123,26 @@ namespace GameCode
                 openList.Remove(cheapestSquare);
                 closedList.Add(cheapestSquare);
                 List<Square> neighbours = customEvent.PublishOnGetNeighbourSquares(cheapestSquare);
-                // neighbours = FilterOutNeighbours(neighbours);
+                neighbours = FilterOutNeighbours(neighbours);
                 foreach (Square currentNeighbour in neighbours)
                 {
-                    
-/*                    if (square == endingSquare)
-                    {
-                        closedList.Add(square);
-                        foundPath = true;
-                    }
-                    */
-                    if (closedList.Contains(currentNeighbour)) continue;
+                    TryUpdateSquare(currentNeighbour, SquareTypes.NeighbourSquare);
                     float tentativeG = currentNeighbour.Weight + cheapestSquare.G;
                     if (tentativeG < currentNeighbour.G)
                     {
-                        Debug.Log($"lower");
                         currentNeighbour.G = tentativeG;
                         currentNeighbour.H = CalculateDistance(currentNeighbour, endingSquare);
                         currentNeighbour.ParentSquare = cheapestSquare;
                     }
-                    openList.Add(currentNeighbour);
-                    /*if (!DetermineIfSkip(square))
+                    if (currentNeighbour == endingSquare)
                     {
-                        openList.Add(square);
-                        TryUpdateSquare(square, SquareTypes.NeighbourSquare);
-                    }*/
+                        closedList.Add(currentNeighbour);
+                        foundPath = true;
+                    }
+                    
+                    // if (closedList.Contains(currentNeighbour)) continue;
+
+                    openList.Add(currentNeighbour);
                 }
                 yield return new WaitForSeconds(aStarSearchDelay / 1000f);
             }
@@ -189,9 +189,9 @@ namespace GameCode
             {
                 List<Square> sameGValues = InternalFindCheapestGSquares(sameFValues);
                 if (sameGValues.Count <= 1) return sameGValues[0];
-                List<Square> sameHValues = InternalFindCheapestH(sameGValues);
+                List<Square> sameHValues = InternalFindCheapestHSquare(sameGValues);
                 if (sameHValues.Count <= 1) return sameHValues[0];
-                List<Square> sameWeightValues = InternalFindCheapestWeightValue(sameHValues);
+                List<Square> sameWeightValues = InternalFindCheapestWeightSquare(sameHValues);
                 return sameWeightValues[0];
             }
             
@@ -212,7 +212,7 @@ namespace GameCode
                 return sameGValues;
             }
 
-            static List<Square> InternalFindCheapestH(List<Square> sameGValues)
+            static List<Square> InternalFindCheapestHSquare(List<Square> sameGValues)
             {
                 List<Square> sameHValues = new List<Square>();
                 foreach (Square square in sameGValues)
@@ -228,7 +228,7 @@ namespace GameCode
                 return sameHValues;
             }
 
-            static List<Square> InternalFindCheapestWeightValue(List<Square> sameHValues)
+            static List<Square> InternalFindCheapestWeightSquare(List<Square> sameHValues)
             {
                 List<Square> sameWeightValues = new List<Square>();
                 foreach (Square square in sameHValues)
@@ -255,16 +255,6 @@ namespace GameCode
             return filteredNeighbours;
         }
         
-        private bool DetermineIfSkip(Square successor)
-        {
-            bool skip = false;
-            foreach (Square openSquare in openList)
-            {
-                if (successor.Index == openSquare.Index &&
-                    openSquare.F < successor.F) skip = true;
-            }
-            return skip;
-        }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void TryUpdateSquare(Square square, SquareTypes squareType)
@@ -281,7 +271,6 @@ namespace GameCode
         {
             HashSet<Square> visitedSquares = new HashSet<Square>();
             Square currentSquare = endingSquare;
-            // UpdateSingleTraceSquare(currentSquare, visitedSquares);
             while (currentSquare is not null &&  currentSquare != startingSquare)
             {
                 UpdateSingleTraceSquare(currentSquare, visitedSquares);
@@ -307,6 +296,7 @@ namespace GameCode
             long total = 0;
             foreach (Square square in squares)
             {
+                // detta ska samma sak som att ta endingSquare.g + endingSquare.weight men jag tycker att detta make:ar mer sense...
                 total += (long)square.Weight;
             }
             return total;
@@ -363,11 +353,7 @@ namespace GameCode
         }
         
 
-        private void OnEnable()
-        {
-            Setup();
-            StartCoroutine(AStarPathfindingAlgorithm());
-        }
+
 
         private void OnValidate()
         {
