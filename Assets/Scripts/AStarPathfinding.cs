@@ -132,16 +132,12 @@ namespace GameCode
                     {
                         currentNeighbour.G = tentativeG;
                         currentNeighbour.H = CalculateDistance(currentNeighbour, endingSquare);
-                        currentNeighbour.ParentSquare = cheapestSquare;
                     }
                     if (currentNeighbour == endingSquare)
                     {
                         closedList.Add(currentNeighbour);
                         foundPath = true;
                     }
-                    
-                    // if (closedList.Contains(currentNeighbour)) continue;
-
                     openList.Add(currentNeighbour);
                 }
                 yield return new WaitForSeconds(aStarSearchDelay / 1000f);
@@ -187,62 +183,80 @@ namespace GameCode
             
             static Square internalHelperFunction(List<Square> sameFValues)
             {
-                List<Square> sameGValues = InternalFindCheapestGSquares(sameFValues);
+                List<Square> sameGValues = FindCheapestGSquares(sameFValues);
                 if (sameGValues.Count <= 1) return sameGValues[0];
-                List<Square> sameHValues = InternalFindCheapestHSquare(sameGValues);
+                List<Square> sameHValues = FindCheapestHSquare(sameGValues);
                 if (sameHValues.Count <= 1) return sameHValues[0];
-                List<Square> sameWeightValues = InternalFindCheapestWeightSquare(sameHValues);
+                List<Square> sameWeightValues = FindCheapestWeightSquare(sameHValues);
                 return sameWeightValues[0];
             }
             
             // refactor o'clock??
-            static List<Square> InternalFindCheapestGSquares(List<Square> sameFValues)
+            
+        }
+        
+        private static List<Square> FindCheapestGSquares(List<Square> sameFValues)
+        {
+            List<Square> sameGValues = new List<Square>();
+            foreach (Square square in sameFValues)
             {
-                List<Square> sameGValues = new List<Square>();
-                foreach (Square square in sameFValues)
+                if (sameGValues.Count == 0) sameGValues.Add(square);
+                else if (Mathf.Approximately(square.G, sameGValues[0].G)) sameGValues.Add(square);
+                else if (square.G < sameGValues[0].G)
                 {
-                    if (sameGValues.Count == 0) sameGValues.Add(square);
-                    else if (Mathf.Approximately(square.G, sameGValues[0].G)) sameGValues.Add(square);
-                    else if (square.G < sameGValues[0].G)
-                    {
-                        sameGValues.Clear();
-                        sameGValues.Add(square);
-                    }
+                    sameGValues.Clear();
+                    sameGValues.Add(square);
                 }
-                return sameGValues;
             }
+            return sameGValues;
+        }
+        
+        private static List<Square> FindCheapestHSquare(List<Square> sameGValues)
+        {
+            List<Square> sameHValues = new List<Square>();
+            foreach (Square square in sameGValues)
+            {
+                if (sameGValues.Count == 0) sameHValues.Add(square);
+                else if (Mathf.Approximately(square.H, sameGValues[0].H)) sameHValues.Add(square);
+                else if (square.H < sameGValues[0].H)
+                {
+                    sameHValues.Clear();
+                    sameHValues.Add(square);
+                }
+            }
+            return sameHValues;
+        }
 
-            static List<Square> InternalFindCheapestHSquare(List<Square> sameGValues)
+        private static List<Square> FindMostExpensiveHSquares(List<Square> collection)
+        {
+            List<Square> foundSquares = new List<Square>();
+            foreach (Square square in collection)
             {
-                List<Square> sameHValues = new List<Square>();
-                foreach (Square square in sameGValues)
+                if (collection.Count == 0) foundSquares.Add(square);
+                else if (Mathf.Approximately(square.H, collection[0].H)) foundSquares.Add(square);
+                else if (square.H > collection[0].H)
                 {
-                    if (sameGValues.Count == 0) sameHValues.Add(square);
-                    else if (Mathf.Approximately(square.H, sameGValues[0].H)) sameHValues.Add(square);
-                    else if (square.H < sameGValues[0].H)
-                    {
-                        sameHValues.Clear();
-                        sameHValues.Add(square);
-                    }
+                    foundSquares.Clear();
+                    foundSquares.Add(square);
                 }
-                return sameHValues;
             }
-
-            static List<Square> InternalFindCheapestWeightSquare(List<Square> sameHValues)
+            return foundSquares;
+        }
+        
+        private static List<Square> FindCheapestWeightSquare(List<Square> sameHValues)
+        {
+            List<Square> sameWeightValues = new List<Square>();
+            foreach (Square square in sameHValues)
             {
-                List<Square> sameWeightValues = new List<Square>();
-                foreach (Square square in sameHValues)
+                if (sameWeightValues.Count == 0) sameWeightValues.Add(square);
+                else if (Mathf.Approximately(square.Weight, sameHValues[0].H)) sameWeightValues.Add(square);
+                else if (square.Weight < sameHValues[0].H)
                 {
-                    if (sameWeightValues.Count == 0) sameWeightValues.Add(square);
-                    else if (Mathf.Approximately(square.Weight, sameHValues[0].H)) sameWeightValues.Add(square);
-                    else if (square.Weight < sameHValues[0].H)
-                    {
-                        sameWeightValues.Clear();
-                        sameWeightValues.Add(square);
-                    }
+                    sameWeightValues.Clear();
+                    sameWeightValues.Add(square);
                 }
-                return sameWeightValues;
             }
+            return sameWeightValues;
         }
         
         private List<Square> FilterOutNeighbours(List<Square> neighbours)
@@ -254,7 +268,6 @@ namespace GameCode
             }
             return filteredNeighbours;
         }
-        
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void TryUpdateSquare(Square square, SquareTypes squareType)
@@ -283,6 +296,11 @@ namespace GameCode
                         borderingNeighbours.Add(neighbour);
                     }
                 }
+
+                foreach (Square neighbour in borderingNeighbours)
+                {
+                    Debug.Log($"neighbour: {neighbour.G}", neighbour);
+                }
                 currentSquare = FindCheapestGSquare(borderingNeighbours);
                 yield return new WaitForSeconds(tracingSearchDelay / 1000f);
             }
@@ -302,16 +320,15 @@ namespace GameCode
             return total;
         }
         
+        // spaghetti but work. PLSPLSPLSPLSPLSPLSPLSPLSPLSPLSPLSPLSPLSPLS refactor!!!!
         private static Square FindCheapestGSquare(List<Square> squares)
         {
-            Square cheapestSquare = null;
-            foreach (Square square in squares)
-            {
-                if (cheapestSquare is null) cheapestSquare = square;
-                else if (Mathf.Approximately(square.G, cheapestSquare.G)) cheapestSquare = FindMostExpensiveHSquare(squares);
-                else if (cheapestSquare.G > square.G) cheapestSquare = square;
-            }
-            return cheapestSquare;
+            List<Square> foundSquares = FindCheapestGSquares(squares);
+            if (foundSquares.Count == 1) return foundSquares[0];
+            foundSquares = FindMostExpensiveHSquares(foundSquares);
+            if (foundSquares.Count == 1) return foundSquares[0];
+            foundSquares = FindCheapestWeightSquare(foundSquares);
+            return foundSquares.Count == 1 ? foundSquares[0] : null;
         }
 
         private static Square FindMostExpensiveHSquare(List<Square> squares)
@@ -352,9 +369,6 @@ namespace GameCode
             StopCoroutine(AStarPathfindingAlgorithm());
         }
         
-
-
-
         private void OnValidate()
         {
             customEvent.PublishOnReset();

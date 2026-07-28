@@ -15,14 +15,13 @@ namespace GameCode
         [Header("Settings")]
         [SerializeField] private SquareTypes squareType = SquareTypes.RegularSquare;
         [SerializeField] private float weight = 0f;
-        [SerializeField] private float g;
-        [SerializeField] private float h;
+        private float g;
+        private float h;
         [Header("References (dont touch)")]
         [SerializeField] private TextMeshPro weightText = null;
         [SerializeField] private TextMeshPro fText = null;
         private static CustomEvents customEvent;
         private Vector2Int index;
-        private Square parentSquare = null;
         public Vector2Int Index
         {
             get => index;
@@ -62,12 +61,6 @@ namespace GameCode
                 weight = value;
                 UpdateText(weightText, weight);
             }
-        }
-
-        public Square ParentSquare
-        {
-            get => parentSquare;
-            set => parentSquare = value;
         }
 
         public void SetupSquareValues(float newH = 0f, float newG = float.MaxValue / 2f)

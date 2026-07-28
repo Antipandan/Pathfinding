@@ -456,7 +456,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   squareType: 2
   weight: 0
-  g: 0
-  h: 0
   weightText: {fileID: 4854836590187135377}
   fText: {fileID: 2262445235175769477}

@@ -30,6 +30,8 @@ namespace GameCode
         [SerializeField] private Vector2Int startingPosition = Vector2Int.zero;
         [Tooltip("Position of the ending point for the Astar algorithm. Values will loopback when out of range. Range goes from 0 to columns - 1")]
         [SerializeField] private Vector2Int endingPosition = new Vector2Int(2, 2);
+        [Tooltip("Overrides the existing map if number of squares in scene equals nr of rows * nr columns")]
+        [SerializeField] private bool overrideExistingMap = false;
         [Header("References (dont touch)")]
         [SerializeField] private GameObject squarePrefab;
         [SerializeField] private CustomEvents customEvents;
@@ -156,15 +158,15 @@ namespace GameCode
         }
         
 
-        private void InitializeSquareValues(Square square)
+        private void ReInitializeSquareValues(Square square)
         {
             square.Weight = random.Next(minWeight, maxWeight + 1);
             square.SetupSquareValues(0f, float.MaxValue);
         }
         
-        private void InitializeSquareValues(Square square, SquareTypes newSquareType)
+        private void ReInitializeSquareValues(Square square, SquareTypes newSquareType)
         {
-            InitializeSquareValues(square);
+            ReInitializeSquareValues(square);
             square.SquareType = newSquareType;
         }
         
@@ -177,14 +179,14 @@ namespace GameCode
 
         private void SetupSquareProperly(Square square, Vector2Int index, float dimensionsX = 0f, float dimensionsY = 0f)
         {
-            InitializeSquareValues(square);
+            ReInitializeSquareValues(square);
             SetupSquare(square, index, dimensionsX, dimensionsY);
         }
 
         private void SetupSquareProperly(Square square, Vector2Int index, SquareTypes newSquareType,
             float dimensionsX = 0f, float dimensionsY = 0f)
         {
-            InitializeSquareValues(square, newSquareType);
+            ReInitializeSquareValues(square, newSquareType);
             SetupSquare(square, index, dimensionsX, dimensionsY);
         }
 
@@ -225,13 +227,13 @@ namespace GameCode
             Square[] existingObjects = FindExistingSquares();
             List<GameObject> existingGameObjects = new List<GameObject>(existingObjects.Length);
             existingGameObjects = GetSortedGameObjects(existingObjects);
-            // TODO bökig lösning fixa!
+            // TODO bökig lösning fixa!, cumbersome solution fix!
             for (int i = 0; i < existingObjects.Length; i++)
             {
                 existingObjects[i] = existingGameObjects[i].GetComponent<Square>();
             }
             if (existingObjects.Length == 0) ResetBoard();
-            else if (existingObjects.Length == GetNrSquares) ResetBoard(existingObjects);
+            else if (existingObjects.Length == GetNrSquares && !overrideExistingMap) ResetBoard(existingObjects);
             else
             {
                 for (int i = existingGameObjects.Count - 1; i >= 0; i--)
@@ -268,7 +270,13 @@ namespace GameCode
             void LocalFunction(Vector2Int index, Vector2 dimensions)
             {
                 Square square = IndexProperly(existingObjects, index);
-                SetupSquareProperly(square, index, dimensions.x, dimensions.y);
+                InternalSetupSquare(square, index, dimensions.x, dimensions.y);
+            }
+
+            void InternalSetupSquare(Square square, Vector2Int index, float dimensionsX = 0f, float dimensionsY = 0f)
+            {
+                SetupSquare(square, index, dimensionsX, dimensionsY);
+                square.SetupSquareValues();
             }
         }
 
