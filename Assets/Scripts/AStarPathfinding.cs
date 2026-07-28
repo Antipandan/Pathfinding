@@ -25,8 +25,8 @@ namespace GameCode
         [SerializeField] private float tracingSearchDelay = 100f;
         [Header("References (dont touch)")]
         [SerializeField] private CustomEvents customEvent;
-        private List<Square> openList;
-        private List<Square> closedList;
+        private HashSet<Square> openList;
+        private HashSet<Square> closedList;
         private Square startingSquare;
         private Square endingSquare;
 
@@ -53,9 +53,15 @@ namespace GameCode
             startingSquare = customEvent.PublishOnGetStartingSquare();
             endingSquare = customEvent.PublishOnGetEndingSquare();
             openList.Add(startingSquare);
+            SetupStartingSquare();
             StartCoroutine(AStarPathfindingAlgorithm());
         }
-        
+
+        private void SetupStartingSquare()
+        {
+            startingSquare.G = 0;
+            startingSquare.H = CalculateDistance(startingSquare, endingSquare);
+        }
 
         private void SubscribeToEvents()
         {
@@ -83,13 +89,12 @@ namespace GameCode
         
         private void Setup()
         {
-            openList = new List<Square>();
-            closedList = new List<Square>();
+            openList = new HashSet<Square>();
+            closedList = new HashSet<Square>();
             if (customEvent == null)
             {
                 Debug.LogWarning($"Warning! Reference to {nameof(customEvent)} is null!", this);
             }
-            
         }
 
         #endregion
@@ -98,40 +103,54 @@ namespace GameCode
 
         private IEnumerator AStarPathfindingAlgorithm()
         {
+            startingSquare.G = 0;
+            startingSquare.H = CalculateDistance(startingSquare, endingSquare);
             bool foundPath = false;
             while (openList.Count > 0 && !foundPath)
             {
                 Square cheapestSquare = FindCheapestSquare();
-                if (cheapestSquare is null)
+                if (cheapestSquare == endingSquare)
                 {
-                    yield break;
-                } 
+                    foundPath = true;
+                    break;
+                }
+                if (cheapestSquare is null) yield break;
                 openList.Remove(cheapestSquare);
-
+                closedList.Add(cheapestSquare);
                 List<Square> neighbours = customEvent.PublishOnGetNeighbourSquares(cheapestSquare);
-                neighbours = FilterOutNeighbours(neighbours);
-                foreach (Square square in neighbours)
+                // neighbours = FilterOutNeighbours(neighbours);
+                foreach (Square currentNeighbour in neighbours)
                 {
-                    // steg 1
-                    if (square == endingSquare)
+                    
+/*                    if (square == endingSquare)
                     {
                         closedList.Add(square);
                         foundPath = true;
                     }
-                    // steg 2
-                    square.G += cheapestSquare.G;
-                    square.H = CalculateDistance(square, endingSquare);
-                    // steg 3 och 4
-                    if (!DetermineIfSkip(square))
+                    */
+                    if (closedList.Contains(currentNeighbour)) continue;
+                    float tentativeG = currentNeighbour.Weight + cheapestSquare.G;
+                    if (tentativeG < currentNeighbour.G)
+                    {
+                        Debug.Log($"lower");
+                        currentNeighbour.G = tentativeG;
+                        currentNeighbour.H = CalculateDistance(currentNeighbour, endingSquare);
+                        currentNeighbour.ParentSquare = cheapestSquare;
+                    }
+                    openList.Add(currentNeighbour);
+                    /*if (!DetermineIfSkip(square))
                     {
                         openList.Add(square);
                         TryUpdateSquare(square, SquareTypes.NeighbourSquare);
-                    }
+                    }*/
                 }
-                closedList.Add(cheapestSquare);
                 yield return new WaitForSeconds(aStarSearchDelay / 1000f);
             }
-            if (foundPath) StartCoroutine(TraceBackPath());
+            if (foundPath)
+            {
+                Debug.Log($"path found!");
+                StartCoroutine(TraceBackPath());
+            }
             else
             {
                 if (!restartOnEnd) yield break;
@@ -140,34 +159,90 @@ namespace GameCode
             }
         }
         
-        private static bool CheckIfAllSameFValues(List<Square> squares)
-        {
-            Square previousSquare = null;
-            foreach (Square square in squares)
-            {
-                if (previousSquare is null) previousSquare = square;
-                else if (!Mathf.Approximately(previousSquare.F, square.F)) return false;
-            }
-            return true;
-        }
-        
         private Square FindCheapestSquare()
         {
             Square cheapestSquare = null;
-            bool sameFValue = CheckIfAllSameFValues(openList);
+            List<Square> sameFValues = new List<Square>();
             foreach (Square square in openList)
             {
-                if (!sameFValue)
+                if (cheapestSquare is null)
                 {
-                    if (cheapestSquare is null || square.F < cheapestSquare.F) cheapestSquare = square;
+                    cheapestSquare = square;
+                    sameFValues.Add(cheapestSquare);
                 }
-                else
+                else if (Mathf.Approximately(square.F, cheapestSquare.F)) sameFValues.Add(square);
+                else if (square.F < cheapestSquare.F)
                 {
-                    if (cheapestSquare is null || square.G > cheapestSquare.G) cheapestSquare = square;
+                    sameFValues.Clear();
+                    cheapestSquare = square;
+                    sameFValues.Add(cheapestSquare);
                 }
+            }
+            if (sameFValues.Count > 1)
+            {
+                cheapestSquare = internalHelperFunction(sameFValues);
             }
             TryUpdateSquare(cheapestSquare, SquareTypes.FoundPathSquare);
             return cheapestSquare;
+            
+            static Square internalHelperFunction(List<Square> sameFValues)
+            {
+                List<Square> sameGValues = InternalFindCheapestGSquares(sameFValues);
+                if (sameGValues.Count <= 1) return sameGValues[0];
+                List<Square> sameHValues = InternalFindCheapestH(sameGValues);
+                if (sameHValues.Count <= 1) return sameHValues[0];
+                List<Square> sameWeightValues = InternalFindCheapestWeightValue(sameHValues);
+                return sameWeightValues[0];
+            }
+            
+            // refactor o'clock??
+            static List<Square> InternalFindCheapestGSquares(List<Square> sameFValues)
+            {
+                List<Square> sameGValues = new List<Square>();
+                foreach (Square square in sameFValues)
+                {
+                    if (sameGValues.Count == 0) sameGValues.Add(square);
+                    else if (Mathf.Approximately(square.G, sameGValues[0].G)) sameGValues.Add(square);
+                    else if (square.G < sameGValues[0].G)
+                    {
+                        sameGValues.Clear();
+                        sameGValues.Add(square);
+                    }
+                }
+                return sameGValues;
+            }
+
+            static List<Square> InternalFindCheapestH(List<Square> sameGValues)
+            {
+                List<Square> sameHValues = new List<Square>();
+                foreach (Square square in sameGValues)
+                {
+                    if (sameGValues.Count == 0) sameHValues.Add(square);
+                    else if (Mathf.Approximately(square.H, sameGValues[0].H)) sameHValues.Add(square);
+                    else if (square.H < sameGValues[0].H)
+                    {
+                        sameHValues.Clear();
+                        sameHValues.Add(square);
+                    }
+                }
+                return sameHValues;
+            }
+
+            static List<Square> InternalFindCheapestWeightValue(List<Square> sameHValues)
+            {
+                List<Square> sameWeightValues = new List<Square>();
+                foreach (Square square in sameHValues)
+                {
+                    if (sameWeightValues.Count == 0) sameWeightValues.Add(square);
+                    else if (Mathf.Approximately(square.Weight, sameHValues[0].H)) sameWeightValues.Add(square);
+                    else if (square.Weight < sameHValues[0].H)
+                    {
+                        sameWeightValues.Clear();
+                        sameWeightValues.Add(square);
+                    }
+                }
+                return sameWeightValues;
+            }
         }
         
         private List<Square> FilterOutNeighbours(List<Square> neighbours)
@@ -188,19 +263,13 @@ namespace GameCode
                 if (successor.Index == openSquare.Index &&
                     openSquare.F < successor.F) skip = true;
             }
-
-            foreach (Square closedSquare in closedList)
-            {
-                if (successor.Index == closedSquare.Index &&
-                    closedSquare.F < successor.F) skip = true;
-            }
             return skip;
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void TryUpdateSquare(Square square, SquareTypes squareType)
         {
-            if (square.SquareType < squareType) square.SquareType = squareType;
+            if (square?.SquareType < squareType) square.SquareType = squareType;
         }
 
         #endregion
@@ -212,7 +281,7 @@ namespace GameCode
         {
             HashSet<Square> visitedSquares = new HashSet<Square>();
             Square currentSquare = endingSquare;
-            UpdateSingleTraceSquare(currentSquare, visitedSquares);
+            // UpdateSingleTraceSquare(currentSquare, visitedSquares);
             while (currentSquare is not null &&  currentSquare != startingSquare)
             {
                 UpdateSingleTraceSquare(currentSquare, visitedSquares);

@@ -159,8 +159,7 @@ namespace GameCode
         private void InitializeSquareValues(Square square)
         {
             square.Weight = random.Next(minWeight, maxWeight + 1);
-            square.G = square.Weight;
-            square.H = 0f;
+            square.SetupSquareValues(0f, float.MaxValue);
         }
         
         private void InitializeSquareValues(Square square, SquareTypes newSquareType)

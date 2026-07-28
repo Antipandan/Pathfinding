@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using Utility;
 using static GameCode.Constants;
+using Random = System.Random;
 
 namespace GameCode
 {
@@ -21,7 +22,7 @@ namespace GameCode
         [SerializeField] private TextMeshPro fText = null;
         private static CustomEvents customEvent;
         private Vector2Int index;
-
+        private Square parentSquare = null;
         public Vector2Int Index
         {
             get => index;
@@ -34,7 +35,7 @@ namespace GameCode
             set
             {
                 g = value;
-                UpdateText(fText, F);
+                UpdateText(fText, F);   
             }
         }
 
@@ -61,6 +62,18 @@ namespace GameCode
                 weight = value;
                 UpdateText(weightText, weight);
             }
+        }
+
+        public Square ParentSquare
+        {
+            get => parentSquare;
+            set => parentSquare = value;
+        }
+
+        public void SetupSquareValues(float newH = 0f, float newG = float.MaxValue / 2f)
+        {
+            H = newH;
+            G = newG;
         }
 
         [ExecuteAlways]
@@ -117,6 +130,8 @@ namespace GameCode
         {
             Weight = Mathf.Clamp(weight, 0f, float.MaxValue);
             SquareType = SquareType;
+            G = G;
+            H = H;
         }
 
         public override string ToString()
