@@ -238,7 +238,7 @@ namespace GameCode
             long total = 0;
             foreach (Square square in squares)
             {
-                total += (long)square.F;
+                total += (long)square.Weight;
             }
             return total;
         }
