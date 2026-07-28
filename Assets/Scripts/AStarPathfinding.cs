@@ -296,11 +296,6 @@ namespace GameCode
                         borderingNeighbours.Add(neighbour);
                     }
                 }
-
-                foreach (Square neighbour in borderingNeighbours)
-                {
-                    Debug.Log($"neighbour: {neighbour.G}", neighbour);
-                }
                 currentSquare = FindCheapestGSquare(borderingNeighbours);
                 yield return new WaitForSeconds(tracingSearchDelay / 1000f);
             }

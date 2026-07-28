@@ -180,7 +180,6 @@ namespace Utility
                 }
             }
         }
-
         
         /// <summary>
         /// Runs a function inside a double for loop
