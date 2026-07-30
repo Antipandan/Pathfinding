@@ -249,8 +249,8 @@ namespace GameCode
             foreach (Square square in sameHValues)
             {
                 if (sameWeightValues.Count == 0) sameWeightValues.Add(square);
-                else if (Mathf.Approximately(square.Weight, sameHValues[0].H)) sameWeightValues.Add(square);
-                else if (square.Weight < sameHValues[0].H)
+                else if (Mathf.Approximately(square.Weight, sameHValues[0].Weight)) sameWeightValues.Add(square);
+                else if (square.Weight < sameHValues[0].Weight)
                 {
                     sameWeightValues.Clear();
                     sameWeightValues.Add(square);
@@ -297,6 +297,7 @@ namespace GameCode
                     }
                 }
                 currentSquare = FindCheapestGSquare(borderingNeighbours);
+                Debug.Log($"currentSquare: {currentSquare.Index}", currentSquare);
                 yield return new WaitForSeconds(tracingSearchDelay / 1000f);
             }
             UpdateSingleTraceSquare(currentSquare, visitedSquares);
