@@ -284,7 +284,7 @@ namespace GameCode
         {
             HashSet<Square> visitedSquares = new HashSet<Square>();
             Square currentSquare = endingSquare;
-            while (currentSquare is not null &&  currentSquare != startingSquare)
+            while (currentSquare is not null && currentSquare != startingSquare)
             {
                 UpdateSingleTraceSquare(currentSquare, visitedSquares);
                 List<Square> neighbours = customEvent.PublishOnGetNeighbourSquares(currentSquare);
@@ -297,7 +297,6 @@ namespace GameCode
                     }
                 }
                 currentSquare = FindCheapestGSquare(borderingNeighbours);
-                Debug.Log($"currentSquare: {currentSquare.Index}", currentSquare);
                 yield return new WaitForSeconds(tracingSearchDelay / 1000f);
             }
             UpdateSingleTraceSquare(currentSquare, visitedSquares);
