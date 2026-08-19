@@ -9,7 +9,7 @@ using Random = System.Random;
 
 namespace GameCode
 {
-    [ExecuteAlways]
+    [ExecuteAlways] [SelectionBase]
     public class Square : MonoBehaviour
     {
         [Header("Settings")]
